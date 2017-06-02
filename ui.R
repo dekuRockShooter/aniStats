@@ -16,7 +16,10 @@ initTabs = function() {
                 tabPanel("Genres",
                          #textOutput("genresView"),
                          #category.getView(),
-                         plotOutput("propsVsYear"),
+                         fluidPage(
+                                   fluidRow(column(12, plotOutput("propsVsYear"))),
+                                   fluidRow(column(12, plotOutput("scoreVsClass")))
+                                   ),
                          value=TAB_ID_GENRES),
                 tabPanel("Sources",
                          textOutput("sourcesView"),

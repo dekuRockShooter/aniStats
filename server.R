@@ -149,8 +149,8 @@ shinyServer(
                     input$tabpanelId
                 })
 
-                # Show props vs. year barplot for all categorical variables
-                # (genres, source, type, and studio).
+                # Show props vs. class barplot for all categorical
+                # variables (genres, source, type, and studio).
                 output$propsVsYear <- renderPlot({
                     curType = NULL
                     tabId = input$tabpanelId
@@ -163,6 +163,21 @@ shinyServer(
                     w = order(curType$tot_props, decreasing=TRUE)
                     gprop_vs_genre(curType$tot_props[w],
                                    curType$class_colors[w])
+                })
+
+                # Show score vs. class barplot for all categorical
+                # variables (genres, source, type, and studio).
+                output$scoreVsClass <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    w = order(curType$score_meds, decreasing=TRUE)
+                    mean_gscore_vs_genre(curType$score_meds[w],
+                                         curType$class_colors[w],
+                                         globalMedScore)
                 })
 
                 output$typesView <- renderPrint({
