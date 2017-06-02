@@ -229,6 +229,25 @@ shinyServer(
                          )
                 })
 
+                # Show score,prop vs. year for all categorical variables
+                # (genres, source, type, and studio).
+                output$scoreVsViews <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    gscore_vs_gview(
+                                    curType$view_meds,
+                                    curType$score_meds,
+                                    curType$class_colors,
+                                    globalMedScore,
+                                    globalMedViews,
+                                    curType$class_names
+                                    )
+                })
+
                 output$typesView <- renderPrint({
                     #summary(data())
                     input$tabpanelId
