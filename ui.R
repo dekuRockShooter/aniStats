@@ -22,7 +22,8 @@ initTabs = function() {
                                    fluidRow(column(12,plotOutput("scorePropVsYear"))),
                                    fluidRow(column(12, plotOutput("propLevelplot"))),
                                    fluidRow(column(12, plotOutput("scoreVsViews"))),
-                                   fluidRow(column(12, plotOutput("scoreVsProp")))
+                                   fluidRow(column(12, plotOutput("scoreVsProp"))),
+                                   fluidRow(column(12, plotOutput("scoreSlopeVsPropSlope")))
                                    ),
                          value=TAB_ID_GENRES),
                 tabPanel("Sources",

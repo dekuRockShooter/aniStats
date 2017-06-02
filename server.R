@@ -266,6 +266,23 @@ shinyServer(
                                     )
                 })
 
+                # Show score slope vs. prop slope for all categorical
+                # variables (genres, source, type, and studio).
+                output$scoreSlopeVsPropSlope <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    gscore_slope_vs_gprop_slope(
+                                                curType$prop_slopes,
+                                                curType$score_slopes,
+                                                curType$class_colors,
+                                                curType$class_names
+                                                )
+                })
+
                 output$typesView <- renderPrint({
                     #summary(data())
                     input$tabpanelId
