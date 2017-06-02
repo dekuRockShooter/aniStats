@@ -1,5 +1,6 @@
 library(shiny)
 source('main5.R')
+source('constants.R')
 
 # Initialization of data common to all users.
 # Executed once throughout lifetime.
@@ -146,6 +147,22 @@ shinyServer(
                 output$sourcesView <- renderPrint({
                     #summary(data())
                     input$tabpanelId
+                })
+
+                # Show props vs. year barplot for all categorical variables
+                # (genres, source, type, and studio).
+                output$propsVsYear <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    # This 'if' is probably not necessary.
+                    #if (tabId == TAB_ID_SUMMARY) curType = data$overall
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    w = order(curType$tot_props, decreasing=TRUE)
+                    gprop_vs_genre(curType$tot_props[w],
+                                   curType$class_colors[w])
                 })
 
                 output$typesView <- renderPrint({
