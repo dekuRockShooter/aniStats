@@ -180,6 +180,24 @@ shinyServer(
                                          globalMedScore)
                 })
 
+                # Show score,prop vs. year for all categorical variables
+                # (genres, source, type, and studio).
+                output$scorePropVsYear <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    gprop_vs_year(
+                                  data$years,
+                                  curType$prop_mat[, 1],
+                                  curType$score_mat[, 1],
+                                  max(curType$prop_mat, na.rm=TRUE),
+                                  range(curType$score_mat, na.rm=TRUE)
+                                  )
+                })
+
                 output$typesView <- renderPrint({
                     #summary(data())
                     input$tabpanelId
