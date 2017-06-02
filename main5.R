@@ -37,11 +37,11 @@ category_enum = list(
 #   score_class
 #   noisy_score
 init_anime = function() {
-    par(fg=rgb(0.6, 0.6, 0.6),
-        bg=rgb(0, 0, 0),
-        col.axis=rgb(0.6, 0.6, 0.6),
-        col.lab=rgb(0.6, 0.6, 0.6),
-        mfrow=c(2, 2))
+    #par(fg=rgb(0.6, 0.6, 0.6),
+        #bg=rgb(0, 0, 0),
+        #col.axis=rgb(0.6, 0.6, 0.6),
+        #col.lab=rgb(0.6, 0.6, 0.6),
+        #mfrow=c(2, 2))
 
     Anime = read.table("anime_mach.csv",
                      header=FALSE,
@@ -90,7 +90,12 @@ get_overall_data = function(data, gbl_data, cur_studio) {
                     wyear = which(D$year == year)
                     studios = D$studio[wyear]
                     studio_counts = table(studios)
-                    cur_studio_count = studio_counts[cur_studio]
+                    if (is.null(cur_studio)) {
+                        cur_studio_count = 0.0
+                    }
+                    else {
+                        cur_studio_count = studio_counts[cur_studio]
+                    }
                     # Proportion percentile.
                     a = sum(studio_counts[!(studio_counts > cur_studio_count)])
                     # proportion.
@@ -544,96 +549,106 @@ score_vs_dominance = function(years, perf_mat) {
 #A = init_anime()
 #D = A[, -1]
 #sapply(6 : 44, function(idx) D[, idx] <<- as.integer(D[, idx]) - 1)
-cur_studio = 'Gainax'
-default_years = (max(D$year) - 10) : (max(D$year) - 1) # Not the current year
-dataset = D[(D$studio == cur_studio), ]
-data = init_data(dataset, D, cur_studio)
+#cur_studio = 'Gainax'
+#default_years = (max(D$year) - 10) : (max(D$year) - 1) # Not the current year
+#dataset = D[(D$studio == cur_studio), ]
+#data = init_data(D, D, NULL)
 
-pdf(file='tmp.pdf')
-par(fg=rgb(0.6, 0.6, 0.6),
-    bg=rgb(0, 0, 0),
-    col.axis=rgb(0.6, 0.6, 0.6),
-    col.lab=rgb(0.6, 0.6, 0.6),
-    mfrow=c(1, 1))
-glb_med_score = median(D$score)
-glb_med_view = median(D$tot_watched)
-
-########################################################################
-# TYPES SECTION
+#pdf(file='tmp.pdf')
+#par(fg=rgb(0.6, 0.6, 0.6),
+    #bg=rgb(0, 0, 0),
+    #col.axis=rgb(0.6, 0.6, 0.6),
+    #col.lab=rgb(0.6, 0.6, 0.6),
+    #mfrow=c(1, 1))
+#glb_med_score = median(D$score)
+#glb_med_view = median(D$tot_watched)
 #
-# These are the common elements of each type (genre, source, and type).
-# The only thing that changes is the value of cur_type, which denotes
-# the currently selected type.
-########################################################################
-cur_type = data$genre
-
-w = order(cur_type$tot_props, decreasing=TRUE)
-gprop_vs_genre(cur_type$tot_props[w], cur_type$class_colors[w])
-w = order(cur_type$score_meds, decreasing=TRUE)
-mean_gscore_vs_genre(cur_type$score_meds[w], cur_type$class_colors[w], glb_med_score)
-gprop_vs_year(data$years, cur_type$prop_mat[, 4], cur_type$score_mat[, 4],
-              max(cur_type$prop_mat, na.rm=TRUE),
-              range(cur_type$score_mat, na.rm=TRUE))
-
-gprop_palette = colorRampPalette(c('black', 'white'))(n=128)
-image(x=data$years, y=1:length(cur_type$class_names),
-      cur_type$prop_mat, col=gprop_palette)
-axis(side=2, at=1:length(cur_type$class_names),
-     labels=cur_type$class_names, las=2)
-#levelplot(data$gprop_mat, region=TRUE, col.regions=gprop_palette)
-
-gscore_vs_gview(cur_type$view_meds, cur_type$score_meds, cur_type$class_colors,
-                glb_med_score, glb_med_view, cur_type$class_names)
-gscore_vs_gprop(cur_type$tot_props, cur_type$score_meds,
-                glb_med_score, cur_type$class_colors,
-                cur_type$class_names)
-gscore_slope_vs_gprop_slope(
-                            get_trendline(cur_type$prop_mat,
-                                          byrow=FALSE,
-                                          onlysig=FALSE),
-                            cur_type$score_slopes,
-                            cur_type$class_colors, cur_type$class_names)
-
-########################################################################
-# OVERALL SECTION
-########################################################################
-score_vs_year(data$years,
-              get_timeline('median', D$score[D$year%in%data$years],
-                           D$year[D$year%in%data$years]),
-              title='Mean score throughout time',
-              ylab='Mean score',
-              timeline_mat=data$overall$qscore_timeline,
-              main_col=3,
-              ylim=c(min(data$overall$qscore_timeline, na.rm=TRUE),
-                     max(data$overall$qscore_timeline, na.rm=TRUE))
-              )
-score_vs_year(data$years,
-              get_timeline('median', D$tot_watched[D$year%in%data$years],
-                           D$year[D$year%in%data$years]),
-              title='Mean views throughout time',
-              ylab='Mean views',
-              data$overall$qview_timeline,
-              main_col=3,
-              c(min(data$overall$qview_timeline, na.rm=TRUE),
-                max(data$overall$qview_timeline, na.rm=TRUE))
-              )
-score_vs_year(data$years,
-              get_timeline('median', D$tot_eps[D$year%in%data$years],
-                           D$year[D$year%in%data$years]),
-              title='Mean episodes throughout time',
-              ylab='Mean episodes',
-              data$overall$qeps_timeline,
-              main_col=3,
-              c(min(data$overall$qeps_timeline, na.rm=TRUE),
-                max(data$overall$qeps_timeline, na.rm=TRUE))
-              )
-numtype_vs_year(data$years, t(data$types$prop_mat), data$types$class_names)
-                #sort(levels(dataset$type), decreasing=FALSE))
-numtype_vs_year(data$years, t(data$sources$prop_mat), data$sources$class_names)
-                #sort(levels(dataset$source), decreasing=FALSE))
-dominance_vs_year(data$years, data$overall$perf_mat)
-score_vs_dominance(data$years, data$overall$perf_mat)
-dev.off()
+#########################################################################
+## TYPES SECTION
+##
+## These are the common elements of each type (genre, source, and type).
+## The only thing that changes is the value of cur_type, which denotes
+## the currently selected type.
+#########################################################################
+#cur_type = data$genre
+#
+#w = order(cur_type$tot_props, decreasing=TRUE)
+#gprop_vs_genre(cur_type$tot_props[w], cur_type$class_colors[w])
+#w = order(cur_type$score_meds, decreasing=TRUE)
+#mean_gscore_vs_genre(cur_type$score_meds[w], cur_type$class_colors[w], glb_med_score)
+#gprop_vs_year(data$years, cur_type$prop_mat[, 4], cur_type$score_mat[, 4],
+              #max(cur_type$prop_mat, na.rm=TRUE),
+              #range(cur_type$score_mat, na.rm=TRUE))
+#
+#gprop_palette = colorRampPalette(c('black', 'white'))(n=128)
+#image(x=data$years, y=1:length(cur_type$class_names),
+      #cur_type$prop_mat, col=gprop_palette)
+#axis(side=2, at=1:length(cur_type$class_names),
+     #labels=cur_type$class_names, las=2)
+##levelplot(data$gprop_mat, region=TRUE, col.regions=gprop_palette)
+#
+#gscore_vs_gview(cur_type$view_meds, cur_type$score_meds, cur_type$class_colors,
+                #glb_med_score, glb_med_view, cur_type$class_names)
+#gscore_vs_gprop(cur_type$tot_props, cur_type$score_meds,
+                #glb_med_score, cur_type$class_colors,
+                #cur_type$class_names)
+#gscore_slope_vs_gprop_slope(
+                            #get_trendline(cur_type$prop_mat,
+                                          #byrow=FALSE,
+                                          #onlysig=FALSE),
+                            #cur_type$score_slopes,
+                            #cur_type$class_colors, cur_type$class_names)
+#
+#########################################################################
+## OVERALL SECTION
+#########################################################################
+get_quantiles_tmp = function(year, vec, data_years) {
+    as.numeric(summary(vec[data_years == year]))
+}
+#
+#tmln = lapply(data$years, get_quantiles_tmp, na.omit(D$score))
+#tmln = do.call(rbind, tmln)[, 3]
+#score_vs_year(data$years, tmln,
+              ##get_timeline('median', D$score[D$year%in%data$years],
+                           ##D$year[D$year%in%data$years]),
+              #title='Mean score throughout time',
+              #ylab='Mean score',
+              #timeline_mat=data$overall$qscore_timeline,
+              #main_col=3,
+              #ylim=c(min(data$overall$qscore_timeline, na.rm=TRUE),
+                     #max(data$overall$qscore_timeline, na.rm=TRUE))
+              #)
+#tmln = lapply(data$years, get_quantiles_tmp, na.omit(D$tot_watched))
+#tmln = do.call(rbind, tmln)[, 3]
+#score_vs_year(data$years, tmln,
+              ##get_timeline('median', D$tot_watched[D$year%in%data$years],
+                           ##D$year[D$year%in%data$years]),
+              #title='Mean views throughout time',
+              #ylab='Mean views',
+              #data$overall$qview_timeline,
+              #main_col=3,
+              #c(min(data$overall$qview_timeline, na.rm=TRUE),
+                #max(data$overall$qview_timeline, na.rm=TRUE))
+              #)
+#tmln = lapply(data$years, get_quantiles_tmp, na.omit(D$tot_eps))
+#tmln = do.call(rbind, tmln)[, 3]
+#score_vs_year(data$years, tmln,
+              ##get_timeline('median', D$tot_eps[D$year%in%data$years],
+                           ##D$year[D$year%in%data$years]),
+              #title='Mean episodes throughout time',
+              #ylab='Mean episodes',
+              #data$overall$qeps_timeline,
+              #main_col=3,
+              #c(min(data$overall$qeps_timeline, na.rm=TRUE),
+                #max(data$overall$qeps_timeline, na.rm=TRUE))
+              #)
+#numtype_vs_year(data$years, t(data$types$prop_mat), data$types$class_names)
+                ##sort(levels(dataset$type), decreasing=FALSE))
+#numtype_vs_year(data$years, t(data$sources$prop_mat), data$sources$class_names)
+                ##sort(levels(dataset$source), decreasing=FALSE))
+##dominance_vs_year(data$years, data$overall$perf_mat)
+##score_vs_dominance(data$years, data$overall$perf_mat)
+#dev.off()
 
 # Core genres
 #data$core_genres
