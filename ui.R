@@ -1,5 +1,6 @@
 library(shiny)
 source('views/summaryView.R')
+source('constants.R')
 
 initTabs = function() {
     tabsetPanel(
@@ -9,13 +10,20 @@ initTabs = function() {
                 # The argument to *Ouput(x) is the name of an R object
                 # (defined in server.R as output$x) of type *.
                 tabPanel("Summary", 
-                         summary.getView()
-                         #plotOutput("summaryView"),
-                         #plotOutput("summaryView")
+                         summary.getView(),
+                         value=TAB_ID_SUMMARY
                          ), 
-                tabPanel("Genres", textOutput("genresView")), 
-                tabPanel("Sources", textOutput("sourcesView")), 
-                tabPanel("Types", textOutput("typesView"))
+                tabPanel("Genres",
+                         #textOutput("genresView"),
+                         #category.getView(),
+                         plotOutput("propsVsYear"),
+                         value=TAB_ID_GENRES),
+                tabPanel("Sources",
+                         textOutput("sourcesView"),
+                         value=TAB_ID_SOURCES),
+                tabPanel("Types",
+                         textOutput("typesView"),
+                         value=TAB_ID_TYPES)
                 )
 }
 
