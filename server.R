@@ -102,6 +102,18 @@ shinyServer(
                                   )
                 })
 
+                output$typePropVsYear <- renderPlot({
+                    numtype_vs_year(data$years,
+                                    t(data$types$prop_mat),
+                                    data$types$class_names)
+                })
+
+                output$sourcePropVsYear <- renderPlot({
+                    numtype_vs_year(data$years,
+                                    t(data$sources$prop_mat),
+                                    data$sources$class_names)
+                })
+
                 # Generate a plot of the data. Also uses the inputs to build
                 # the plot label. Note that the dependencies on both the inputs
                 # and the data reactive expression are both tracked, and

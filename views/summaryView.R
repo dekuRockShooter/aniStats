@@ -6,6 +6,8 @@ summary.getView = function() {
     fluidPage(
               fluidRow(column(12, plotOutput("scoreVsYear"))),
               fluidRow(column(12, plotOutput("viewsVsYear"))),
-              fluidRow(column(12, plotOutput("epsVsYear")))
+              fluidRow(column(12, plotOutput("epsVsYear"))),
+              fluidRow(column(12, plotOutput("typePropVsYear"))),
+              fluidRow(column(12, plotOutput("sourcePropVsYear")))
               )
 }
