@@ -1,4 +1,5 @@
 library(shiny)
+library(lattice)
 source('main5.R')
 source('constants.R')
 
@@ -196,6 +197,36 @@ shinyServer(
                                   max(curType$prop_mat, na.rm=TRUE),
                                   range(curType$score_mat, na.rm=TRUE)
                                   )
+                })
+
+                # Show score,prop vs. year for all categorical variables
+                # (genres, source, type, and studio).
+                output$propLevelplot <- renderPlot({
+                    curType = NULL
+                    tabId = input$tabpanelId
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    gprop_palette = colorRampPalette(c('black', 'white'))(n=128)
+                    #levelplot(
+                              #curType$prop_mat,
+                              #region=TRUE,
+                              ##ylab='',
+                              #col.regions=gprop_palette
+                              #)
+                    image(
+                          x=data$years,
+                          y=1:length(curType$class_names),
+                          curType$prop_mat,
+                          col=gprop_palette
+                          )
+                    axis(
+                         side=2,
+                         at=1:length(curType$class_names),
+                         labels=curType$class_names,
+                         las=2
+                         )
                 })
 
                 output$typesView <- renderPrint({
