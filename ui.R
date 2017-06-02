@@ -1,4 +1,5 @@
 library(shiny)
+source('views/summaryView.R')
 
 initTabs = function() {
     tabsetPanel(
@@ -8,18 +9,7 @@ initTabs = function() {
                 # The argument to *Ouput(x) is the name of an R object
                 # (defined in server.R as output$x) of type *.
                 tabPanel("Summary", 
-                         fluidRow(
-                                  column(12,
-                                         plotOutput("scoreVsYear"))
-                                  ),
-                         fluidRow(
-                                  column(12,
-                                         plotOutput("viewsVsYear"))
-                                  ),
-                         fluidRow(
-                                  column(12,
-                                         plotOutput("epsVsYear"))
-                                  )
+                         summary.getView()
                          #plotOutput("summaryView"),
                          #plotOutput("summaryView")
                          ), 
