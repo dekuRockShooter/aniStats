@@ -46,16 +46,18 @@ shinyServer(
                 # This is called whenever the inputs change. The output
                 # functions defined below then all use the value computed from
                 # this expression
-                #data <- reactive({
-                    #dist <- switch(input$dist,
-                                   #norm = rnorm,
-                                   #unif = runif,
-                                   #lnorm = rlnorm,
-                                   #exp = rexp,
-                                   #rnorm)
-#
-                    #dist(input$n)
-                #})
+                reactiveTabChange <- reactive({
+                    tabId = input$tabpanelId
+                    # This 'if' is probably not necessary.
+                    #if (tabId == TAB_ID_SUMMARY) curType = data$overall
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
+
+                    retList = list()
+                    retList$curType = curType
+                    return(retList)
+                })
 
                 # The render* functions are executed everytime a widget
                 # that it is observing changes.  These widgets are stored
@@ -153,14 +155,7 @@ shinyServer(
                 # Show props vs. class barplot for all categorical
                 # variables (genres, source, type, and studio).
                 output$propsVsYear <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    # This 'if' is probably not necessary.
-                    #if (tabId == TAB_ID_SUMMARY) curType = data$overall
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     w = order(curType$tot_props, decreasing=TRUE)
                     gprop_vs_genre(curType$tot_props[w],
                                    curType$class_colors[w])
@@ -169,12 +164,7 @@ shinyServer(
                 # Show score vs. class barplot for all categorical
                 # variables (genres, source, type, and studio).
                 output$scoreVsClass <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     w = order(curType$score_meds, decreasing=TRUE)
                     mean_gscore_vs_genre(curType$score_meds[w],
                                          curType$class_colors[w],
@@ -184,12 +174,7 @@ shinyServer(
                 # Show score,prop vs. year for all categorical variables
                 # (genres, source, type, and studio).
                 output$scorePropVsYear <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     gprop_vs_year(
                                   data$years,
                                   curType$prop_mat[, 1],
@@ -202,19 +187,8 @@ shinyServer(
                 # Show score,prop vs. year for all categorical variables
                 # (genres, source, type, and studio).
                 output$propLevelplot <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     gprop_palette = colorRampPalette(c('black', 'white'))(n=128)
-                    #levelplot(
-                              #curType$prop_mat,
-                              #region=TRUE,
-                              ##ylab='',
-                              #col.regions=gprop_palette
-                              #)
                     image(
                           x=data$years,
                           y=1:length(curType$class_names),
@@ -232,12 +206,7 @@ shinyServer(
                 # Show score vs. views for all categorical variables
                 # (genres, source, type, and studio).
                 output$scoreVsViews <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     gscore_vs_gview(
                                     curType$view_meds,
                                     curType$score_meds,
@@ -251,12 +220,7 @@ shinyServer(
                 # Show score vs. props for all categorical variables
                 # (genres, source, type, and studio).
                 output$scoreVsProp <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     gscore_vs_gprop(
                                     curType$tot_props,
                                     curType$score_meds,
@@ -269,12 +233,7 @@ shinyServer(
                 # Show score slope vs. prop slope for all categorical
                 # variables (genres, source, type, and studio).
                 output$scoreSlopeVsPropSlope <- renderPlot({
-                    curType = NULL
-                    tabId = input$tabpanelId
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
+                    curType = reactiveTabChange()$curType
                     gscore_slope_vs_gprop_slope(
                                                 curType$prop_slopes,
                                                 curType$score_slopes,
