@@ -1,6 +1,7 @@
 library(shiny)
 source('views/summaryView.R')
 source('constants.R')
+source('main5.R')
 
 initTabs = function() {
     tabsetPanel(
@@ -71,6 +72,13 @@ fluidPage(
     
   # Application title
   titlePanel("Tabsets"),
+  selectInput(
+              inputId='studioSelectId',
+              label='Select studio',
+              choices=c('All', sort(levels(globalDS$studio))),
+              selected='All'
+              ),
+  #actionButton(),
   
   # Sidebar with controls to select the random distribution type
   # and number of observations to generate. Note the use of the
