@@ -78,8 +78,7 @@ fluidPage(
               choices=c('All', sort(levels(globalDS$studio))),
               selected='All'
               ),
-  #actionButton(),
-  
+  actionButton('changeDataActionButton', 'Done'),
   # Sidebar with controls to select the random distribution type
   # and number of observations to generate. Note the use of the
   # br() element to introduce extra vertical spacing

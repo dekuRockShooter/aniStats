@@ -67,6 +67,22 @@ shinyServer(
                                     data$sources$class_names)
                 })
 
+                reactiveDataChange = eventReactive(
+                    input$changeDataActionButton,
+                    {
+                        studio = input$studioSelectId
+                        if (studio == 'All') {
+                            data <<- init_data(globalDS, globalDS, NULL)
+                        }
+                        else {
+                            studioDS = globalDS[globalDS$studio == studio, ]
+                            data <<- init_data(studioDS, globalDS, studio)
+                        }
+                        data
+                    },
+                    ignoreNULL = FALSE
+                    )
+
                 # Create plot output objects for the categorical variables
                 # tabs.  This function is meant to be used as:
                 #
@@ -75,14 +91,15 @@ shinyServer(
                 # It returns a renderPlot() object that renders the given
                 # plot for the given tab.
                 createCatPlot = function(plotId, tabId) {
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
+                    if (tabId == TAB_ID_GENRES) category = 'genres'
+                    else if (tabId == TAB_ID_SOURCES) category = 'sources'
+                    else if (tabId == TAB_ID_TYPES) category = 'types'
 
                     if (plotId == 1) {
                         # Show props vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             w = order(curType$tot_props, decreasing=TRUE)
                             gprop_vs_genre(curType$tot_props[w],
                                            curType$class_colors[w])
@@ -91,6 +108,7 @@ shinyServer(
                         # Show score vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             w = order(curType$score_meds, decreasing=TRUE)
                             mean_gscore_vs_genre(curType$score_meds[w],
                                                  curType$class_colors[w],
@@ -100,6 +118,7 @@ shinyServer(
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             gprop_vs_year(
                                           data$years,
                                           curType$prop_mat[, 1],
@@ -112,6 +131,7 @@ shinyServer(
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             gprop_palette = colorRampPalette(c('black',
                                                                'white'))(n=128)
                             image(
@@ -128,9 +148,10 @@ shinyServer(
                                  )
                         })
                     } else if (plotId == 5) {
+                        # Show score vs. views for all categorical
+                        # variables (genres, source, type, and studio).
                         renderPlot({
-                            # Show score vs. views for all categorical
-                            # variables (genres, source, type, and studio).
+                            curType = reactiveDataChange()[[category]]
                             gscore_vs_gview(
                                             curType$view_meds,
                                             curType$score_meds,
@@ -144,6 +165,7 @@ shinyServer(
                         # Show score vs. props for all categorical variables
                         # (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             gscore_vs_gprop(
                                             curType$tot_props,
                                             curType$score_meds,
@@ -156,6 +178,7 @@ shinyServer(
                         # Show score slope vs. prop slope for all categorical
                         # variables (genres, source, type, and studio).
                         renderPlot({
+                            curType = reactiveDataChange()[[category]]
                             gscore_slope_vs_gprop_slope(
                                                         curType$prop_slopes,
                                                         curType$score_slopes,
