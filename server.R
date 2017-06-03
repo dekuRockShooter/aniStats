@@ -42,29 +42,12 @@ shinyServer(
                 #dataset = D[(D$studio == cur_studio), ]
                 data = globalData
 
-                # Reactive expression to generate the requested distribution.
-                # This is called whenever the inputs change. The output
-                # functions defined below then all use the value computed from
-                # this expression
-                reactiveTabChange <- reactive({
-                    tabId = input$tabpanelId
-                    # This 'if' is probably not necessary.
-                    #if (tabId == TAB_ID_SUMMARY) curType = data$overall
-                    if (tabId == TAB_ID_GENRES) curType = data$genres
-                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
-                    else if (tabId == TAB_ID_TYPES) curType = data$types
-
-                    retList = list()
-                    retList$curType = curType
-                    return(retList)
-                })
-
                 # The render* functions are executed everytime a widget
                 # that it is observing changes.  These widgets are stored
                 # in input$x.  If a function does not use the input list,
                 # then it is executed only once. 
 
-                output$scoreVsYear <- renderPlot({
+                scoreVsYear <- renderPlot({
                     score_vs_year(data$years,
                                   globalTimeline$scores,
                                   title='Mean score throughout time',
@@ -74,15 +57,9 @@ shinyServer(
                                   ylim=c(min(data$overall$qscore_timeline, na.rm=TRUE),
                                          max(data$overall$qscore_timeline, na.rm=TRUE))
                                   )
-
-                    #dist <- input$dist
-                    #n <- input$n
-
-                    #hist(data(), 
-                         #main=paste(input$tabpanelId, '(', n, ')', sep=''))
                 })
 
-                output$viewsVsYear <- renderPlot({
+                viewsVsYear <- renderPlot({
                     score_vs_year(data$years,
                                   globalTimeline$scores,
                                   title='Mean views throughout time',
@@ -94,7 +71,7 @@ shinyServer(
                                   )
                 })
 
-                output$epsVsYear <- renderPlot({
+                epsVsYear <- renderPlot({
                     score_vs_year(data$years,
                                   globalTimeline$scores,
                                   title='Mean episodes throughout time',
@@ -106,156 +83,158 @@ shinyServer(
                                   )
                 })
 
-                output$typePropVsYear <- renderPlot({
+                typePropVsYear <- renderPlot({
                     numtype_vs_year(data$years,
                                     t(data$types$prop_mat),
                                     data$types$class_names)
                 })
 
-                output$sourcePropVsYear <- renderPlot({
+                sourcePropVsYear <- renderPlot({
                     numtype_vs_year(data$years,
                                     t(data$sources$prop_mat),
                                     data$sources$class_names)
                 })
 
-                # Generate a plot of the data. Also uses the inputs to build
-                # the plot label. Note that the dependencies on both the inputs
-                # and the data reactive expression are both tracked, and
-                # all expressions are called in the sequence implied by the
-                # dependency graph
-                output$summaryView <- renderPlot({
-                    #dist <- input$dist
-                    #n <- input$n
-#
-                    #hist(data(), 
-                         #main=paste(input$tabpanelId, '(', n, ')', sep=''))
-                    plot(1, 1)
-                })
+                # Create plot output objects for the categorical variables
+                # tabs.  This function is meant to be used as:
+                #
+                #   output$x = createCatPlot(pid, tid)
+                #
+                # It returns a renderPlot() object that renders the given
+                # plot for the given tab.
+                createCatPlot = function(plotId, tabId) {
+                    if (tabId == TAB_ID_GENRES) curType = data$genres
+                    else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    else if (tabId == TAB_ID_TYPES) curType = data$types
 
-                output$barplot <- renderPrint({
-                    #summary(data())
-                    input$tabpanelId
-                })
-
-                output$genresView <- renderPrint({
-                    #summary(data())
-                    input$tabpanelId
-                })
-
-                output$genresView <- renderPrint({
-                    #summary(data())
-                    input$tabpanelId
-                })
-
-                output$sourcesView <- renderPrint({
-                    #summary(data())
-                    input$tabpanelId
-                })
-
-                # Show props vs. class barplot for all categorical
-                # variables (genres, source, type, and studio).
-                output$propsVsYear <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    w = order(curType$tot_props, decreasing=TRUE)
-                    gprop_vs_genre(curType$tot_props[w],
-                                   curType$class_colors[w])
-                })
-
-                # Show score vs. class barplot for all categorical
-                # variables (genres, source, type, and studio).
-                output$scoreVsClass <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    w = order(curType$score_meds, decreasing=TRUE)
-                    mean_gscore_vs_genre(curType$score_meds[w],
-                                         curType$class_colors[w],
-                                         globalMedScore)
-                })
-
-                # Show score,prop vs. year for all categorical variables
-                # (genres, source, type, and studio).
-                output$scorePropVsYear <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    gprop_vs_year(
-                                  data$years,
-                                  curType$prop_mat[, 1],
-                                  curType$score_mat[, 1],
-                                  max(curType$prop_mat, na.rm=TRUE),
-                                  range(curType$score_mat, na.rm=TRUE)
+                    if (plotId == 1) {
+                        # Show props vs. class barplot for all categorical
+                        # variables (genres, source, type, and studio).
+                        renderPlot({
+                            w = order(curType$tot_props, decreasing=TRUE)
+                            gprop_vs_genre(curType$tot_props[w],
+                                           curType$class_colors[w])
+                        })
+                    } else if (plotId == 2) {
+                        # Show score vs. class barplot for all categorical
+                        # variables (genres, source, type, and studio).
+                        renderPlot({
+                            w = order(curType$score_meds, decreasing=TRUE)
+                            mean_gscore_vs_genre(curType$score_meds[w],
+                                                 curType$class_colors[w],
+                                                 globalMedScore)
+                        })
+                    } else if (plotId == 3) {
+                        # Show score,prop vs. year for all categorical variables
+                        # (genres, source, type, and studio).
+                        renderPlot({
+                            gprop_vs_year(
+                                          data$years,
+                                          curType$prop_mat[, 1],
+                                          curType$score_mat[, 1],
+                                          max(curType$prop_mat, na.rm=TRUE),
+                                          range(curType$score_mat, na.rm=TRUE)
+                                          )
+                        })
+                    } else if (plotId == 4) {
+                        # Show score,prop vs. year for all categorical variables
+                        # (genres, source, type, and studio).
+                        renderPlot({
+                            gprop_palette = colorRampPalette(c('black',
+                                                               'white'))(n=128)
+                            image(
+                                  x=data$years,
+                                  y=1:length(curType$class_names),
+                                  curType$prop_mat,
+                                  col=gprop_palette
                                   )
-                })
+                            axis(
+                                 side=2,
+                                 at=1:length(curType$class_names),
+                                 labels=curType$class_names,
+                                 las=2
+                                 )
+                        })
+                    } else if (plotId == 5) {
+                        renderPlot({
+                            # Show score vs. views for all categorical
+                            # variables (genres, source, type, and studio).
+                            gscore_vs_gview(
+                                            curType$view_meds,
+                                            curType$score_meds,
+                                            curType$class_colors,
+                                            globalMedScore,
+                                            globalMedViews,
+                                            curType$class_names
+                                            )
+                        })
+                    } else if (plotId == 6) {
+                        # Show score vs. props for all categorical variables
+                        # (genres, source, type, and studio).
+                        renderPlot({
+                            gscore_vs_gprop(
+                                            curType$tot_props,
+                                            curType$score_meds,
+                                            globalMedScore,
+                                            curType$class_colors,
+                                            curType$class_names
+                                            )
+                        })
+                    } else if (plotId == 7) {
+                        # Show score slope vs. prop slope for all categorical
+                        # variables (genres, source, type, and studio).
+                        renderPlot({
+                            gscore_slope_vs_gprop_slope(
+                                                        curType$prop_slopes,
+                                                        curType$score_slopes,
+                                                        curType$class_colors,
+                                                        curType$class_names
+                                                        )
+                        })
+                    }
+                }
 
-                # Show score,prop vs. year for all categorical variables
-                # (genres, source, type, and studio).
-                output$propLevelplot <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    gprop_palette = colorRampPalette(c('black', 'white'))(n=128)
-                    image(
-                          x=data$years,
-                          y=1:length(curType$class_names),
-                          curType$prop_mat,
-                          col=gprop_palette
-                          )
-                    axis(
-                         side=2,
-                         at=1:length(curType$class_names),
-                         labels=curType$class_names,
-                         las=2
-                         )
-                })
-
-                # Show score vs. views for all categorical variables
-                # (genres, source, type, and studio).
-                output$scoreVsViews <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    gscore_vs_gview(
-                                    curType$view_meds,
-                                    curType$score_meds,
-                                    curType$class_colors,
-                                    globalMedScore,
-                                    globalMedViews,
-                                    curType$class_names
-                                    )
-                })
-
-                # Show score vs. props for all categorical variables
-                # (genres, source, type, and studio).
-                output$scoreVsProp <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    gscore_vs_gprop(
-                                    curType$tot_props,
-                                    curType$score_meds,
-                                    globalMedScore,
-                                    curType$class_colors,
-                                    curType$class_names
-                                    )
-                })
-
-                # Show score slope vs. prop slope for all categorical
-                # variables (genres, source, type, and studio).
-                output$scoreSlopeVsPropSlope <- renderPlot({
-                    curType = reactiveTabChange()$curType
-                    gscore_slope_vs_gprop_slope(
-                                                curType$prop_slopes,
-                                                curType$score_slopes,
-                                                curType$class_colors,
-                                                curType$class_names
-                                                )
-                })
-
-                output$typesView <- renderPrint({
-                    #summary(data())
-                    input$tabpanelId
-                })
-
-                # Generate an HTML table view of the data
-                #output$table <- renderTable({
-                #data.frame(x=data())
+                # For the moment, this reactive is not necessary.
+                #reactiveTabChange <- reactive({
+                    #tabId = as.integer(input$tabpanelId)
+                    #curType = NULL
+                    ## This 'if' is probably not necessary.
+                    #if (tabId == TAB_ID_SUMMARY) curType = data$overall
+                    #else if (tabId == TAB_ID_GENRES) curType = data$genres
+                    #else if (tabId == TAB_ID_SOURCES) curType = data$sources
+                    #else if (tabId == TAB_ID_TYPES) curType = data$types
+#
+                    #retList = list()
+                    #retList$curType = curType
+                    #return(retList)
                 #})
+
 
                 output$testView <- renderPlot({
                     plot(1, 1)
                 })
+
+                # Create plots for the Summary tab.
+                output[[paste('plot', 1, '_', 1, sep='')]] = scoreVsYear
+                output[[paste('plot', 1, '_', 2, sep='')]] = viewsVsYear
+                output[[paste('plot', 1, '_', 3, sep='')]] = epsVsYear
+                output[[paste('plot', 1, '_', 4, sep='')]] = typePropVsYear
+                output[[paste('plot', 1, '_', 5, sep='')]] = sourcePropVsYear
+
+                # Create plots for the other tabs.
+                sapply(2 : 4,
+                       function(tabId) {
+                           outputSuffix = paste('plot', tabId, '_', sep='')
+                           sapply(1 : 7,
+                                  function(plotId) {
+                                      outputName = paste(
+                                                         outputSuffix,
+                                                         plotId,
+                                                         sep=''
+                                                         )
+                                      output[[outputName]] =
+                                          createCatPlot(plotId, tabId)
+                                  })
+                       })
             }
-
-
 )
