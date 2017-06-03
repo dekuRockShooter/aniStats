@@ -9,29 +9,51 @@ initTabs = function() {
                 id='tabpanelId',
                 # The argument to *Ouput(x) is the name of an R object
                 # (defined in server.R as output$x) of type *.
-                tabPanel("Summary", 
-                         summary.getView(),
+                tabPanel(
+                         "Summary", 
+                         #summary.getView(),
+                         fluidRow(column(12, plotOutput("plot1_1"))),
+                         fluidRow(column(12, plotOutput("plot1_2"))),
+                         fluidRow(column(12, plotOutput("plot1_3"))),
+                         fluidRow(column(12, plotOutput("plot1_4"))),
+                         fluidRow(column(12, plotOutput("plot1_5"))),
                          value=TAB_ID_SUMMARY
                          ), 
-                tabPanel("Genres",
+                tabPanel(
+                         "Genres",
                          #textOutput("genresView"),
                          #category.getView(),
-                         fluidPage(
-                                   fluidRow(column(12, plotOutput("propsVsYear"))),
-                                   fluidRow(column(12, plotOutput("scoreVsClass"))),
-                                   fluidRow(column(12,plotOutput("scorePropVsYear"))),
-                                   fluidRow(column(12, plotOutput("propLevelplot"))),
-                                   fluidRow(column(12, plotOutput("scoreVsViews"))),
-                                   fluidRow(column(12, plotOutput("scoreVsProp"))),
-                                   fluidRow(column(12, plotOutput("scoreSlopeVsPropSlope")))
-                                   ),
-                         value=TAB_ID_GENRES),
-                tabPanel("Sources",
-                         textOutput("sourcesView"),
-                         value=TAB_ID_SOURCES),
-                tabPanel("Types",
-                         textOutput("typesView"),
-                         value=TAB_ID_TYPES)
+                         fluidRow(column(12, plotOutput("plot2_1"))),
+                         fluidRow(column(12, plotOutput("plot2_2"))),
+                         fluidRow(column(12, plotOutput("plot2_3"))),
+                         fluidRow(column(12, plotOutput("plot2_4"))),
+                         fluidRow(column(12, plotOutput("plot2_5"))),
+                         fluidRow(column(12, plotOutput("plot2_6"))),
+                         fluidRow(column(12, plotOutput("plot2_7"))),
+                         value=TAB_ID_GENRES
+                         ),
+                tabPanel(
+                         "Sources",
+                         fluidRow(column(12, plotOutput("plot3_1"))),
+                         fluidRow(column(12, plotOutput("plot3_2"))),
+                         fluidRow(column(12, plotOutput("plot3_3"))),
+                         fluidRow(column(12, plotOutput("plot3_4"))),
+                         fluidRow(column(12, plotOutput("plot3_5"))),
+                         fluidRow(column(12, plotOutput("plot3_6"))),
+                         fluidRow(column(12, plotOutput("plot3_7"))),
+                         value=TAB_ID_SOURCES
+                         ),
+                tabPanel(
+                         "Types",
+                         fluidRow(column(12, plotOutput("plot4_1"))),
+                         fluidRow(column(12, plotOutput("plot4_2"))),
+                         fluidRow(column(12, plotOutput("plot4_3"))),
+                         fluidRow(column(12, plotOutput("plot4_4"))),
+                         fluidRow(column(12, plotOutput("plot4_5"))),
+                         fluidRow(column(12, plotOutput("plot4_6"))),
+                         fluidRow(column(12, plotOutput("plot4_7"))),
+                         value=TAB_ID_TYPES
+                         )
                 )
 }
 
