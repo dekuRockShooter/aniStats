@@ -226,7 +226,7 @@ shinyServer(
                             score_vs_year(
                                           data$years,
                                           globalPerf,
-                                          curType$qview_timeline[, 3],
+                                          curType$qeps_timeline[, 3],
                                           title='Mean episodes throughout time',
                                           ylab='Mean episodes',
                                           timeline_mat=timeline_mat,
