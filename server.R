@@ -83,10 +83,56 @@ shinyServer(
                     ignoreNULL = FALSE
                     )
 
+                # Create reactives to listen to checkbox selections.  The
+                # checkboxes are to show percentiles of some plots on the
+                # Summary tab.  For r = getReactiveShowQuantiles(x), r is
+                # the reactive for plot x.  r() returns a vector of all
+                # checked boxes.  The indeces correspond to elements in
+                # a call to summary(), so that if r() = 1,4,6, then this
+                # means min, mean, and max.
+                getReactiveShowQuantiles = function(plotId) {
+                    qnames = c('Min', 'Q25', 'Mean', 'Q75', 'Max')
+                    nameSuffix = 'Checkbox'
+                    checkboxIds = NULL
+                    #if (plotId == 1) {
+                    namePrefix = paste('plot1_', plotId, sep='')
+                    checkboxIds = sapply(qnames,
+                                         function(q) {
+                                             paste(namePrefix,
+                                                   q,
+                                                   nameSuffix,
+                                                   sep='')
+                                         })
+                    reactive({
+                        wquantile = integer(0)
+                        if (input[[checkboxIds[1]]] == TRUE) {
+                            wquantile = c(wquantile, 1)
+                        }
+                        if (input[[checkboxIds[2]]] == TRUE) {
+                            wquantile = c(wquantile, 2)
+                        }
+                        if (input[[checkboxIds[3]]] == TRUE) {
+                            wquantile = c(wquantile, 4)
+                        }
+                        if (input[[checkboxIds[4]]] == TRUE) {
+                            wquantile = c(wquantile, 5)
+                        }
+                        if (input[[checkboxIds[5]]] == TRUE) {
+                            wquantile = c(wquantile, 6)
+                        }
+                        return(wquantile)
+                    })
+                }
+
+                reactiveShowQuantilesPlot1_1 = getReactiveShowQuantiles(1)
+                reactiveShowQuantilesPlot1_2 = getReactiveShowQuantiles(2)
+                reactiveShowQuantilesPlot1_3 = getReactiveShowQuantiles(3)
+
                 createSummaryPlot = function(plotId) {
                     if (plotId == 1) {
                         renderPlot({
                             data = reactiveDataChange()
+                            # TODO: this block needs to be in a reactive.
                             curType = data$overall
                             ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
                                    max(curType$qscore_timeline, na.rm=TRUE))
@@ -97,13 +143,24 @@ shinyServer(
                                                 globalDS$year
                                                 )
                             globalPerf = do.call(rbind, globalPerf)[, 3]
+
+                            # Get the quantiles to show in the plot.
+                            timeline_mat = NULL
+                            wquantiles = reactiveShowQuantilesPlot1_1()
+                            if (length(wquantiles) > 0) {
+                                timeline_mat =
+                                    as.matrix(
+                                              curType$qscore_timeline[, wquantiles]
+                                              )
+                            }
+
                             score_vs_year(
                                           data$years,
-                                          globalPerf,
+                                          globalPerf, # median
+                                          curType$qscore_timeline[, 3], # median
                                           title='Mean score throughout time',
                                           ylab='Mean score',
-                                          timeline_mat=curType$qscore_timeline,
-                                          main_col=3,
+                                          timeline_mat=timeline_mat,
                                           ylim=ylim
                                           )
                         })
@@ -120,13 +177,24 @@ shinyServer(
                                                 globalDS$year
                                                 )
                             globalPerf = do.call(rbind, globalPerf)[, 3]
+
+                            # Get the quantiles to show in the plot.
+                            timeline_mat = NULL
+                            wquantiles = reactiveShowQuantilesPlot1_2()
+                            if (length(wquantiles) > 0) {
+                                timeline_mat =
+                                    as.matrix(
+                                              curType$qview_timeline[, wquantiles]
+                                              )
+                            }
+
                             score_vs_year(
                                           data$years,
                                           globalPerf,
+                                          curType$qview_timeline[, 3],
                                           title='Mean views throughout time',
                                           ylab='Mean views',
-                                          timeline_mat=curType$qview_timeline,
-                                          main_col=3,
+                                          timeline_mat=timeline_mat,
                                           ylim=ylim
                                           )
                         })
@@ -144,13 +212,24 @@ shinyServer(
                                                 globalDS$year
                                                 )
                             globalPerf = do.call(rbind, globalPerf)[, 3]
+
+                            # Get the quantiles to show in the plot.
+                            timeline_mat = NULL
+                            wquantiles = reactiveShowQuantilesPlot1_3()
+                            if (length(wquantiles) > 0) {
+                                timeline_mat =
+                                    as.matrix(
+                                              curType$qeps_timeline[, wquantiles]
+                                              )
+                            }
+
                             score_vs_year(
                                           data$years,
                                           globalPerf,
+                                          curType$qview_timeline[, 3],
                                           title='Mean episodes throughout time',
                                           ylab='Mean episodes',
-                                          timeline_mat=curType$qeps_timeline,
-                                          main_col=3,
+                                          timeline_mat=timeline_mat,
                                           ylim=ylim
                                           )
                         })

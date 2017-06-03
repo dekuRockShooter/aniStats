@@ -13,9 +13,99 @@ initTabs = function() {
                 tabPanel(
                          "Summary", 
                          #summary.getView(),
-                         fluidRow(column(12, plotOutput("plot1_1"))),
-                         fluidRow(column(12, plotOutput("plot1_2"))),
-                         fluidRow(column(12, plotOutput("plot1_3"))),
+                         fluidRow(
+                                  column(10, plotOutput("plot1_1")),
+                                  column(
+                                         2,
+                                         checkboxInput(
+                                                       'plot1_1MinCheckbox',
+                                                       'Min',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_1Q25Checkbox',
+                                                       '25th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_1MeanCheckbox',
+                                                       'Mean',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_1Q75Checkbox',
+                                                       '75th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_1MaxCheckbox',
+                                                       'Max',
+                                                       FALSE
+                                                       )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(10, plotOutput("plot1_2")),
+                                  column(
+                                         2,
+                                         checkboxInput(
+                                                       'plot1_2MinCheckbox',
+                                                       'Min',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_2Q25Checkbox',
+                                                       '25th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_2MeanCheckbox',
+                                                       'Mean',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_2Q75Checkbox',
+                                                       '75th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_2MaxCheckbox',
+                                                       'Max',
+                                                       FALSE
+                                                       )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(10, plotOutput("plot1_3")),
+                                  column(
+                                         2,
+                                         checkboxInput(
+                                                       'plot1_3MinCheckbox',
+                                                       'Min',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_3Q25Checkbox',
+                                                       '25th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_3MeanCheckbox',
+                                                       'Mean',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_3Q75Checkbox',
+                                                       '75th percentile',
+                                                       FALSE
+                                                       ),
+                                         checkboxInput(
+                                                       'plot1_3MaxCheckbox',
+                                                       'Max',
+                                                       FALSE
+                                                       )
+                                         )
+                                  ),
                          fluidRow(column(12, plotOutput("plot1_4"))),
                          fluidRow(column(12, plotOutput("plot1_5"))),
                          value=TAB_ID_SUMMARY
