@@ -83,6 +83,98 @@ shinyServer(
                     ignoreNULL = FALSE
                     )
 
+                createSummaryPlot = function(plotId) {
+                    if (plotId == 1) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            curType = data$overall
+                            ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
+                                   max(curType$qscore_timeline, na.rm=TRUE))
+                            globalPerf = lapply(
+                                                data$years,
+                                                get_quantiles_tmp,
+                                                na.omit(globalDS$score),
+                                                globalDS$year
+                                                )
+                            globalPerf = do.call(rbind, globalPerf)[, 3]
+                            score_vs_year(
+                                          data$years,
+                                          globalPerf,
+                                          title='Mean score throughout time',
+                                          ylab='Mean score',
+                                          timeline_mat=curType$qscore_timeline,
+                                          main_col=3,
+                                          ylim=ylim
+                                          )
+                        })
+                    } else if (plotId == 2) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            curType = data$overall
+                            ylim=c(min(curType$qview_timeline, na.rm=TRUE),
+                                   max(curType$qview_timeline, na.rm=TRUE))
+                            globalPerf = lapply(
+                                                data$years,
+                                                get_quantiles_tmp,
+                                                na.omit(globalDS$tot_watched),
+                                                globalDS$year
+                                                )
+                            globalPerf = do.call(rbind, globalPerf)[, 3]
+                            score_vs_year(
+                                          data$years,
+                                          globalPerf,
+                                          title='Mean views throughout time',
+                                          ylab='Mean views',
+                                          timeline_mat=curType$qview_timeline,
+                                          main_col=3,
+                                          ylim=ylim
+                                          )
+                        })
+                    }
+                    else if (plotId == 3) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            curType = data$overall
+                            ylim=c(min(curType$qeps_timeline, na.rm=TRUE),
+                                   max(curType$qeps_timeline, na.rm=TRUE))
+                            globalPerf = lapply(
+                                                data$years,
+                                                get_quantiles_tmp,
+                                                na.omit(globalDS$tot_eps),
+                                                globalDS$year
+                                                )
+                            globalPerf = do.call(rbind, globalPerf)[, 3]
+                            score_vs_year(
+                                          data$years,
+                                          globalPerf,
+                                          title='Mean episodes throughout time',
+                                          ylab='Mean episodes',
+                                          timeline_mat=curType$qeps_timeline,
+                                          main_col=3,
+                                          ylim=ylim
+                                          )
+                        })
+                    } else if (plotId == 4) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            numtype_vs_year(
+                                            data$years,
+                                            t(data$types$prop_mat),
+                                            data$types$class_names
+                                            )
+                        })
+                    } else if (plotId == 5) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            numtype_vs_year(
+                                            data$years,
+                                            t(data$sources$prop_mat),
+                                            data$sources$class_names
+                                            )
+                        })
+                    }
+                }
+
                 # Create plot output objects for the categorical variables
                 # tabs.  This function is meant to be used as:
                 #
@@ -210,11 +302,21 @@ shinyServer(
                 })
 
                 # Create plots for the Summary tab.
-                output[[paste('plot', 1, '_', 1, sep='')]] = scoreVsYear
-                output[[paste('plot', 1, '_', 2, sep='')]] = viewsVsYear
-                output[[paste('plot', 1, '_', 3, sep='')]] = epsVsYear
-                output[[paste('plot', 1, '_', 4, sep='')]] = typePropVsYear
-                output[[paste('plot', 1, '_', 5, sep='')]] = sourcePropVsYear
+                #output[[paste('plot', 1, '_', 1, sep='')]] = scoreVsYear
+                output[[paste('plot', 1, '_', 1, sep='')]] =
+                    createSummaryPlot(1)
+                #output[[paste('plot', 1, '_', 2, sep='')]] = viewsVsYear
+                output[[paste('plot', 1, '_', 2, sep='')]] =
+                    createSummaryPlot(2)
+                #output[[paste('plot', 1, '_', 3, sep='')]] = epsVsYear
+                output[[paste('plot', 1, '_', 3, sep='')]] =
+                    createSummaryPlot(3)
+                #output[[paste('plot', 1, '_', 4, sep='')]] = typePropVsYear
+                output[[paste('plot', 1, '_', 4, sep='')]] =
+                    createSummaryPlot(4)
+                #output[[paste('plot', 1, '_', 5, sep='')]] = sourcePropVsYear
+                output[[paste('plot', 1, '_', 5, sep='')]] =
+                    createSummaryPlot(5)
 
                 # Create plots for the other tabs.
                 sapply(2 : 4,
