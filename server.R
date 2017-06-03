@@ -380,22 +380,18 @@ shinyServer(
                     plot(1, 1)
                 })
 
-                # Create plots for the Summary tab.
-                #output[[paste('plot', 1, '_', 1, sep='')]] = scoreVsYear
-                output[[paste('plot', 1, '_', 1, sep='')]] =
-                    createSummaryPlot(1)
-                #output[[paste('plot', 1, '_', 2, sep='')]] = viewsVsYear
-                output[[paste('plot', 1, '_', 2, sep='')]] =
-                    createSummaryPlot(2)
-                #output[[paste('plot', 1, '_', 3, sep='')]] = epsVsYear
-                output[[paste('plot', 1, '_', 3, sep='')]] =
-                    createSummaryPlot(3)
-                #output[[paste('plot', 1, '_', 4, sep='')]] = typePropVsYear
-                output[[paste('plot', 1, '_', 4, sep='')]] =
-                    createSummaryPlot(4)
-                #output[[paste('plot', 1, '_', 5, sep='')]] = sourcePropVsYear
-                output[[paste('plot', 1, '_', 5, sep='')]] =
-                    createSummaryPlot(5)
+                # Create plots for the summary tab.
+                outputSuffix = paste('plot', 1, '_', sep='')
+                sapply(1 : 5,
+                       function(plotId) {
+                           outputName = paste(
+                                              outputSuffix,
+                                              plotId,
+                                              sep=''
+                                              )
+                           output[[outputName]] =
+                           createSummaryPlot(plotId)
+                       })
 
                 # Create plots for the other tabs.
                 sapply(2 : 4,
