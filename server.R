@@ -128,6 +128,46 @@ shinyServer(
                 reactiveShowQuantilesPlot1_2 = getReactiveShowQuantiles(2)
                 reactiveShowQuantilesPlot1_3 = getReactiveShowQuantiles(3)
 
+                # Get a reactive that listens to select menu selections in
+                # the score, prop vs. time plots.  These plots have a select
+                # menu to change the data to be plotted.  The return value
+                # of the reactives is the index of the selected item ordered
+                # by increasing order of 1) genre names if tabId ==
+                # TAB_ID_GENRES, 2) levels if tabId == TAB_ID_SOURCES or
+                # TAB_ID_TYPES.
+                getReactiveClassChange = function(tabId) {
+                    # Each reactive listens to changes on a selection menu
+                    # for a specific tab.
+                    if (tabId == TAB_ID_GENRES) {
+                        reactive({
+                            class = input$plot2_3SelectId
+                            classes = sort(names(globalDS)[6 : 44],
+                                           decreasing=FALSE)
+                            idx = which(classes == class)
+
+                            return(idx)
+                        })
+                    } else if (tabId == TAB_ID_SOURCES) {
+                        reactive({
+                            class = input$plot3_3SelectId
+                            classes = sort(levels(globalDS$source),
+                                           decreasing=FALSE)
+                            idx = which(classes == class)
+
+                            return(idx)
+                        })
+                    } else if (tabId == TAB_ID_TYPES) {
+                        reactive({
+                            class = input$plot4_3SelectId
+                            classes = sort(levels(globalDS$type),
+                                           decreasing=FALSE)
+                            idx = which(classes == class)
+
+                            return(idx)
+                        })
+                    }
+                }
+
                 createSummaryPlot = function(plotId) {
                     if (plotId == 1) {
                         renderPlot({
@@ -288,12 +328,15 @@ shinyServer(
                     } else if (plotId == 3) {
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
+                        reactiveClassChange = getReactiveClassChange(tabId)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            classIdx = reactiveClassChange()
                             gprop_vs_year(
                                           data$years,
-                                          curType$prop_mat[, 1],
-                                          curType$score_mat[, 1],
+                                          curType$prop_mat[, classIdx],
+                                          curType$score_mat[, classIdx],
                                           max(curType$prop_mat, na.rm=TRUE),
                                           range(curType$score_mat, na.rm=TRUE)
                                           )

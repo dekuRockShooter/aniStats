@@ -116,7 +116,19 @@ initTabs = function() {
                          #category.getView(),
                          fluidRow(column(12, plotOutput("plot2_1"))),
                          fluidRow(column(12, plotOutput("plot2_2"))),
-                         fluidRow(column(12, plotOutput("plot2_3"))),
+                         fluidRow(
+                                  column(10, plotOutput("plot2_3")),
+                                  column(2,
+                                         selectInput(
+                                                     inputId='plot2_3SelectId',
+                                                     label='Select genre',
+                                                     choices=sort(names(globalDS)
+                                                                  [6 : 44],
+                                                                  decreasing=FALSE),
+                                                     selected='Action'
+                                                     )
+                                         )
+                                  ),
                          fluidRow(column(12, plotOutput("plot2_4"))),
                          fluidRow(column(12, plotOutput("plot2_5"))),
                          fluidRow(column(12, plotOutput("plot2_6"))),
@@ -127,7 +139,20 @@ initTabs = function() {
                          "Sources",
                          fluidRow(column(12, plotOutput("plot3_1"))),
                          fluidRow(column(12, plotOutput("plot3_2"))),
-                         fluidRow(column(12, plotOutput("plot3_3"))),
+                         fluidRow(
+                                  column(10, plotOutput("plot3_3")),
+                                  column(2,
+                                         selectInput(
+                                                     inputId='plot3_3SelectId',
+                                                     label='Select source',
+                                                     choices=sort(levels(globalDS$
+                                                                         source),
+                                                                  decreasing=FALSE
+                                                                  ),
+                                                     selected='Manga'
+                                                     )
+                                         )
+                                  ),
                          fluidRow(column(12, plotOutput("plot3_4"))),
                          fluidRow(column(12, plotOutput("plot3_5"))),
                          fluidRow(column(12, plotOutput("plot3_6"))),
@@ -138,7 +163,21 @@ initTabs = function() {
                          "Types",
                          fluidRow(column(12, plotOutput("plot4_1"))),
                          fluidRow(column(12, plotOutput("plot4_2"))),
-                         fluidRow(column(12, plotOutput("plot4_3"))),
+                         fluidRow(
+                                  column(10,
+                                         plotOutput("plot4_3")),
+                                  column(2,
+                                         selectInput(
+                                                     inputId='plot4_3SelectId',
+                                                     label='Select type',
+                                                     choices=sort(levels(globalDS$
+                                                                        type),
+                                                                  decreasing=FALSE
+                                                                  ),
+                                                     selected='TV'
+                                                     )
+                                         )
+                                  ),
                          fluidRow(column(12, plotOutput("plot4_4"))),
                          fluidRow(column(12, plotOutput("plot4_5"))),
                          fluidRow(column(12, plotOutput("plot4_6"))),
