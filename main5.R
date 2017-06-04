@@ -475,9 +475,9 @@ gscore_slope_vs_gprop_slope = function(gcount_slopes, gscore_slopes,
 #                            D$year[D$year%in%years]),
 #               data$q_timeline, c(min(data$q_timeline, max(data$q_timeline))))
 score_vs_year = function(years, global_timeline, local_timeline, title, ylab,
-                         timeline_mat=NULL, ylim=NULL) {
+                         timeline_mat=NULL, ylim=NULL, xlim=NULL) {
     if (is.null(ylim)) ylim = range(timeline, na.rm=TRUE)
-    plot(years, local_timeline, type='b', ylim=ylim, col='red',
+    plot(years, local_timeline, type='b', ylim=ylim, xlim=xlim, col='red',
          main=title,
          xlab='years',
          ylab=ylab)
