@@ -1,15 +1,4 @@
 # Functions: #   init_anime: initialize the main data set 
-library(MASS)
-library(nnet)
-library(class)
-library(boot)
-library(randomForest)
-library(gbm)
-library(e1071)
-library(glmnet)
-library(foreach)
-library(doParallel)
-library(parallel)
 library(lattice)
 source('util.R')
 source('variables.R')
@@ -89,22 +78,42 @@ get_overall_data = function(data, gbl_data, cur_studio) {
                 function(year) {
                     year_idx <<- year_idx + 1
                     wyear = which(D$year == year)
-                    studios = D$studio[wyear]
-                    studio_counts = table(studios)
+                    ss = NULL
+                    studios = NULL
+                    studio_counts = NULL
                     if (is.null(cur_studio)) {
-                        cur_studio_count = 0.0
+                        # Pull these out to reduce repetitive calculations.
+                        studios = D$year # All rows
+                        studio_counts = table(D$year)
+                        wyear = 1 : nrow(D) # This extra array can be removed.
+
+                        cur_studio_count = studio_counts[as.character(year)]
+                        yr = year - min(globalDS$year) + 1 # 1-based index
+                        sm = apply(studioMedScoresMat, 1,
+                                   function(row) median(row, na.rm=TRUE))
+                        sw = apply(studioMedScoresMat, 1,
+                                   function(row) length(na.omit(row)))
+                        ss = sum(sm < sm[yr], na.rm=TRUE)/
+                            sum(sw > 0)
                     }
                     else {
+                        studios = D$studio[wyear]
+                        studio_counts = table(studios)
                         cur_studio_count = studio_counts[cur_studio]
+                        yr = year - min(globalDS$year) + 1 # 1-based index
+                        ss = sum(studioMedScoresMat[yr, ] < 
+                                 qscore_timeline[year_idx, Q50_IDX],
+                                 na.rm=TRUE)/
+                        length(na.omit(studioMedScoresMat[yr, ]))
                     }
                     # Proportion percentile.
-                    a = sum(studio_counts[!(studio_counts > cur_studio_count)])
+                    a = sum(studio_counts[!(studio_counts > cur_studio_count)],
+                            na.rm=TRUE)
                     # proportion.
                     l = cur_studio_count/length(studios)
                     # Mean score percentile.
-                    ss = sum(D$score[wyear] <
-                             qscore_timeline[year_idx, QMEAN_IDX])/
-                        length(wyear)
+                    #ss = sum(D$score[wyear] <
+                             #qscore_timeline[year_idx, QMEAN_IDX])/
                     c(l, a/sum(studio_counts), ss)
                 })
     perf_mat = do.call(rbind, perf_mat)
@@ -696,6 +705,24 @@ rm(A)
 sapply(6 : 44,
        function(idx)
            globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
+
+# Matrix of median scores for each studio (columns) per year (rows).
+years = min(globalDS$year) : max(globalDS$year)
+studioMedScoresMat = lapply(
+                            sort(levels(globalDS$studio),
+                                 decreasing=FALSE),
+                            function(studio) {
+                                sapply(years,
+                                       function(year) {
+                                           median(globalDS$score[
+                                                  (globalDS$studio == studio) &
+                                                      (globalDS$year == year)
+                                                  ], na.rm=TRUE)
+                                       })
+                            })
+rm(years)
+studioMedScoresMat = do.call(cbind, studioMedScoresMat)
+
 # Not the current year
 defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
 globalData = init_data(globalDS, globalDS, NULL)
