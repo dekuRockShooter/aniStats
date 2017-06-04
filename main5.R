@@ -14,34 +14,6 @@ library(lattice)
 source('util.R')
 source('variables.R')
 
-A = init_anime()
-globalNames = A$name
-globalDS = A[, -1]
-rm(A)
-sapply(6 : 44,
-       function(idx)
-           globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
-# Not the current year
-defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
-globalData = init_data(globalDS, globalDS, NULL)
-globalMedScore = median(globalDS$score)
-globalMedViews = median(globalDS$tot_watched)
-globalTimeline = list()
-globalTimeline$scores = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$score),
-                               globalDS$year)
-globalTimeline$views = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$tot_watched),
-                               globalDS$year)
-globalTimeline$eps = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$tot_eps),
-                               globalDS$year)
-globalTimeline$scores = do.call(rbind, globalTimeline$scores)[, 3]
-globalTimeline$views = do.call(rbind, globalTimeline$views)[, 3]
-globalTimeline$eps = do.call(rbind, globalTimeline$eps)[, 3]
 
 QMIN_IDX = 1
 Q25_IDX = 2
@@ -715,3 +687,32 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of OVAs vs. year (interest in OVA)
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
+
+A = init_anime()
+globalNames = A$name
+globalDS = A[, -1]
+rm(A)
+sapply(6 : 44,
+       function(idx)
+           globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
+# Not the current year
+defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
+globalData = init_data(globalDS, globalDS, NULL)
+globalMedScore = median(globalDS$score)
+globalMedViews = median(globalDS$tot_watched)
+globalTimeline = list()
+globalTimeline$scores = lapply(globalData$years,
+                               get_quantiles_tmp,
+                               na.omit(globalDS$score),
+                               globalDS$year)
+globalTimeline$views = lapply(globalData$years,
+                               get_quantiles_tmp,
+                               na.omit(globalDS$tot_watched),
+                               globalDS$year)
+globalTimeline$eps = lapply(globalData$years,
+                               get_quantiles_tmp,
+                               na.omit(globalDS$tot_eps),
+                               globalDS$year)
+globalTimeline$scores = do.call(rbind, globalTimeline$scores)[, 3]
+globalTimeline$views = do.call(rbind, globalTimeline$views)[, 3]
+globalTimeline$eps = do.call(rbind, globalTimeline$eps)[, 3]
