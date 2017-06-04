@@ -67,18 +67,48 @@ shinyServer(
                                     data$sources$class_names)
                 })
 
+                # Update the underlying data set based on given parameters.
+                # This reactive returns the data set being computed on.  It
+                # listens to the changeDataActionButton and updates the data
+                # set based on values of the widgets in the parameters panel.
                 reactiveDataChange = eventReactive(
                     input$changeDataActionButton,
                     {
                         studio = input$studioSelectId
-                        if (studio == 'All') {
-                            data <<- init_data(globalDS, globalDS, NULL)
+                        genre = input$genreSelectId
+                        src = input$sourceSelectId
+                        type = input$typeSelectId
+                        localDS = globalDS
+
+                        # These if-blocks gradually decrease the data set
+                        # based on the parameters.  The current implementation
+                        # is fine at the moment, but could possibly become
+                        # slow since theoretically, only one pass through
+                        # the global data set should be enough.
+
+                        # Filter data set by studio.
+                        if (studio != 'All studios') {
+                            localDS = localDS[localDS$studio == studio, ]
                         }
                         else {
-                            studioDS = globalDS[globalDS$studio == studio, ]
-                            data <<- init_data(studioDS, globalDS, studio)
+                            studio = NULL
                         }
-                        data
+                        # Filter data set by genre.
+                        if (genre != 'Any genre') {
+                            wgenre = which(names(localDS) == genre)
+                            localDS = localDS[localDS[[wgenre]] == 1, ]
+                        }
+                        # Filter data set by source.
+                        if (src != 'Any source') {
+                            localDS = localDS[localDS$source == src, ]
+                        }
+                        # Filter data set by type.
+                        if (type != 'Any type') {
+                            localDS = localDS[localDS$type == type, ]
+                        }
+
+                        data <<- init_data(localDS, globalDS, studio)
+                        return(data)
                     },
                     ignoreNULL = FALSE
                     )

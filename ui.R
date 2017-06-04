@@ -203,13 +203,45 @@ fluidPage(
     
   # Application title
   titlePanel("Tabsets"),
-  selectInput(
-              inputId='studioSelectId',
-              label='Select studio',
-              choices=c('All', sort(levels(globalDS$studio))),
-              selected='All'
-              ),
-  actionButton('changeDataActionButton', 'Done'),
+  fluidRow(
+           column(2,
+                  selectInput(
+                              inputId='studioSelectId',
+                              label='Select studio',
+                              choices=c('All studios',
+                                        sort(levels(globalDS$studio))),
+                              selected='All studios'
+                              )
+                  ),
+           column(2,
+                  selectInput(
+                              inputId='genreSelectId',
+                              label='Select genre',
+                              choices=c('Any genre',
+                                        sort(names(globalDS)[6 : 44])),
+                              selected='Any genre'
+                              )
+                  ),
+           column(2,
+                  selectInput(
+                              inputId='sourceSelectId',
+                              label='Select source',
+                              choices=c('Any source',
+                                        sort(levels(globalDS$source))),
+                              selected='Any source'
+                              )
+                  ),
+           column(2,
+                  selectInput(
+                              inputId='typeSelectId',
+                              label='Select type',
+                              choices=c('Any type',
+                                        sort(levels(globalDS$type))),
+                              selected='Any type'
+                              )
+                  )
+           ),
+          actionButton('changeDataActionButton', 'Done'),
   # Sidebar with controls to select the random distribution type
   # and number of observations to generate. Note the use of the
   # br() element to introduce extra vertical spacing
