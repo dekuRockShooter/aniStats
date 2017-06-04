@@ -195,6 +195,15 @@ shinyServer(
 
                             return(idx)
                         })
+                    } else if (tabId == TAB_ID_STUDIOS) {
+                        reactive({
+                            class = input$plot5_3SelectId
+                            classes = sort(levels(globalDS$studio),
+                                           decreasing=FALSE)
+                            idx = which(classes == class)
+
+                            return(idx)
+                        })
                     }
                 }
 
@@ -352,12 +361,16 @@ shinyServer(
                     if (tabId == TAB_ID_GENRES) category = 'genres'
                     else if (tabId == TAB_ID_SOURCES) category = 'sources'
                     else if (tabId == TAB_ID_TYPES) category = 'types'
+                    else if (tabId == TAB_ID_STUDIOS) category = 'studios'
 
                     if (plotId == 1) {
                         # Show props vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             w = order(curType$tot_props, decreasing=TRUE)
                             gprop_vs_genre(curType$tot_props[w],
                                            curType$class_colors[w])
@@ -367,6 +380,9 @@ shinyServer(
                         # variables (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             w = order(curType$score_meds, decreasing=TRUE)
                             mean_gscore_vs_genre(curType$score_meds[w],
                                                  curType$class_colors[w],
@@ -379,6 +395,9 @@ shinyServer(
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             classIdx = reactiveClassChange()
                             gprop_vs_year(
                                           data$years,
@@ -393,6 +412,9 @@ shinyServer(
                         # (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             gprop_palette = colorRampPalette(c('black',
                                                                'white'))(n=128)
                             image(
@@ -413,6 +435,9 @@ shinyServer(
                         # variables (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             gscore_vs_gview(
                                             curType$view_meds,
                                             curType$score_meds,
@@ -427,6 +452,9 @@ shinyServer(
                         # (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             gscore_vs_gprop(
                                             curType$tot_props,
                                             curType$score_meds,
@@ -440,6 +468,9 @@ shinyServer(
                         # variables (genres, source, type, and studio).
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
+                            if (is.null(curType)) {
+                                return()
+                            }
                             gscore_slope_vs_gprop_slope(
                                                         curType$prop_slopes,
                                                         curType$score_slopes,
@@ -484,7 +515,7 @@ shinyServer(
                        })
 
                 # Create plots for the other tabs.
-                sapply(2 : 4,
+                sapply(2 : 5,
                        function(tabId) {
                            outputSuffix = paste('plot', tabId, '_', sep='')
                            sapply(1 : 7,

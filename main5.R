@@ -16,7 +16,8 @@ PERFMAT_QSCORE = 3
 category_enum = list(
                      CATEGORY_TYPE=1,
                      CATEGORY_SOURCE=2,
-                     CATEGORY_GENRE=3
+                     CATEGORY_GENRE=3,
+                     CATEGORY_STUDIO=4
                      )
 
 # Initialize the main data set.  The Anime data set in its entirety is
@@ -170,6 +171,9 @@ get_type_data = function(data, gbl_data, category) {
     } else if (category == category_enum$CATEGORY_SOURCE) {
         vec = data$source
         is_genre = FALSE
+    } else if (category == category_enum$CATEGORY_STUDIO) {
+        vec = data$studio
+        is_genre = FALSE
     # Matrix initialization genre.
     } else if (category == category_enum$CATEGORY_GENRE) {
         # Get timeline matrices for genres and their slopes.
@@ -271,6 +275,10 @@ init_data = function(data, gbl_data, studio) {
     types = get_type_data(data, gbl_data, category_enum$CATEGORY_TYPE)
     sources = get_type_data(data, gbl_data, category_enum$CATEGORY_SOURCE)
     genres = get_type_data(data, gbl_data, category_enum$CATEGORY_GENRE)
+    studios = NULL
+    if (is.null(studio)) {
+        studios = get_type_data(data, gbl_data, category_enum$CATEGORY_STUDIO)
+    }
 
     years = min(data$year) : max(data$year)
 
@@ -331,6 +339,7 @@ init_data = function(data, gbl_data, studio) {
                     sources=sources,
                     types=types,
                     genres=genres,
+                    studios=studios,
                     #gcolors=gcolors,
                     years=years,
                     studio=studio

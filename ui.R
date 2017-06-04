@@ -185,6 +185,31 @@ initTabs = function() {
                          fluidRow(column(12, plotOutput("plot4_6"))),
                          fluidRow(column(12, plotOutput("plot4_7"))),
                          value=TAB_ID_TYPES
+                         ),
+                tabPanel(
+                         "Studios",
+                         fluidRow(column(12, plotOutput("plot5_1"))),
+                         fluidRow(column(12, plotOutput("plot5_2"))),
+                         fluidRow(
+                                  column(10,
+                                         plotOutput("plot5_3")),
+                                  column(2,
+                                         selectInput(
+                                                     inputId='plot5_3SelectId',
+                                                     label='Select studio',
+                                                     choices=sort(levels(globalDS$
+                                                                         studio),
+                                                                  decreasing=FALSE
+                                                                  )
+                                                     #selected=''
+                                                     )
+                                         )
+                                  ),
+                         fluidRow(column(12, plotOutput("plot5_4"))),
+                         fluidRow(column(12, plotOutput("plot5_5"))),
+                         fluidRow(column(12, plotOutput("plot5_6"))),
+                         fluidRow(column(12, plotOutput("plot5_7"))),
+                         value=TAB_ID_STUDIOS
                          )
                 )
 }
