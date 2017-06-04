@@ -323,7 +323,8 @@ init_data = function(data, gbl_data, studio) {
                     types=types,
                     genres=genres,
                     #gcolors=gcolors,
-                    years=years
+                    years=years,
+                    studio=studio
                     )
     return(ret_list)
 }
