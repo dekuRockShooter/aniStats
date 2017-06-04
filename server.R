@@ -291,6 +291,23 @@ shinyServer(
                                             data$sources$class_names
                                             )
                         })
+                    } else if (plotId == 6) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            dominance_vs_year(
+                                              data$years,
+                                              data$overall$perf_mat
+                                              )
+
+                        })
+                    } else if (plotId == 7) {
+                        renderPlot({
+                            data = reactiveDataChange()
+                            score_vs_dominance(
+                                               data$years,
+                                               data$overall$perf_mat
+                                               )
+                        })
                     }
                 }
 
@@ -425,7 +442,7 @@ shinyServer(
 
                 # Create plots for the summary tab.
                 outputSuffix = paste('plot', 1, '_', sep='')
-                sapply(1 : 5,
+                sapply(1 : 7,
                        function(plotId) {
                            outputName = paste(
                                               outputSuffix,

@@ -108,6 +108,8 @@ initTabs = function() {
                                   ),
                          fluidRow(column(12, plotOutput("plot1_4"))),
                          fluidRow(column(12, plotOutput("plot1_5"))),
+                         fluidRow(column(12, plotOutput("plot1_6"))),
+                         fluidRow(column(12, plotOutput("plot1_7"))),
                          value=TAB_ID_SUMMARY
                          ), 
                 tabPanel(
