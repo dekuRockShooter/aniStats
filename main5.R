@@ -387,9 +387,11 @@ mean_gscore_vs_genre = function(mean_gscores, gcolors, global_med_score) {
 # genre proportion vs. year (shift in focus)
 
 # gprop_vs_year(1990:2000, gprop_mat[, 4], data$gscore_mat[, 4])
-gprop_vs_year = function(years, gprops, gscores, max_prop, minmax_scores) {
+gprop_vs_year = function(years, gprops, gscores, max_prop, minmax_scores,
+                         ylim=NULL, xlim=NULL) {
     #gprops[gprops < 1e-12] = NaN
-    plot(years, gprops, type='b', ylim=c(0.0, max_prop),
+    if (is.null(ylim)) ylim = c(0.0, max_prop)
+    plot(years, gprops, type='b', ylim=ylim, xlim=xlim,
          xlab='years',
          ylab='Frequency of genre',
          main='Genre frequency throughout time')
@@ -410,11 +412,15 @@ gprop_vs_year = function(years, gprops, gscores, max_prop, minmax_scores) {
 #                 median(D$score), median(D$tot_watched))
 gscore_vs_gview = function(mean_gviews, mean_gscores, gcolors,
                            global_med_score, global_med_views,
-                           glabels) {
-    plot(mean_gviews, mean_gscores, type='n',
+                           glabels, ylim=NULL, xlim=NULL) {
+    plot(
+         mean_gviews, mean_gscores, type='n',
          ylab='Mean score (quality)',
          xlab='Mean views (popularity)',
-         main='Genre popularity and quality')
+         main='Genre popularity and quality',
+         ylim=ylim,
+         xlim=xlim
+         )
     abline(h=median(mean_gscores, na.rm=TRUE), lty='dashed')
     abline(v=median(mean_gviews, na.rm=TRUE), lty='dashed')
     abline(h=global_med_score, lty='dashed', col='#303030')
@@ -432,11 +438,15 @@ gscore_vs_gview = function(mean_gviews, mean_gscores, gcolors,
 # gscore_vs_gprop(gprops, score_means, median(D$score), gcolors,
 #                 names(D)[6 : 44])
 gscore_vs_gprop = function(gprops, mean_gscores, global_med_score, gcolors,
-                           glabels) {
-    plot(gprops, mean_gscores, type='n',
+                           glabels, ylim=NULL, xlim=NULL) {
+    plot(
+         gprops, mean_gscores, type='n',
          main='Genre quantity and quality',
          xlab='Frequency of genre (quantity)',
-         ylab='Mean score (quality)')
+         ylab='Mean score (quality)',
+         ylim=ylim,
+         xlim=xlim
+         )
     abline(h=median(mean_gscores, na.rm=TRUE), lty='dashed')
     abline(v=median(gprops, na.rm=TRUE), lty='dashed')
     abline(h=global_med_score, lty='dashed', col='#303030')
@@ -454,11 +464,16 @@ gscore_vs_gprop = function(gprops, mean_gscores, global_med_score, gcolors,
 #                             gcolors, names(D)[6 : 44])
 # score slope vs. count slope (forecast) (quality vs. quanitity)
 gscore_slope_vs_gprop_slope = function(gcount_slopes, gscore_slopes,
-                                       gcolors, glabels) {
-    plot(gcount_slopes, gscore_slopes, type='n',
+                                       gcolors, glabels,
+                                       ylim=NULL, xlim=NULL) {
+    plot(
+         gcount_slopes, gscore_slopes, type='n',
          main='Forecast of genre quality and quantity',
          xlab='Change in frequency',
-         ylab='Change in mean score')
+         ylab='Change in mean score',
+         ylim=ylim,
+         xlim=xlim
+         )
     abline(h=0, lty='dashed')
     abline(v=0, lty='dashed')
     text(gcount_slopes, gscore_slopes, labels=glabels, col=gcolors)
@@ -712,7 +727,7 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
 
-A = init_anime()
+A = init_anime()[sample(1000), ]
 globalNames = A$name
 globalDS = A[, -1]
 rm(A)
