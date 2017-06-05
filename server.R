@@ -209,12 +209,21 @@ shinyServer(
 
                 createSummaryPlot = function(plotId) {
                     if (plotId == 1) {
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick('plot1_1DblClick', ranges)
+                        observeBrush('plot1_1Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             # TODO: this block needs to be in a reactive.
                             curType = data$overall
-                            ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
-                                   max(curType$qscore_timeline, na.rm=TRUE))
+                            ylim = ranges$y
+                            xlim = ranges$x
+                            if (is.null(ylim)) {
+                                ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
+                                       max(curType$qscore_timeline, na.rm=TRUE))
+                            }
+                            #ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
+                                   #max(curType$qscore_timeline, na.rm=TRUE))
                             globalPerf = lapply(
                                                 data$years,
                                                 get_quantiles_tmp,
@@ -240,15 +249,25 @@ shinyServer(
                                           title='Mean score throughout time',
                                           ylab='Mean score',
                                           timeline_mat=timeline_mat,
-                                          ylim=ylim
+                                          ylim=ylim,
+                                          xlim=xlim
                                           )
                         })
                     } else if (plotId == 2) {
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick('plot1_2DblClick', ranges)
+                        observeBrush('plot1_2Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
-                            ylim=c(min(curType$qview_timeline, na.rm=TRUE),
-                                   max(curType$qview_timeline, na.rm=TRUE))
+                            # Redraw the plot when the x and y ranges are
+                            # changed (brush or double click).
+                            ylim = ranges$y
+                            xlim = ranges$x
+                            if (is.null(ylim)) {
+                                ylim=c(min(curType$qview_timeline, na.rm=TRUE),
+                                       max(curType$qview_timeline, na.rm=TRUE))
+                            }
                             globalPerf = lapply(
                                                 data$years,
                                                 get_quantiles_tmp,
@@ -274,16 +293,24 @@ shinyServer(
                                           title='Mean views throughout time',
                                           ylab='Mean views',
                                           timeline_mat=timeline_mat,
-                                          ylim=ylim
+                                          ylim=ylim,
+                                          xlim=xlim
                                           )
                         })
                     }
                     else if (plotId == 3) {
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick('plot1_3DblClick', ranges)
+                        observeBrush('plot1_3Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
-                            ylim=c(min(curType$qeps_timeline, na.rm=TRUE),
-                                   max(curType$qeps_timeline, na.rm=TRUE))
+                            ylim = ranges$y
+                            xlim = ranges$x
+                            if (is.null(ylim)) {
+                                ylim=c(min(curType$qeps_timeline, na.rm=TRUE),
+                                       max(curType$qeps_timeline, na.rm=TRUE))
+                            }
                             globalPerf = lapply(
                                                 data$years,
                                                 get_quantiles_tmp,
@@ -331,23 +358,96 @@ shinyServer(
                                             )
                         })
                     } else if (plotId == 6) {
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick('plot1_6DblClick', ranges)
+                        observeBrush('plot1_6Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
+                            ylim = ranges$y
+                            xlim = ranges$x
                             dominance_vs_year(
                                               data$years,
-                                              data$overall$perf_mat
+                                              data$overall$perf_mat,
+                                              ylim=ylim,
+                                              xlim=xlim
                                               )
 
                         })
                     } else if (plotId == 7) {
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick('plot1_7DblClick', ranges)
+                        observeBrush('plot1_7Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
+                            ylim = ranges$y
+                            xlim = ranges$x
                             score_vs_dominance(
                                                data$years,
-                                               data$overall$perf_mat
+                                               data$overall$perf_mat,
+                                               ylim=ylim,
+                                               xlim=xlim
                                                )
                         })
                     }
+                }
+
+                # Taken from the zoom example on the Shiny Server gallery
+                # page.
+                #
+                # These blocks of code implement zoom in and out.  Zooming
+                # in means drawing a brush (click and drag), and zooming
+                # out means double clicking.
+                # 
+                # Together, these functions are meant to be used as:
+                #   r = getReactivePlotLimitsChange()
+                #   observeBrush(bid, r) # Listen to brushes and update r.
+                #   observeDblClick(did, r) # Listen to dblclk and update r.
+                #   ...
+                #   plot(..., ylim=r$y, xlim=r$x) # Redraw on brush or dblclk.
+                #   ...
+
+                # Create a new reactiveValues object.  The values of this
+                # reactiveValues are independent of the values of other
+                # objects instantiated by this call.  By running:
+                #   r = getReactivePlotLimitsChange()
+                # r$x and r$y can be used as variables to listen to in a
+                # render*() function.  If one piece of code modifies one of
+                # these variables, then another piece of code that reads
+                # it will be notified.  This is meant to be used to listen
+                # to zoom in and out actions, where r$x is the new xlim
+                # and r$y is the new ylim.
+                getReactivePlotLimitsChange = function() {
+                    reactiveValues(x=NULL, y=NULL)
+                }
+
+                # Create an observer for a brush action.  When the given
+                # brush is acted on, the reactivePlotLimitChange (r) will be
+                # updated such that r$x and r$y are the x and y limits
+                # of the rectangle, respectively.  This is meant to be used
+                # as:
+                #   r = getReactivePlotLimitListener()
+                #   observeBrush(bid, r)
+                observeBrush = function(brushId, reactivePlotLimitChange) {
+                    observeEvent(input[[brushId]], {
+                                     brush = input[[brushId]]
+                                     reactivePlotLimitChange$x <<-
+                                         c(brush$xmin, brush$xmax)
+                                     reactivePlotLimitChange$y <<-
+                                         c(brush$ymin, brush$ymax)
+                        })
+                }
+
+                # Create an observer for a double click.  When the given
+                # double click is acted on, the reactivePlotLimitChange (r)
+                # will be updated such that r$x and r$y are both NULL.
+                # This is meant to be used as:
+                #   r = getReactivePlotLimitListener()
+                #   observeDblClick(did, r)
+                observeDblClick = function(dblClickId, reactivePlotLimitChange) {
+                    observeEvent(input[[dblClickId]], {
+                                 reactivePlotLimitChange$x <<- NULL
+                                 reactivePlotLimitChange$y <<- NULL
+                        })
                 }
 
                 # Create plot output objects for the categorical variables

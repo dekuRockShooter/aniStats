@@ -14,7 +14,17 @@ initTabs = function() {
                          "Summary", 
                          #summary.getView(),
                          fluidRow(
-                                  column(10, plotOutput("plot1_1")),
+                                  column(
+                                         10,
+                                         plotOutput(
+                                                    "plot1_1",
+                                                    brush=brushOpts(
+                                                                    id='plot1_1Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot1_1DblClick'
+                                                    )
+                                  ),
                                   column(
                                          2,
                                          checkboxInput(
@@ -45,7 +55,17 @@ initTabs = function() {
                                          )
                                   ),
                          fluidRow(
-                                  column(10, plotOutput("plot1_2")),
+                                  column(
+                                         10,
+                                         plotOutput(
+                                                    "plot1_2",
+                                                    brush=brushOpts(
+                                                                    id='plot1_2Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot1_2DblClick'
+                                                    )
+                                         ),
                                   column(
                                          2,
                                          checkboxInput(
@@ -76,7 +96,18 @@ initTabs = function() {
                                          )
                                   ),
                          fluidRow(
-                                  column(10, plotOutput("plot1_3")),
+                                  #column(10, plotOutput("plot1_3")),
+                                  column(
+                                         10,
+                                         plotOutput(
+                                                    "plot1_3",
+                                                    brush=brushOpts(
+                                                                    id='plot1_3Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot1_3DblClick'
+                                                    )
+                                  ),
                                   column(
                                          2,
                                          checkboxInput(
@@ -108,8 +139,32 @@ initTabs = function() {
                                   ),
                          fluidRow(column(12, plotOutput("plot1_4"))),
                          fluidRow(column(12, plotOutput("plot1_5"))),
-                         fluidRow(column(12, plotOutput("plot1_6"))),
-                         fluidRow(column(12, plotOutput("plot1_7"))),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot1_6",
+                                                    brush=brushOpts(
+                                                                    id='plot1_6Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot1_6DblClick'
+                                                    )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot1_7",
+                                                    brush=brushOpts(
+                                                                    id='plot1_7Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot1_7DblClick'
+                                                    )
+                                         )
+                                  ),
                          value=TAB_ID_SUMMARY
                          ), 
                 tabPanel(
