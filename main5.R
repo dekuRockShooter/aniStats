@@ -512,9 +512,12 @@ numtype_vs_year = function(years, cat_freq_mat, categories) {
 ###############################################################################
 # PROPORTION OF TOTAL SHOWS VS. YEAR
 ###############################################################################
-dominance_vs_year = function(years, perf_mat) {
-    ymax = max(perf_mat, na.rm=TRUE)
-    plot(years, perf_mat[, 1], type='b', ylim=c(0, ymax),
+dominance_vs_year = function(years, perf_mat, ylim=NULL, xlim=NULL) {
+    if (is.null(ylim)) {
+        ymax = max(perf_mat, na.rm=TRUE)
+        ylim = c(0, ymax)
+    }
+    plot(years, perf_mat[, 1], type='b', xlim=xlim, ylim=ylim,
          main='Performance throughout time',
          xlab='years',
          ylab='Proportion of studios that did worse')
@@ -526,7 +529,7 @@ dominance_vs_year = function(years, perf_mat) {
 ###############################################################################
 # SCORE VS. DOMINANCE
 ###############################################################################
-score_vs_dominance = function(years, perf_mat) {
+score_vs_dominance = function(years, perf_mat, ylim=NULL, xlim=NULL) {
     cur_year = as.integer(format(Sys.time(), '%Y'))
     ycolors = sapply(years,
                      function(year) {
@@ -537,7 +540,9 @@ score_vs_dominance = function(years, perf_mat) {
     plot(perf_mat[, 2], perf_mat[, 3], type='n',
          main='Performance throughout time: from a different angle',
          xlab='Proportion of studios that produced fewer anime',
-         ylab='Proportion of studios with lower mean scores'
+         ylab='Proportion of studios with lower mean scores',
+         ylim=ylim,
+         xlim=xlim
          )
     abline(v=median(perf_mat[, 2], na.rm=TRUE), lty='dashed')
     abline(h=median(perf_mat[, 3], na.rm=TRUE), lty='dashed')
