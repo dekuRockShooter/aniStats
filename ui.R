@@ -171,8 +171,32 @@ initTabs = function() {
                          "Genres",
                          #textOutput("genresView"),
                          #category.getView(),
-                         fluidRow(column(12, plotOutput("plot2_1"))),
-                         fluidRow(column(12, plotOutput("plot2_2"))),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot2_1",
+                                                    brush=brushOpts(
+                                                                    id='plot2_1Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot2_1DblClick'
+                                                    )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot2_2",
+                                                    brush=brushOpts(
+                                                                    id='plot2_2Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot2_2DblClick'
+                                                    )
+                                         )
+                                  ),
                          fluidRow(
                                   column(
                                          10,
@@ -240,8 +264,32 @@ initTabs = function() {
                          ),
                 tabPanel(
                          "Sources",
-                         fluidRow(column(12, plotOutput("plot3_1"))),
-                         fluidRow(column(12, plotOutput("plot3_2"))),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot3_1",
+                                                    brush=brushOpts(
+                                                                    id='plot3_1Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot3_1DblClick'
+                                                    )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot3_2",
+                                                    brush=brushOpts(
+                                                                    id='plot3_2Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot3_2DblClick'
+                                                    )
+                                         )
+                                  ),
                          fluidRow(
                                   column(
                                          10,
@@ -310,8 +358,32 @@ initTabs = function() {
                          ),
                 tabPanel(
                          "Types",
-                         fluidRow(column(12, plotOutput("plot4_1"))),
-                         fluidRow(column(12, plotOutput("plot4_2"))),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot4_1",
+                                                    brush=brushOpts(
+                                                                    id='plot4_1Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot4_1DblClick'
+                                                    )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot4_2",
+                                                    brush=brushOpts(
+                                                                    id='plot4_2Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot4_2DblClick'
+                                                    )
+                                         )
+                                  ),
                          fluidRow(
                                   column(
                                          10,
@@ -380,8 +452,32 @@ initTabs = function() {
                          ),
                 tabPanel(
                          "Studios",
-                         fluidRow(column(12, plotOutput("plot5_1"))),
-                         fluidRow(column(12, plotOutput("plot5_2"))),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot5_1",
+                                                    brush=brushOpts(
+                                                                    id='plot5_1Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot5_1DblClick'
+                                                    )
+                                         )
+                                  ),
+                         fluidRow(
+                                  column(
+                                         12,
+                                         plotOutput(
+                                                    "plot5_2",
+                                                    brush=brushOpts(
+                                                                    id='plot5_2Brush',
+                                                                    resetOnNew=TRUE
+                                                                    ),
+                                                    dblclick='plot5_2DblClick'
+                                                    )
+                                         )
+                                  ),
                          fluidRow(
                                   column(
                                          10,

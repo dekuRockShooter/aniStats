@@ -466,27 +466,76 @@ shinyServer(
                     if (plotId == 1) {
                         # Show props vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
                             w = order(curType$tot_props, decreasing=TRUE)
-                            gprop_vs_genre(curType$tot_props[w],
-                                           curType$class_colors[w])
+                            xlim = ranges$x
+                            if (!is.null(xlim)) {
+                                xlim = floor(xlim) + 1
+                                # Lower bound of 1.
+                                if (xlim[1] < 1) {
+                                    xlim[1] = 1
+                                }
+                                # Upper bound of the number of classes.
+                                if (xlim[2] > length(curType$tot_props)) {
+                                    xlim[2] = length(curType$tot_props)
+                                }
+                                xlim = xlim[1] : xlim[2]
+                                w = w[xlim]
+                            }
+                            gprop_vs_genre(
+                                           curType$tot_props[w],
+                                           curType$class_colors[w]
+                                           #xlim=xlim
+                                           )
                         })
                     } else if (plotId == 2) {
                         # Show score vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
                             w = order(curType$score_meds, decreasing=TRUE)
-                            mean_gscore_vs_genre(curType$score_meds[w],
+                            xlim = ranges$x
+                            if (!is.null(xlim)) {
+                                xlim = floor(xlim) + 1
+                                # Lower bound of 1.
+                                if (xlim[1] < 1) {
+                                    xlim[1] = 1
+                                }
+                                # Upper bound of the number of classes.
+                                if (xlim[2] > length(curType$score_meds)) {
+                                    xlim[2] = length(curType$score_meds)
+                                }
+                                xlim = xlim[1] : xlim[2]
+                                w = w[xlim]
+                            }
+                            mean_gscore_vs_genre(
+                                                 curType$score_meds[w],
                                                  curType$class_colors[w],
-                                                 globalMedScore)
+                                                 globalMedScore
+                                                 )
                         })
                     } else if (plotId == 3) {
                         # Show score,prop vs. year for all categorical variables
