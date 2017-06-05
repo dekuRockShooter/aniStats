@@ -492,6 +492,13 @@ shinyServer(
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         reactiveClassChange = getReactiveClassChange(tabId)
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -499,12 +506,16 @@ shinyServer(
                                 return()
                             }
                             classIdx = reactiveClassChange()
+                            ylim = ranges$y
+                            xlim = ranges$x
                             gprop_vs_year(
                                           data$years,
                                           curType$prop_mat[, classIdx],
                                           curType$score_mat[, classIdx],
                                           max(curType$prop_mat, na.rm=TRUE),
-                                          range(curType$score_mat, na.rm=TRUE)
+                                          range(curType$score_mat, na.rm=TRUE),
+                                          ylim=ylim,
+                                          xlim=xlim
                                           )
                         })
                     } else if (plotId == 4) {
@@ -533,49 +544,85 @@ shinyServer(
                     } else if (plotId == 5) {
                         # Show score vs. views for all categorical
                         # variables (genres, source, type, and studio).
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
+                            ylim = ranges$y
+                            xlim = ranges$x
                             gscore_vs_gview(
                                             curType$view_meds,
                                             curType$score_meds,
                                             curType$class_colors,
                                             globalMedScore,
                                             globalMedViews,
-                                            curType$class_names
+                                            curType$class_names,
+                                            ylim=ylim,
+                                            xlim=xlim
                                             )
                         })
                     } else if (plotId == 6) {
                         # Show score vs. props for all categorical variables
                         # (genres, source, type, and studio).
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
+                            ylim = ranges$y
+                            xlim = ranges$x
                             gscore_vs_gprop(
                                             curType$tot_props,
                                             curType$score_meds,
                                             globalMedScore,
                                             curType$class_colors,
-                                            curType$class_names
+                                            curType$class_names,
+                                            ylim=ylim,
+                                            xlim=xlim
                                             )
                         })
                     } else if (plotId == 7) {
                         # Show score slope vs. prop slope for all categorical
                         # variables (genres, source, type, and studio).
+                        brushId = paste('plot', tabId, '_',
+                                        plotId, 'Brush', sep='')
+                        dblClickId = paste('plot', tabId, '_',
+                                           plotId, 'DblClick', sep='')
+                        ranges = getReactivePlotLimitsChange()
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
+                            ylim = ranges$y
+                            xlim = ranges$x
                             gscore_slope_vs_gprop_slope(
                                                         curType$prop_slopes,
                                                         curType$score_slopes,
                                                         curType$class_colors,
-                                                        curType$class_names
+                                                        curType$class_names,
+                                                        ylim=ylim,
+                                                        xlim=xlim
                                                         )
                         })
                     }
