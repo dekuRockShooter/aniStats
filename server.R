@@ -163,16 +163,18 @@ shinyServer(
                     } else if (rv == 'eps') {
                         rv = globalDS$tot_eps
                     }
+
                     reactive({
                         data = reactiveDataChange()
-                        globalPerf = lapply(
-                                            data$years,
-                                            get_quantiles_tmp,
-                                            na.omit(rv),
-                                            globalDS$year
-                                            )
-                        globalPerf = do.call(rbind, globalPerf)[, 3]
-                        return(globalPerf)
+                        gblPerf = sapply(
+                                         data$years,
+                                         function(year) {
+                                             median(
+                                                    rv[globalDS$year == year],
+                                                    na.rm=TRUE
+                                                    )
+                                         })
+                        return(gblPerf)
                     })
                 }
 
