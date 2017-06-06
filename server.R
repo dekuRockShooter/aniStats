@@ -102,10 +102,6 @@ shinyServer(
                     })
                 }
 
-                reactiveShowQuantilesPlot1_1 = getReactiveShowQuantiles(1, 1)
-                reactiveShowQuantilesPlot1_2 = getReactiveShowQuantiles(1, 2)
-                reactiveShowQuantilesPlot1_3 = getReactiveShowQuantiles(1, 3)
-
                 # Get a reactive that listens to select menu selections in
                 # the score, prop vs. time plots.  These plots have a select
                 # menu to change the data to be plotted.  The return value
@@ -154,45 +150,72 @@ shinyServer(
                     }
                 }
 
+                # Create a reactive that listens to data changes and returns
+                # a statistic for the global data.  The statistic is evaluated
+                # using the years in the changed data.  The statistic is the
+                # median, and the values are the global scores, views, or
+                # episodes, depending on the value of 'rv'.
+                getReactiveGlobalPerf = function(rv) {
+                    if (rv == 'score') {
+                        rv = globalDS$score
+                    } else if (rv == 'views') {
+                        rv = globalDS$tot_watched
+                    } else if (rv == 'eps') {
+                        rv = globalDS$tot_eps
+                    }
+                    reactive({
+                        data = reactiveDataChange()
+                        globalPerf = lapply(
+                                            data$years,
+                                            get_quantiles_tmp,
+                                            na.omit(rv),
+                                            globalDS$year
+                                            )
+                        globalPerf = do.call(rbind, globalPerf)[, 3]
+                        return(globalPerf)
+                    })
+                }
+
                 # Create a renderPlot function.  This can be used as:
                 #   output$x = createSummaryPlot(p, b, d).
                 # brushId and dblClickId must be formatted according to the
                 # specs in tabs.R.  plotId is the number of the plot; that is,
                 # the y in plotx_y (see tabs.R).
                 createSummaryPlot = function(plotId, brushId, dblClickId) {
+                    # Create observers for double clicks and brushes if
+                    # so desired.
                     if (!(is.null(dblClickId) || is.null(brushId))) {
                         ranges = getReactivePlotLimitsChange()
                         observeDblClick(dblClickId, ranges)
                         observeBrush(brushId, ranges)
                     }
                     if (plotId == 1) {
+                        reactiveGlobalPerf = getReactiveGlobalPerf('score')
+                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 1)
+
                         renderPlot({
                             data = reactiveDataChange()
-                            # TODO: this block needs to be in a reactive.
                             curType = data$overall
+                            globalPerf = reactiveGlobalPerf()
+
+                            # This needs no reactive due to the if-block.
                             ylim = ranges$y
                             xlim = ranges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
                                        max(curType$qscore_timeline, na.rm=TRUE))
                             }
-                            #ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
-                                   #max(curType$qscore_timeline, na.rm=TRUE))
-                            globalPerf = lapply(
-                                                data$years,
-                                                get_quantiles_tmp,
-                                                na.omit(globalDS$score),
-                                                globalDS$year
-                                                )
-                            globalPerf = do.call(rbind, globalPerf)[, 3]
 
                             # Get the quantiles to show in the plot.
+                            # This needs no reactive due to the if-block.
                             timeline_mat = NULL
-                            wquantiles = reactiveShowQuantilesPlot1_1()
+                            wquantiles = reactiveShowQuantiles()
                             if (length(wquantiles) > 0) {
                                 timeline_mat =
                                     as.matrix(
-                                              curType$qscore_timeline[, wquantiles]
+                                              curType$qscore_timeline[,
+                                                                      wquantiles
+                                                                      ]
                                               )
                             }
 
@@ -208,32 +231,32 @@ shinyServer(
                                           )
                         })
                     } else if (plotId == 2) {
+                        reactiveGlobalPerf = getReactiveGlobalPerf('views')
+                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 2)
+
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
-                            # Redraw the plot when the x and y ranges are
-                            # changed (brush or double click).
+                            globalPerf = reactiveGlobalPerf()
+
+                            # This needs no reactive due to the if-block.
                             ylim = ranges$y
                             xlim = ranges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qview_timeline, na.rm=TRUE),
                                        max(curType$qview_timeline, na.rm=TRUE))
                             }
-                            globalPerf = lapply(
-                                                data$years,
-                                                get_quantiles_tmp,
-                                                na.omit(globalDS$tot_watched),
-                                                globalDS$year
-                                                )
-                            globalPerf = do.call(rbind, globalPerf)[, 3]
 
                             # Get the quantiles to show in the plot.
+                            # This needs no reactive due to the if-block.
                             timeline_mat = NULL
-                            wquantiles = reactiveShowQuantilesPlot1_2()
+                            wquantiles = reactiveShowQuantiles()
                             if (length(wquantiles) > 0) {
                                 timeline_mat =
                                     as.matrix(
-                                              curType$qview_timeline[, wquantiles]
+                                              curType$qview_timeline[,
+                                                                     wquantiles
+                                                                     ]
                                               )
                             }
 
@@ -250,26 +273,26 @@ shinyServer(
                         })
                     }
                     else if (plotId == 3) {
+                        reactiveGlobalPerf = getReactiveGlobalPerf('eps')
+                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 3)
+
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
+                            globalPerf = reactiveGlobalPerf()
+
+                            # This needs no reactive due to the if-block.
                             ylim = ranges$y
                             xlim = ranges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qeps_timeline, na.rm=TRUE),
                                        max(curType$qeps_timeline, na.rm=TRUE))
                             }
-                            globalPerf = lapply(
-                                                data$years,
-                                                get_quantiles_tmp,
-                                                na.omit(globalDS$tot_eps),
-                                                globalDS$year
-                                                )
-                            globalPerf = do.call(rbind, globalPerf)[, 3]
 
                             # Get the quantiles to show in the plot.
+                            # This needs no reactive due to the if-block.
                             timeline_mat = NULL
-                            wquantiles = reactiveShowQuantilesPlot1_3()
+                            wquantiles = reactiveShowQuantiles()
                             if (length(wquantiles) > 0) {
                                 timeline_mat =
                                     as.matrix(
