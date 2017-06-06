@@ -35,6 +35,7 @@
 #       (1 is topmost, 5 is bottomost).  Only plots 1, 2, and 3 of tabs
 #       created by createSummaryTab contain checkboxes.
 #       Access with input[['selectx_y_z']].
+source('main5.R')
 
 # Create a tabPanel for one of the categorical variables tabs.  See the
 # file description for details.
