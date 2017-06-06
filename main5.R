@@ -52,13 +52,12 @@ init_anime = function() {
     Anime$studio = factor(Anime$studio)
     Anime = data.frame(
                        Anime,
-                       genre_bits=get_genre_bits(Anime),
                        num_genres=get_num_genres(Anime)
                        )
 }
 
-get_overall_data = function(data, gbl_data, cur_studio) {
-    D = gbl_data
+get_overall_data = function(data, glo_data, cur_studio) {
+    D = glo_data
     years = min(data$year) : max(data$year)
     overall = list()
 
@@ -74,6 +73,9 @@ get_overall_data = function(data, gbl_data, cur_studio) {
     qview_timeline = do.call(rbind, qview_timeline)
     qeps_timeline = do.call(rbind, qeps_timeline)
 
+    # Get performance percentiles for each year.  The rows are the years.
+    # Column 1 is the proportion of shows made by the studio.  Column 2
+    # is the proportions percentile.  Column 3 is the score percentile.
     year_idx = 0
     perf_mat = lapply(years,
                 function(year) {
@@ -90,12 +92,15 @@ get_overall_data = function(data, gbl_data, cur_studio) {
 
                         cur_studio_count = studio_counts[as.character(year)]
                         yr = year - min(globalDS$year) + 1 # 1-based index
+                        # Median of studio median scores for each year.
                         sm = apply(studioMedScoresMat, 1,
                                    function(row) median(row, na.rm=TRUE))
+                        # Number of studios for each year.
                         sw = apply(studioMedScoresMat, 1,
                                    function(row) length(na.omit(row)))
-                        ss = sum(sm < sm[yr], na.rm=TRUE)/
-                            sum(sw > 0)
+                        # Number of years worse than yr /
+                        # Number of years
+                        ss = sum(sm < sm[yr], na.rm=TRUE)/sum(sw > 0)
                     }
                     else {
                         studios = D$studio[wyear]
@@ -127,8 +132,8 @@ get_overall_data = function(data, gbl_data, cur_studio) {
     return(overall)
 }
 
-get_type_data = function(data, gbl_data, category) {
-    D = gbl_data
+get_type_data = function(data, glo_data, category) {
+    D = glo_data
     years = min(data$year) : max(data$year)
 
     get_category_metric = function(year, cat_vec, categories, metric='count',
@@ -266,18 +271,18 @@ get_type_data = function(data, gbl_data, category) {
 
 # 'data' is a data frame of the data of interest, for example, of all shows
 # made by a specific studio.
-init_data = function(data, gbl_data, studio) {
-    D = gbl_data
+init_data = function(data, glo_data, studio) {
+    D = glo_data
     genres = list()
     types = list()
     sources = list()
-    overall = get_overall_data(data, gbl_data, studio)
-    types = get_type_data(data, gbl_data, category_enum$CATEGORY_TYPE)
-    sources = get_type_data(data, gbl_data, category_enum$CATEGORY_SOURCE)
-    genres = get_type_data(data, gbl_data, category_enum$CATEGORY_GENRE)
+    overall = get_overall_data(data, glo_data, studio)
+    types = get_type_data(data, glo_data, category_enum$CATEGORY_TYPE)
+    sources = get_type_data(data, glo_data, category_enum$CATEGORY_SOURCE)
+    genres = get_type_data(data, glo_data, category_enum$CATEGORY_GENRE)
     studios = NULL
     if (is.null(studio)) {
-        studios = get_type_data(data, gbl_data, category_enum$CATEGORY_STUDIO)
+        studios = get_type_data(data, glo_data, category_enum$CATEGORY_STUDIO)
     }
 
     years = min(data$year) : max(data$year)
@@ -354,11 +359,11 @@ init_data = function(data, gbl_data, studio) {
 # w = order(gprops, decreasing=TRUE)
 # prop_vs_genre(gprops[w], gcolors[w])
 gprop_vs_genre = function(gprops, gcolors) {
-    barplot(100*gprops, space=0, las=2, col=gcolors,
+    barplot(
+            100*gprops, space=0, las=2, col=gcolors,
             ylab='Frequency of genre (%)',
-            main='Genres by frequency')
-    #barplot(sort(gprops, decreasing=TRUE), space=0, las=2,
-            #col=gcolors[order(gprops, decreasing=TRUE)])
+            main='Genres by frequency'
+            )
 }
 #w = order(gprops, decreasing=TRUE)
 #gprop_vs_genre(gprops[w], gcolors[w])
@@ -727,49 +732,55 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
 
-A = init_anime()[sample(1000), ]
-globalNames = A$name
-globalDS = A[, -1]
-rm(A)
-sapply(6 : 44,
-       function(idx)
-           globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
-
-# Matrix of median scores for each studio (columns) per year (rows).
-years = min(globalDS$year) : max(globalDS$year)
-studioMedScoresMat = lapply(
-                            sort(levels(globalDS$studio),
-                                 decreasing=FALSE),
-                            function(studio) {
-                                sapply(years,
-                                       function(year) {
-                                           median(globalDS$score[
-                                                  (globalDS$studio == studio) &
-                                                      (globalDS$year == year)
-                                                  ], na.rm=TRUE)
-                                       })
-                            })
-rm(years)
-studioMedScoresMat = do.call(cbind, studioMedScoresMat)
+#A = init_anime()
+#globalNames = A$name
+#globalDS = A[, -1]
+#rm(A)
+#sapply(6 : 44,
+       #function(idx)
+           #globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
+#
+## Matrix of median scores for each studio (columns) per year (rows).
+#years = min(globalDS$year) : max(globalDS$year)
+#gloStudio = as.character(globalDS$studio)
+#gloYear = as.integer(globalDS$year)
+#gloScore = as.numeric(globalDS$score)
+#studioMedScoresMat = lapply(
+                            #sort(as.character(levels(globalDS$studio)),
+                                 #decreasing=FALSE),
+                            #function(studio) {
+                                #locScore = gloScore[gloStudio == studio]
+                                #locYear = gloYear[gloStudio == studio]
+                                #sapply(years,
+                                       #function(year) {
+                                           #median(locScore[
+                                                  #(locYear == year)
+                                                  #], na.rm=TRUE)
+                                       #})
+                            #})
+#rm(years); rm(gloStudio); rm(gloYear); rm(gloScore)
+#studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
 # Not the current year
-defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
+#defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
 globalData = init_data(globalDS, globalDS, NULL)
-globalMedScore = median(globalDS$score)
-globalMedViews = median(globalDS$tot_watched)
-globalTimeline = list()
-globalTimeline$scores = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$score),
-                               globalDS$year)
-globalTimeline$views = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$tot_watched),
-                               globalDS$year)
-globalTimeline$eps = lapply(globalData$years,
-                               get_quantiles_tmp,
-                               na.omit(globalDS$tot_eps),
-                               globalDS$year)
-globalTimeline$scores = do.call(rbind, globalTimeline$scores)[, 3]
-globalTimeline$views = do.call(rbind, globalTimeline$views)[, 3]
-globalTimeline$eps = do.call(rbind, globalTimeline$eps)[, 3]
+#globalMedScore = median(globalDS$score)
+#globalMedViews = median(globalDS$tot_watched)
+
+# I don't remember what these variables were meant for.
+#globalTimeline = list()
+#globalTimeline$scores = lapply(globalData$years,
+                               #get_quantiles_tmp,
+                               #na.omit(globalDS$score),
+                               #globalDS$year)
+#globalTimeline$views = lapply(globalData$years,
+                               #get_quantiles_tmp,
+                               #na.omit(globalDS$tot_watched),
+                               #globalDS$year)
+#globalTimeline$eps = lapply(globalData$years,
+                               #get_quantiles_tmp,
+                               #na.omit(globalDS$tot_eps),
+                               #globalDS$year)
+#globalTimeline$scores = do.call(rbind, globalTimeline$scores)[, 3]
+#globalTimeline$views = do.call(rbind, globalTimeline$views)[, 3]
+#globalTimeline$eps = do.call(rbind, globalTimeline$eps)[, 3]
