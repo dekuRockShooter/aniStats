@@ -637,10 +637,6 @@ shinyServer(
                 #})
 
 
-                output$testView <- renderPlot({
-                    plot(1, 1)
-                })
-
                 # Create plots for the summary tab.
                 plotSuffix = paste('plot', 1, '_', sep='')
                 brushSuffix = paste('brush', 1, '_', sep='')
