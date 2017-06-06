@@ -120,43 +120,39 @@ shinyServer(
                 # checked boxes.  The indeces correspond to elements in
                 # a call to summary(), so that if r() = 1,4,6, then this
                 # means min, mean, and max.
-                getReactiveShowQuantiles = function(plotId) {
-                    qnames = c('Min', 'Q25', 'Mean', 'Q75', 'Max')
-                    nameSuffix = 'Checkbox'
-                    checkboxIds = NULL
-                    #if (plotId == 1) {
-                    namePrefix = paste('plot1_', plotId, sep='')
-                    checkboxIds = sapply(qnames,
-                                         function(q) {
-                                             paste(namePrefix,
-                                                   q,
-                                                   nameSuffix,
-                                                   sep='')
-                                         })
+                getReactiveShowQuantiles = function(tabId, rowIdx) {
+                    # Create checkbox IDs of the format specified in
+                    # tabs.R.
+                    idPrefix = paste('checkbox', tabId, '_',
+                                     rowIdx, '_', sep='')
+                    cbIds = sapply(1 : 5, # Checkbox indeces.
+                                   function(cbIdx) {
+                                       paste(idPrefix, cbIdx, sep='')
+                                   })
                     reactive({
                         wquantile = integer(0)
-                        if (input[[checkboxIds[1]]] == TRUE) {
+                        if (input[[cbIds[1]]] == TRUE) {
                             wquantile = c(wquantile, 1)
                         }
-                        if (input[[checkboxIds[2]]] == TRUE) {
+                        if (input[[cbIds[2]]] == TRUE) {
                             wquantile = c(wquantile, 2)
                         }
-                        if (input[[checkboxIds[3]]] == TRUE) {
+                        if (input[[cbIds[3]]] == TRUE) {
                             wquantile = c(wquantile, 4)
                         }
-                        if (input[[checkboxIds[4]]] == TRUE) {
+                        if (input[[cbIds[4]]] == TRUE) {
                             wquantile = c(wquantile, 5)
                         }
-                        if (input[[checkboxIds[5]]] == TRUE) {
+                        if (input[[cbIds[5]]] == TRUE) {
                             wquantile = c(wquantile, 6)
                         }
                         return(wquantile)
                     })
                 }
 
-                reactiveShowQuantilesPlot1_1 = getReactiveShowQuantiles(1)
-                reactiveShowQuantilesPlot1_2 = getReactiveShowQuantiles(2)
-                reactiveShowQuantilesPlot1_3 = getReactiveShowQuantiles(3)
+                reactiveShowQuantilesPlot1_1 = getReactiveShowQuantiles(1, 1)
+                reactiveShowQuantilesPlot1_2 = getReactiveShowQuantiles(1, 2)
+                reactiveShowQuantilesPlot1_3 = getReactiveShowQuantiles(1, 3)
 
                 # Get a reactive that listens to select menu selections in
                 # the score, prop vs. time plots.  These plots have a select
@@ -166,11 +162,14 @@ shinyServer(
                 # TAB_ID_GENRES, 2) levels if tabId == TAB_ID_SOURCES or
                 # TAB_ID_TYPES.
                 getReactiveClassChange = function(tabId) {
+                    # For the input$select* accesses, x is the ID of a select
+                    # menu formatted as specified in tabs.R.
+
                     # Each reactive listens to changes on a selection menu
                     # for a specific tab.
                     if (tabId == TAB_ID_GENRES) {
                         reactive({
-                            class = input$plot2_3SelectId
+                            class = input$select2_3
                             classes = sort(names(globalDS)[6 : 44],
                                            decreasing=FALSE)
                             idx = which(classes == class)
@@ -179,7 +178,7 @@ shinyServer(
                         })
                     } else if (tabId == TAB_ID_SOURCES) {
                         reactive({
-                            class = input$plot3_3SelectId
+                            class = input$select3_3
                             classes = sort(levels(globalDS$source),
                                            decreasing=FALSE)
                             idx = which(classes == class)
@@ -188,7 +187,7 @@ shinyServer(
                         })
                     } else if (tabId == TAB_ID_TYPES) {
                         reactive({
-                            class = input$plot4_3SelectId
+                            class = input$select4_3
                             classes = sort(levels(globalDS$type),
                                            decreasing=FALSE)
                             idx = which(classes == class)
@@ -197,7 +196,7 @@ shinyServer(
                         })
                     } else if (tabId == TAB_ID_STUDIOS) {
                         reactive({
-                            class = input$plot5_3SelectId
+                            class = input$select5_3
                             classes = sort(levels(globalDS$studio),
                                            decreasing=FALSE)
                             idx = which(classes == class)
@@ -207,11 +206,18 @@ shinyServer(
                     }
                 }
 
-                createSummaryPlot = function(plotId) {
-                    if (plotId == 1) {
+                # Create a renderPlot function.  This can be used as:
+                #   output$x = createSummaryPlot(p, b, d).
+                # brushId and dblClickId must be formatted according to the
+                # specs in tabs.R.  plotId is the number of the plot; that is,
+                # the y in plotx_y (see tabs.R).
+                createSummaryPlot = function(plotId, brushId, dblClickId) {
+                    if (!(is.null(dblClickId) || is.null(brushId))) {
                         ranges = getReactivePlotLimitsChange()
-                        observeDblClick('plot1_1DblClick', ranges)
-                        observeBrush('plot1_1Brush', ranges)
+                        observeDblClick(dblClickId, ranges)
+                        observeBrush(brushId, ranges)
+                    }
+                    if (plotId == 1) {
                         renderPlot({
                             data = reactiveDataChange()
                             # TODO: this block needs to be in a reactive.
@@ -254,9 +260,6 @@ shinyServer(
                                           )
                         })
                     } else if (plotId == 2) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick('plot1_2DblClick', ranges)
-                        observeBrush('plot1_2Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
@@ -299,9 +302,6 @@ shinyServer(
                         })
                     }
                     else if (plotId == 3) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick('plot1_3DblClick', ranges)
-                        observeBrush('plot1_3Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             curType = data$overall
@@ -358,9 +358,6 @@ shinyServer(
                                             )
                         })
                     } else if (plotId == 6) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick('plot1_6DblClick', ranges)
-                        observeBrush('plot1_6Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             ylim = ranges$y
@@ -374,9 +371,6 @@ shinyServer(
 
                         })
                     } else if (plotId == 7) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick('plot1_7DblClick', ranges)
-                        observeBrush('plot1_7Brush', ranges)
                         renderPlot({
                             data = reactiveDataChange()
                             ylim = ranges$y
@@ -427,6 +421,7 @@ shinyServer(
                 # as:
                 #   r = getReactivePlotLimitListener()
                 #   observeBrush(bid, r)
+                # brushId must be formatted as specified in tabs.R.
                 observeBrush = function(brushId, reactivePlotLimitChange) {
                     observeEvent(input[[brushId]], {
                                      brush = input[[brushId]]
@@ -443,6 +438,7 @@ shinyServer(
                 # This is meant to be used as:
                 #   r = getReactivePlotLimitListener()
                 #   observeDblClick(did, r)
+                # dblClickId must be formatted as specified in tabs.R.
                 observeDblClick = function(dblClickId, reactivePlotLimitChange) {
                     observeEvent(input[[dblClickId]], {
                                  reactivePlotLimitChange$x <<- NULL
@@ -457,22 +453,32 @@ shinyServer(
                 #
                 # It returns a renderPlot() object that renders the given
                 # plot for the given tab.
-                createCatPlot = function(plotId, tabId) {
+                #
+                # plotId is the y part of plotx_y (see tabs.R).
+                #
+                # tabId is a TAB_ID_* constant (see constants.R) except
+                # TAB_ID_SUMMARY.
+                #
+                # If the plot has support for brushing and double clicking,
+                # then the IDs of those actions can be given with brushId
+                # and dblClickId.  These must be formatted according to the
+                # specs in tabs.R.
+                createCatPlot = function(plotId, tabId,
+                                         brushId, dblClickId) {
                     if (tabId == TAB_ID_GENRES) category = 'genres'
                     else if (tabId == TAB_ID_SOURCES) category = 'sources'
                     else if (tabId == TAB_ID_TYPES) category = 'types'
                     else if (tabId == TAB_ID_STUDIOS) category = 'studios'
 
-                    if (plotId == 1) {
-                        # Show props vs. class barplot for all categorical
-                        # variables (genres, source, type, and studio).
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
+                    if (!(is.null(dblClickId) || is.null(brushId))) {
                         ranges = getReactivePlotLimitsChange()
                         observeDblClick(dblClickId, ranges)
                         observeBrush(brushId, ranges)
+                    }
+
+                    if (plotId == 1) {
+                        # Show props vs. class barplot for all categorical
+                        # variables (genres, source, type, and studio).
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -503,13 +509,6 @@ shinyServer(
                     } else if (plotId == 2) {
                         # Show score vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -541,13 +540,6 @@ shinyServer(
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         reactiveClassChange = getReactiveClassChange(tabId)
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -593,13 +585,6 @@ shinyServer(
                     } else if (plotId == 5) {
                         # Show score vs. views for all categorical
                         # variables (genres, source, type, and studio).
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -622,13 +607,6 @@ shinyServer(
                     } else if (plotId == 6) {
                         # Show score vs. props for all categorical variables
                         # (genres, source, type, and studio).
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -650,13 +628,6 @@ shinyServer(
                     } else if (plotId == 7) {
                         # Show score slope vs. prop slope for all categorical
                         # variables (genres, source, type, and studio).
-                        brushId = paste('plot', tabId, '_',
-                                        plotId, 'Brush', sep='')
-                        dblClickId = paste('plot', tabId, '_',
-                                           plotId, 'DblClick', sep='')
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
 
                         renderPlot({
                             curType = reactiveDataChange()[[category]]
@@ -698,32 +669,66 @@ shinyServer(
                 })
 
                 # Create plots for the summary tab.
-                outputSuffix = paste('plot', 1, '_', sep='')
+                plotSuffix = paste('plot', 1, '_', sep='')
+                brushSuffix = paste('brush', 1, '_', sep='')
+                dblClkSuffix = paste('dblclick', 1, '_', sep='')
                 sapply(1 : 7,
                        function(plotId) {
-                           outputName = paste(
-                                              outputSuffix,
-                                              plotId,
-                                              sep=''
-                                              )
-                           output[[outputName]] =
-                           createSummaryPlot(plotId)
+                           pid = paste(plotSuffix, plotId, sep='')
+
+                           # These plots don't listen to double clicks
+                           # or brushes.
+                           if ((plotId == 4) || (plotId == 5)) {
+                               output[[pid]] =
+                                   createSummaryPlot(plotId, NULL, NULL)
+                           }
+                           # These plots listen to double clicks and
+                           # brushes.
+                           else {
+                               bid = paste(brushSuffix, plotId, sep='')
+                               dcid = paste(dblClkSuffix, plotId, sep='')
+                               output[[pid]] =
+                                   createSummaryPlot(plotId, bid, dcid)
+                           }
                        })
 
                 # Create plots for the other tabs.
                 sapply(2 : 5,
                        function(tabId) {
-                           outputSuffix = paste('plot', tabId, '_', sep='')
+                           plotSuffix = paste('plot', tabId, '_', sep='')
+                           brushSuffix = paste('brush', tabId, '_', sep='')
+                           dblClkSuffix = paste('dblclick', tabId, '_', sep='')
                            sapply(1 : 7,
                                   function(plotId) {
-                                      outputName = paste(
-                                                         outputSuffix,
-                                                         plotId,
-                                                         sep=''
-                                                         )
-                                      output[[outputName]] =
-                                          createCatPlot(plotId, tabId)
+                                      pid = paste(plotSuffix, plotId, sep='')
+                                      if (plotId == 4) {
+                                          output[[pid]] =
+                                              createCatPlot(plotId, tabId,
+                                                            NULL, NULL)
+                                      }
+                                      else {
+                                          bid = paste(
+                                                      brushSuffix,
+                                                      plotId,
+                                                      sep=''
+                                                      )
+                                          dcid = paste(
+                                                       dblClkSuffix,
+                                                       plotId,
+                                                       sep=''
+                                                       )
+                                          output[[pid]] =
+                                              createCatPlot(
+                                                            plotId,
+                                                            tabId,
+                                                            bid,
+                                                            dcid
+                                                            )
+                                      }
                                   })
                        })
+                rm(plotSuffix)
+                rm(brushSuffix)
+                rm(dblClkSuffix)
             }
 )
