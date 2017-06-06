@@ -22,7 +22,7 @@ shinyServer(
                 # Update the underlying data set based on given parameters.
                 # This reactive returns the data set being computed on.  It
                 # listens to the changeDataActionButton and updates the data
-                # set based on values of the widgets in the parameters panel.
+                # set based on values of the widgets in the options panel.
                 reactiveDataChange = eventReactive(
                     input$changeDataActionButton,
                     {
@@ -120,39 +120,35 @@ shinyServer(
                     # Each reactive listens to changes on a selection menu
                     # for a specific tab.
                     if (tabId == TAB_ID_GENRES) {
+                        classes = sort(names(globalDS)[6 : 44],
+                                       decreasing=FALSE)
                         reactive({
                             class = input$select2_3
-                            classes = sort(names(globalDS)[6 : 44],
-                                           decreasing=FALSE)
                             idx = which(classes == class)
-
                             return(idx)
                         })
                     } else if (tabId == TAB_ID_SOURCES) {
+                        classes = sort(levels(globalDS$source),
+                                       decreasing=FALSE)
                         reactive({
                             class = input$select3_3
-                            classes = sort(levels(globalDS$source),
-                                           decreasing=FALSE)
                             idx = which(classes == class)
-
                             return(idx)
                         })
                     } else if (tabId == TAB_ID_TYPES) {
+                        classes = sort(levels(globalDS$type),
+                                       decreasing=FALSE)
                         reactive({
                             class = input$select4_3
-                            classes = sort(levels(globalDS$type),
-                                           decreasing=FALSE)
                             idx = which(classes == class)
-
                             return(idx)
                         })
                     } else if (tabId == TAB_ID_STUDIOS) {
+                        classes = sort(levels(globalDS$studio),
+                                       decreasing=FALSE)
                         reactive({
                             class = input$select5_3
-                            classes = sort(levels(globalDS$studio),
-                                           decreasing=FALSE)
                             idx = which(classes == class)
-
                             return(idx)
                         })
                     }
