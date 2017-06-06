@@ -19,54 +19,6 @@ shinyServer(
                 # in input$x.  If a function does not use the input list,
                 # then it is executed only once. 
 
-                scoreVsYear <- renderPlot({
-                    score_vs_year(data$years,
-                                  globalTimeline$scores,
-                                  title='Mean score throughout time',
-                                  ylab='Mean score',
-                                  timeline_mat=data$overall$qscore_timeline,
-                                  main_col=3,
-                                  ylim=c(min(data$overall$qscore_timeline, na.rm=TRUE),
-                                         max(data$overall$qscore_timeline, na.rm=TRUE))
-                                  )
-                })
-
-                viewsVsYear <- renderPlot({
-                    score_vs_year(data$years,
-                                  globalTimeline$scores,
-                                  title='Mean views throughout time',
-                                  ylab='Mean views',
-                                  timeline_mat=data$overall$qview_timeline,
-                                  main_col=3,
-                                  ylim=c(min(data$overall$qview_timeline, na.rm=TRUE),
-                                         max(data$overall$qview_timeline, na.rm=TRUE))
-                                  )
-                })
-
-                epsVsYear <- renderPlot({
-                    score_vs_year(data$years,
-                                  globalTimeline$scores,
-                                  title='Mean episodes throughout time',
-                                  ylab='Mean episodes',
-                                  timeline_mat=data$overall$qeps_timeline,
-                                  main_col=3,
-                                  ylim=c(min(data$overall$qeps_timeline, na.rm=TRUE),
-                                         max(data$overall$qeps_timeline, na.rm=TRUE))
-                                  )
-                })
-
-                typePropVsYear <- renderPlot({
-                    numtype_vs_year(data$years,
-                                    t(data$types$prop_mat),
-                                    data$types$class_names)
-                })
-
-                sourcePropVsYear <- renderPlot({
-                    numtype_vs_year(data$years,
-                                    t(data$sources$prop_mat),
-                                    data$sources$class_names)
-                })
-
                 # Update the underlying data set based on given parameters.
                 # This reactive returns the data set being computed on.  It
                 # listens to the changeDataActionButton and updates the data
