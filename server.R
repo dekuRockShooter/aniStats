@@ -12,7 +12,6 @@ shinyServer(
                 # Initialization of data specific to the current user.
                 # Executed once for every user.
                 #dataset = D[(D$studio == cur_studio), ]
-                data = globalData
 
                 # The render* functions are executed everytime a widget
                 # that it is observing changes.  These widgets are stored
@@ -59,7 +58,7 @@ shinyServer(
                             localDS = localDS[localDS$type == type, ]
                         }
 
-                        data <<- init_data(localDS, globalDS, studio)
+                        data = init_data(localDS, globalDS, studio)
                         return(data)
                     },
                     ignoreNULL = FALSE
