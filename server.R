@@ -58,8 +58,13 @@ shinyServer(
                             localDS = localDS[localDS$type == type, ]
                         }
 
-                        data = init_data(localDS, globalDS, studio)
-                        return(data)
+                        if (nrow(localDS) != nrow(globalDS)) {
+                            localDS = init_data(localDS, globalDS, studio)
+                        }
+                        else {
+                            localDS = globalData
+                        }
+                        return(localDS)
                     },
                     ignoreNULL = FALSE
                     )
