@@ -66,32 +66,40 @@ get_overall_data = function(data, glo_data, cur_studio) {
     }
 
     # Get timeline data for scores, views, and episodes.
-    qscore_timeline = lapply(years, get_quantiles, na.omit(data$score))
-    qview_timeline = lapply(years, get_quantiles, na.omit(data$tot_watched))
-    qeps_timeline = lapply(years, get_quantiles, na.omit(data$tot_eps))
-    qscore_timeline = do.call(rbind, qscore_timeline)
-    qview_timeline = do.call(rbind, qview_timeline)
-    qeps_timeline = do.call(rbind, qeps_timeline)
+    data_score = as.numeric(na.omit(data$score))
+    data_tot_watched = as.integer(na.omit(data$tot_watched))
+    data_tot_eps = as.integer(na.omit(data$tot_eps))
+
+    qscore_timeline = lapply(years, get_quantiles, data_score)
+    qview_timeline = lapply(years, get_quantiles, data_tot_watched)
+    qeps_timeline = lapply(years, get_quantiles, data_tot_eps)
+    qscore_timeline = as.matrix(do.call(rbind, qscore_timeline))
+    qview_timeline = as.matrix(do.call(rbind, qview_timeline))
+    qeps_timeline = as.matrix(do.call(rbind, qeps_timeline))
 
     # Get performance percentiles for each year.  The rows are the years.
     # Column 1 is the proportion of shows made by the studio.  Column 2
     # is the proportions percentile.  Column 3 is the score percentile.
     year_idx = 0
+    D_year = as.integer(D$year)
+    D_studio = as.character(D$studio)
+    gloDS_year = as.integer(globalDS$year)
     perf_mat = lapply(years,
                 function(year) {
                     year_idx <<- year_idx + 1
-                    wyear = which(D$year == year)
+                    wyear = which(D_year == year)
                     ss = NULL
                     studios = NULL
                     studio_counts = NULL
                     if (is.null(cur_studio)) {
                         # Pull these out to reduce repetitive calculations.
-                        studios = D$year # All rows
-                        studio_counts = table(D$year)
+                        studios = D_year # All rows
+                        studio_counts = table(studios)
                         wyear = 1 : nrow(D) # This extra array can be removed.
 
                         cur_studio_count = studio_counts[as.character(year)]
-                        yr = year - min(globalDS$year) + 1 # 1-based index
+                        cur_studio_count = as.integer(cur_studio_count)
+                        yr = year - min(gloDS_year) + 1 # 1-based index
                         # Median of studio median scores for each year.
                         sm = apply(studioMedScoresMat, 1,
                                    function(row) median(row, na.rm=TRUE))
@@ -103,15 +111,17 @@ get_overall_data = function(data, glo_data, cur_studio) {
                         ss = sum(sm < sm[yr], na.rm=TRUE)/sum(sw > 0)
                     }
                     else {
-                        studios = D$studio[wyear]
+                        studios = D_studio[wyear]
                         studio_counts = table(studios)
                         cur_studio_count = studio_counts[cur_studio]
-                        yr = year - min(globalDS$year) + 1 # 1-based index
+                        cur_studio_count = as.integer(cur_studio_count)
+                        yr = year - min(gloDS_year) + 1 # 1-based index
                         ss = sum(studioMedScoresMat[yr, ] < 
                                  qscore_timeline[year_idx, Q50_IDX],
                                  na.rm=TRUE)/
                         length(na.omit(studioMedScoresMat[yr, ]))
                     }
+                    studio_counts = as.integer(studio_counts)
                     # Proportion percentile.
                     a = sum(studio_counts[!(studio_counts > cur_studio_count)],
                             na.rm=TRUE)
@@ -135,10 +145,11 @@ get_overall_data = function(data, glo_data, cur_studio) {
 get_type_data = function(data, glo_data, category) {
     D = glo_data
     years = min(data$year) : max(data$year)
+    data_year = as.integer(data$year)
 
     get_category_metric = function(year, cat_vec, categories, metric='count',
                                    metric_vec=NULL) {
-        wcur_year = which(data$year == year)
+        wcur_year = which(data_year == year)
         cur_cat_vec = cat_vec[wcur_year]
         cur_metric_vec = NULL
         if (!is.null(metric_vec)) {
@@ -189,15 +200,16 @@ get_type_data = function(data, glo_data, category) {
     }
     # Matrix initialization for all categories except genre.
     if (is_genre == FALSE) {
-        class_names = sort(levels(vec), decreasing=FALSE)
+        class_names = as.character(sort(levels(vec), decreasing=FALSE))
+        vec = as.character(vec)
         count_mat = lapply(years, get_category_metric, vec, class_names)
         score_mat = lapply(years, get_category_metric, vec, class_names,
-                           'median', data$score)
+                           'median', as.numeric(data$score))
         view_mat = lapply(years, get_category_metric, vec, class_names,
-                          'median', data$tot_watched)
-        count_mat = do.call(rbind, count_mat)
-        score_mat = do.call(rbind, score_mat)
-        view_mat = do.call(rbind, view_mat)
+                          'median', as.integer(data$tot_watched))
+        count_mat = as.matrix(do.call(rbind, count_mat))
+        score_mat = as.matrix(do.call(rbind, score_mat))
+        view_mat = as.matrix(do.call(rbind, view_mat))
     }
 
     # The following code is common to all categories, and creates further
@@ -208,7 +220,7 @@ get_type_data = function(data, glo_data, category) {
                       function(idx) {
                           count_mat[idx, ]/sum(count_mat[idx, ])
                       })
-    prop_mat = do.call(rbind, prop_mat)
+    prop_mat = as.matrix(do.call(rbind, prop_mat))
     # This line causes barplots to render incorrectly.
     #prop_mat[prop_mat < 1e-10] = NaN
 
