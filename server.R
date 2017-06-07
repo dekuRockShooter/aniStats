@@ -514,7 +514,8 @@ shinyServer(
                         reactiveClassChange = getReactiveClassChange(tabId)
 
                         renderPlot({
-                            curType = reactiveDataChange()[[category]]
+                            data = reactiveDataChange()
+                            curType = data[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
@@ -535,7 +536,8 @@ shinyServer(
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         renderPlot({
-                            curType = reactiveDataChange()[[category]]
+                            data = reactiveDataChange()
+                            curType = data[[category]]
                             if (is.null(curType)) {
                                 return()
                             }
