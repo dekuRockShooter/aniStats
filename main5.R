@@ -299,58 +299,6 @@ init_data = function(data, glo_data, studio) {
 
     years = min(data$year) : max(data$year)
 
-    ## Get timeline matrices for genres and their slopes.
-    #gscore_mat = get_genre_freqs(data, years, 'median', col_idx=46)
-    #gcount_mat = get_genre_freqs(data, years, 'count')
-    #gview_mat = get_genre_freqs(data, years, 'median', col_idx=45)
-    #gscore_slopes = get_trendline(gscore_mat, byrow=FALSE, onlysig=FALSE)
-    #gcount_slopes = get_trendline(gcount_mat, byrow=FALSE, onlysig=FALSE)
-#
-    ## Get interesting genres.
-    #core_genres = get_core_genres(gcount_mat, 0.5)
-#
-    ## median(X) for each genres.
-    #gscore_meds = apply(gscore_mat, 2, function(col) median(col, na.rm=TRUE))
-    #gview_meds = apply(gview_mat, 2, function(col) median(col, na.rm=TRUE))
-#
-    ## Proportions of each genre relative to all years.
-    #gprops = get_genre_props(gcount_mat)
-    #gprops[gprops < 1e-8] = NaN # Set as NaN to ignore 0's when graphing.
-#
-    #names(gprops) = names(data)[6 : 44]
-    #names(gscore_meds) = names(data)[6 : 44]
-#
-    ## Proportions of each genre relative to specific years.
-    #gprop_mat = lapply(1 : nrow(gcount_mat),
-                       #function(idx) {
-                           #gcount_mat[idx, ]/sum(gcount_mat[idx, ])
-                       #})
-    #gprop_mat = do.call(rbind, gprop_mat)
-    #gprop_mat[gprop_mat < 1e-10] = NaN
-
-    #gscore_med = median(genres$score_meds, na.rm=TRUE)
-    #gview_med = median(genres$view_meds, na.rm=TRUE)
-    #gprops_med = median(genres$tot_props, na.rm=TRUE)
-    #gcolors = sapply(1 : 39,
-                     #function(genre_idx) {
-                         #if (is.na(genres$score_meds[genre_idx]) |
-                             #is.na(genres$tot_props[genre_idx])) {
-                             #return('#303030')
-                         #}
-                         #gcolor = '#a0a0a0'
-                         #if (genre_idx %in% genres$core_classes) {
-                             #gcolor = 'red'
-                         #} else if (genres$score_meds[genre_idx] > gscore_med) {
-                             #if (genres$tot_props[genre_idx] < gprops_med) {
-                                 #gcolor = 'blue'
-                             #} else if (genres$view_meds[genre_idx] < gview_med) {
-                                 #gcolor = 'green'
-                             #}
-                         #}
-                         #return(gcolor)
-                     #})
-
-
     ret_list = list(
                     overall=overall,
                     sources=sources,
