@@ -313,7 +313,8 @@ shinyServer(
                                           title='Mean episodes throughout time',
                                           ylab='Mean episodes',
                                           timeline_mat=timeline_mat,
-                                          ylim=ylim
+                                          ylim=ylim,
+                                          xlim=xlim
                                           )
                         })
                     } else if (plotId == 4) {
