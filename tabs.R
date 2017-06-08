@@ -150,40 +150,71 @@ createSummaryTab = function(name, tabIdx) {
     cbIds = do.call(rbind, cbIds)
 
     # Create columns common to most rows.  These have plots with support for
-    # brushes and double clicks.
+    # brushes and double clicks, and some have a hoverable options menu.
     createCol = function(rowIdx, colSize) {
+        checkboxDiv = NULL
+        optionsDiv = NULL
+        # Plot common to all rows.
+        plotOut = plotOutput(
+                             # plot id.
+                             plotIds[rowIdx],
+                             brush=brushOpts(
+                                             id=brushIds[rowIdx],
+                                             resetOnNew=TRUE
+                                             ),
+                             dblclick=dblClkIds[rowIdx]
+                             )
+
+        # Rows 1, 2, and 3 have an options menu that appears when the plot
+        # is hovered over.  This creates an HTML tree of divs as below.  The
+        # dectection of hovers and visibility of each div is handled by the
+        # hover.css file.  When plot (outermost div) is hovered, the icon
+        # is displayed.  When the icon (second div) is hovered, the checkboxes
+        # are displayed (innermost div).
+        #
+        #     <div class='hover_plot'>
+        #       plotOut
+        #       <div class='hover_options'>
+        #         <div class='percentile_checkbox'>
+        #           checkboxes
+        #         </div>
+        #       optionIcon
+        #       </div>
+        #     </div>
+        if ((rowIdx > 0) && (rowIdx < 4)) {
+            checkboxDiv = createCheckboxCol(cbIds[rowIdx, ])
+            optionsDiv = div(
+                             class='hover_options',
+                             checkboxDiv,
+                             tags$p('Options')
+                             )
+            plotOut = div(class='hover_plot', plotOut, optionsDiv)
+        }
+
         column(
                colSize,
-               plotOutput(
-                          # plot id.
-                          plotIds[rowIdx],
-                          brush=brushOpts(
-                                          id=brushIds[rowIdx],
-                                          resetOnNew=TRUE
-                                          ),
-                          dblclick=dblClkIds[rowIdx]
-                          )
+               plotOut
                )
     }
 
-    # Convenience function for creating a column that displays the
+    # Convenience function for creating a div that displays the
     # checkboxes.  'cbIds' is a row of this.cbIds.
     createCheckboxCol = function(cbIds) {
-        column(
-               2,
-               checkboxInput(cbIds[1], 'Min', FALSE),
-               checkboxInput(cbIds[2], '25th percentile', FALSE),
-               checkboxInput(cbIds[3], 'Mean', FALSE),
-               checkboxInput(cbIds[4], '75th percentile', FALSE),
-               checkboxInput(cbIds[5], 'Max', FALSE)
-               )
+        div(
+            class='percentile_checkbox',
+            checkboxInput(cbIds[1], 'Min', FALSE),
+            checkboxInput(cbIds[2], '25th percentile', FALSE),
+            checkboxInput(cbIds[3], 'Mean', FALSE),
+            checkboxInput(cbIds[4], '75th percentile', FALSE),
+            checkboxInput(cbIds[5], 'Max', FALSE)
+            )
     }
 
     tabPanel(
              name, 
-             fluidRow(createCol(1, 10), createCheckboxCol(cbIds[1, ])),
-             fluidRow(createCol(2, 10), createCheckboxCol(cbIds[2, ])),
-             fluidRow(createCol(3, 10), createCheckboxCol(cbIds[3, ])),
+             fluidRow(createCol(1, 12)),
+             fluidRow(createCol(2, 12)),
+             fluidRow(createCol(3, 12)),
              fluidRow(column(12, plotOutput(plotIds[4]))),
              fluidRow(column(12, plotOutput(plotIds[5]))),
              fluidRow(createCol(6, 12)),

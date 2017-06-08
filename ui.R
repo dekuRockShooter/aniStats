@@ -22,6 +22,13 @@ initTabs = function() {
 
 # Define UI for random distribution application 
 fluidPage(
+          tags$head(
+                    tags$link(
+                              rel="stylesheet",
+                              type="text/css",
+                              href="hover.css"
+                              )
+                    ),
           # Application title
           titlePanel("Tabsets"),
           createOptionsPanel(),
