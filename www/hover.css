@@ -1,0 +1,42 @@
+/* Plot container */
+.hover_plot {
+    position: relative;
+}
+
+/* Tooltip (icon) to show on plot hover */
+.hover_plot .hover_options {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    bottom: 75%;
+    position: absolute;
+    z-index: 100;
+}
+
+/* Tooltip (options) to show on icon hover */
+.hover_plot .hover_options .percentile_checkbox {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    top: 100%; /* Place at the bottom of parent. */
+    position: absolute;
+    z-index: 100;
+}
+
+/* Show hover_options on hover_plot hover. */
+.hover_plot:hover .hover_options {
+    visibility: visible;
+}
+
+/* Show percentile_checkbox on hover_options hover. */
+.hover_options:hover .percentile_checkbox {
+    visibility: visible;
+}
