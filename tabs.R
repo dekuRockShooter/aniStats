@@ -76,19 +76,44 @@ createCatTab = function(name, tabIdx) {
     }
 
     # Create columns common to most rows.  These have plots with support for
-    # brushes and double clicks.
+    # brushes and double clicks, and some have a hoverable options menu.
     createCol = function(rowIdx, colSize) {
+        checkboxDiv = NULL
+        optionsDiv = NULL
+        # Plot common to all rows.
+        plotOut = plotOutput(
+                             # plot id.
+                             plotIds[rowIdx],
+                             brush=brushOpts(
+                                             id=brushIds[rowIdx],
+                                             resetOnNew=TRUE
+                                             ),
+                             dblclick=dblClkIds[rowIdx]
+                             )
+
+        # Rows 3 has an options menu that appears when the plot
+        # is hovered over.
+        if (rowIdx == 3) {
+            checkboxDiv = div(
+                              class='percentile_checkbox',
+                              selectInput(
+                                          inputId=selectId,
+                                          label=selectLabel,
+                                          choices=selectItems,
+                                          selected=selectItems[1]
+                                          )
+                              )
+            optionsDiv = div(
+                             class='hover_options',
+                             checkboxDiv,
+                             tags$p('Options')
+                             )
+            plotOut = div(class='hover_plot', plotOut, optionsDiv)
+        }
+
         column(
                colSize,
-               plotOutput(
-                          # plot id.
-                          plotIds[rowIdx],
-                          brush=brushOpts(
-                                          id=brushIds[rowIdx],
-                                          resetOnNew=TRUE
-                                          ),
-                          dblclick=dblClkIds[rowIdx]
-                          )
+               plotOut
                )
     }
 
@@ -96,17 +121,7 @@ createCatTab = function(name, tabIdx) {
              name,
              fluidRow(createCol(1, 12)),
              fluidRow(createCol(2, 12)),
-             fluidRow(
-                      createCol(3, 10),
-                      column(2,
-                             selectInput(
-                                         inputId=selectId,
-                                         label=selectLabel,
-                                         choices=selectItems,
-                                         selected=selectItems[1]
-                                         )
-                             )
-                      ),
+             fluidRow(createCol(3, 12)),
              fluidRow(column(12, plotOutput(plotIds[4]))),
              fluidRow(createCol(5, 12)),
              fluidRow(createCol(6, 12)),
