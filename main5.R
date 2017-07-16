@@ -83,7 +83,7 @@ get_overall_data = function(data, glo_data, cur_studio) {
     year_idx = 0
     D_year = as.integer(D$year)
     D_studio = as.character(D$studio)
-    gloDS_year = as.integer(globalDS$year)
+    gloDS_year = as.integer(D$year)
     perf_mat = lapply(years,
                 function(year) {
                     year_idx <<- year_idx + 1
@@ -692,40 +692,40 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
 
-#A = init_anime()
+A = init_anime()
 #globalNames = A$name
-#globalDS = A[, -1]
-#rm(A)
-#sapply(6 : 44,
-       #function(idx)
-           #globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
-#
-## Matrix of median scores for each studio (columns) per year (rows).
-#years = min(globalDS$year) : max(globalDS$year)
-#gloStudio = as.character(globalDS$studio)
-#gloYear = as.integer(globalDS$year)
-#gloScore = as.numeric(globalDS$score)
-#studioMedScoresMat = lapply(
-                            #sort(as.character(levels(globalDS$studio)),
-                                 #decreasing=FALSE),
-                            #function(studio) {
-                                #locScore = gloScore[gloStudio == studio]
-                                #locYear = gloYear[gloStudio == studio]
-                                #sapply(years,
-                                       #function(year) {
-                                           #median(locScore[
-                                                  #(locYear == year)
-                                                  #], na.rm=TRUE)
-                                       #})
-                            #})
-#rm(years); rm(gloStudio); rm(gloYear); rm(gloScore)
-#studioMedScoresMat = do.call(cbind, studioMedScoresMat)
+globalDS = A[, -1]
+rm(A)
+sapply(6 : 44,
+       function(idx)
+           globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
+
+# Matrix of median scores for each studio (columns) per year (rows).
+years = min(globalDS$year) : max(globalDS$year)
+gloStudio = as.character(globalDS$studio)
+gloYear = as.integer(globalDS$year)
+gloScore = as.numeric(globalDS$score)
+studioMedScoresMat = lapply(
+                            sort(as.character(levels(globalDS$studio)),
+                                 decreasing=FALSE),
+                            function(studio) {
+                                locScore = gloScore[gloStudio == studio]
+                                locYear = gloYear[gloStudio == studio]
+                                sapply(years,
+                                       function(year) {
+                                           median(locScore[
+                                                  (locYear == year)
+                                                  ], na.rm=TRUE)
+                                       })
+                            })
+rm(years); rm(gloStudio); rm(gloYear); rm(gloScore)
+studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
 # Not the current year
-#defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
+defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
 globalData = init_data(globalDS, globalDS, NULL)
-#globalMedScore = median(globalDS$score)
-#globalMedViews = median(globalDS$tot_watched)
+globalMedScore = median(globalDS$score)
+globalMedViews = median(globalDS$tot_watched)
 
 # I don't remember what these variables were meant for.
 #globalTimeline = list()
