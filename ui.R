@@ -30,7 +30,13 @@ fluidPage(
                               )
                     ),
           # Application title
-          titlePanel("Tabsets"),
-          createOptionsPanel(),
-          initTabs()
+          #titlePanel("Tabsets"),
+          navbarPage(
+                     'navbar',
+                     tabPanel(
+                              'Stats',
+                              createOptionsPanel(),
+                              initTabs()
+                              )
+                     )
 )
