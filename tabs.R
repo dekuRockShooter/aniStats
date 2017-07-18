@@ -237,3 +237,26 @@ createSummaryTab = function(name, tabIdx) {
              value=tabIdx
              )
 }
+
+createPredictionsTab = function(name, tabIdx) {
+    tableOut = tableOutput('table_predictions')
+    yearSelect = selectInput(
+                inputId='predictions_year_select',
+                label='year',
+                choices=1990:2016,
+                selected=2016
+                )
+    seasonSelect = selectInput(
+                               inputId='predictions_season_select',
+                               label='season',
+                               choices=c('Winter', 'Spring', 'Summer', 'Fall'),
+                               selected='Winter'
+                               )
+    tabPanel(
+             name,
+             yearSelect,
+             seasonSelect,
+             tableOut,
+             value=tabIdx
+             )
+}

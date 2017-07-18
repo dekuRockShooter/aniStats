@@ -182,6 +182,42 @@ shinyServer(
                     })
                 }
 
+                getReactivePredictions = function() {
+                    reactive({
+                        year = input[['predictions_year_select']]
+                        year = as.integer(year)
+                        season = input[['predictions_season_select']]
+                        months = NULL
+                        indeces = NULL
+
+                        if (season != 'Winter') {
+                            if (season == 'Spring') months = c(3, 4, 5)
+                            else if (season == 'Summer') months = c(6, 7, 8)
+                            else months = c(9, 10, 11)
+                            indeces = which(
+                                            (globalDS$type == 'TV') &
+                                                (globalDS$year == year) &
+                                                (globalDS$month %in% months)
+                                            )
+                        }
+                        else {
+                            indeces = which(
+                                            (globalDS$type == 'TV') &
+                                                (
+                                                 (globalDS$year == year) &
+                                                     (globalDS$month %in% c(1, 2))
+                                                 ) |
+                                            (
+                                             (globalDS$year == (year - 1)) &
+                                                 (globalDS$month == 12)
+                                             )
+                                            )
+                        }
+
+                        return(indeces)
+                    })
+                }
+
                 # Create a renderPlot function.  This can be used as:
                 #   output$x = createSummaryPlot(p, b, d).
                 # brushId and dblClickId must be formatted according to the
@@ -643,6 +679,22 @@ shinyServer(
                     #return(retList)
                 #})
 
+                createPredictionsTable = function() {
+                    getIndeces = getReactivePredictions()
+
+                    renderTable({
+                        indeces = getIndeces()
+                        columns = which(
+                                        names(globalDS) %in%
+                                            c('name', 'score', 'studio',
+                                              'predicted_correctly')
+                                        )
+
+                        table = globalDS[indeces, columns]
+                        return(table)
+                    })
+                }
+
 
                 # Create plots for the summary tab.
                 plotSuffix = paste('plot', 1, '_', sep='')
@@ -703,6 +755,8 @@ shinyServer(
                                       }
                                   })
                        })
+                output[['table_predictions']] = createPredictionsTable()
+
                 rm(plotSuffix)
                 rm(brushSuffix)
                 rm(dblClkSuffix)
