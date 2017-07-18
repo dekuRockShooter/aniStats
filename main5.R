@@ -35,7 +35,8 @@ init_anime = function() {
         #col.lab=rgb(0.6, 0.6, 0.6),
         #mfrow=c(2, 2))
 
-    Anime = read.table("anime_mach.csv",
+    Anime = read.table("anime_mach_rv1.csv",
+    #Anime = read.table("anime_mach.csv",
                      header=FALSE,
                      skip=1,
                      na.strings="?",
@@ -44,7 +45,8 @@ init_anime = function() {
                      quote=''
                      #colClasses=colClasses
                      )
-    header = read.csv("anime_mach.csv",
+    #header = read.csv("anime_mach.csv",
+    header = read.csv("anime_mach_rv1.csv",
                       header=TRUE,
                       nrow=1
                       )
@@ -55,6 +57,7 @@ init_anime = function() {
                        Anime,
                        num_genres=get_num_genres(Anime)
                        )
+
 }
 
 get_overall_data = function(data, glo_data, cur_studio) {
@@ -693,10 +696,10 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
 
-A = init_anime()
+globalDS = init_anime()
 #globalNames = A$name
-globalDS = A[, -1]
-rm(A)
+#globalDS = A[, -1]
+#rm(A)
 sapply(GENRE_COLS,
        function(idx)
            globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
