@@ -1,0 +1,17 @@
+.wrong_row {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+table, td, th {
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 15px;
+}

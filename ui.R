@@ -36,6 +36,11 @@ fluidPage(
                               rel="stylesheet",
                               type="text/css",
                               href="hover.css"
+                              ),
+                    tags$link(
+                              rel="stylesheet",
+                              type="text/css",
+                              href="predictions.css"
                               )
                     ),
           # Application title
