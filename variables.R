@@ -103,14 +103,14 @@ get_k = function(X, rv, data, max_studio=0) {
                  function(idx) {
                      studio = X[idx]
                      # This makes the sum fast (array instead of list).
-                     genres = as.integer(data[idx, 6 : 44])
+                     genres = as.integer(data[idx, GENRE_COLS])
                      sum(genres*(g_a[studio, ] + 1)/(g_b[studio, ] + 1))
                  })
     gbj = sapply(1 : nrow(data),
                  function(idx) {
                      studio = X[idx]
                      # This makes the sum fast (array instead of list).
-                     genres = as.integer(data[idx, 6 : 44])
+                     genres = as.integer(data[idx, GENRE_COLS])
                      sum(genres*(g_b[studio, ] + 1)/(g_a[studio, ] + 1))
                  })
     rho = ((n_a[, 'n'] + 1) / (n_b[, 'n'] + 1))
@@ -246,7 +246,7 @@ get_gcounts = function(x, ab, data, rv='studio') {
     sg = 0
     if(is.null(x)) sg = mean(data$score)
     else sg = mean(data$score[X == x])
-    g = 6 : 44 # genre indeces.
+    g = GENRE_COLS # genre indeces.
     
     if (ab == 'a') {
         if (!is.null(x)) {
@@ -318,7 +318,7 @@ get_num_genres = function(data) {
 #   of the j'th observation's genre set.
 get_genre_bits = function(data) {
     genre_bit_str = rep('1', times=nrow(data))
-    sapply(6 : 44,
+    sapply(GENRE_COLS,
            function(idx) {
                genre_bit_str <<- paste(genre_bit_str,
                                        as.integer(data[, idx]) - 1,
@@ -595,8 +595,8 @@ set_studio_mean_score = function(data, test_data=NULL) {
 
 set_genre_mean_score = function(data, test_data=NULL) {
     test_data = if (is.null(test_data)) data else test_data
-    gm = sapply(6 : 44, function(idx) mean(data$score[data[, idx] == 'Y']))
-    gm = ifelse(test_data[, 6 : 44] == 'Y', gm[1 : 39], 0.0)
+    gm = sapply(GENRE_COLS, function(idx) mean(data$score[data[, idx] == 'Y']))
+    gm = ifelse(test_data[, GENRE_COLS] == 'Y', gm[1 : 39], 0.0)
     gmr = NULL
     if (is.null(test_data)) {
         gmr = ifelse(gm > 0.0, test_data$score / gm, 0.0)

@@ -242,7 +242,7 @@ get_genre_freqs = function(data, years, metric, col_idx=-1) {
                           else {
                               col = D$score
                           }
-                          sapply(6 : 44,
+                          sapply(GENRE_COLS,
                                  function(genre_idx) {
                                      if (metric == 'count') {
                                          sum(D[, genre_idx])
@@ -348,7 +348,7 @@ transform_genres = function(data, from_year, to_year, test=NULL) {
     mat = matrix(0.0, nrow=nrow(data), ncol=39)
     test_mat = NULL
     if (!is.null(test)) test_mat = matrix(0.0, nrow=nrow(test), ncol=39)
-    genre_cols = 6 : 44
+    genre_cols = GENRE_COLS
     sapply(unique(data$studio),
            function(val) {
                wval = which(data$studio == val)

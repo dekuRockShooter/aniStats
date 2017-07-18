@@ -51,7 +51,7 @@ createOptionsPanel = function() {
                                 inputId='genreSelectId',
                                 label='Select genre',
                                 choices=c('Any genre',
-                                          sort(names(globalDS)[6 : 44])),
+                                          sort(names(globalDS)[GENRE_COLS])),
                                 selected='Any genre'
                                 )
                     ),

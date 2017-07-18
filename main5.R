@@ -4,6 +4,7 @@ source('util.R')
 source('variables.R')
 
 
+GENRE_COLS = 7 : 45
 QMIN_IDX = 1
 Q25_IDX = 2
 Q50_IDX = 3
@@ -196,7 +197,7 @@ get_type_data = function(data, glo_data, category) {
         score_mat = get_genre_freqs(data, years, 'median', col_idx=46)
         count_mat = get_genre_freqs(data, years, 'count')
         view_mat = get_genre_freqs(data, years, 'median', col_idx=45)
-        class_names = sort(names(data)[6 : 44], decreasing=FALSE)
+        class_names = sort(names(data)[GENRE_COLS], decreasing=FALSE)
     }
     # Matrix initialization for all categories except genre.
     if (is_genre == FALSE) {
@@ -394,14 +395,14 @@ gscore_vs_gview = function(mean_gviews, mean_gscores, gcolors,
 }
 #gscore_vs_gview(view_means, score_means, gcolors,
                 #median(D$score), median(D$tot_watched),
-                #names(D)[6 : 44])
+                #names(D)[GENRE_COLS])
 
 ###############################################################################
 # GENRE SCORE VS. GENRE PROPORTION
 ###############################################################################
 # score vs. proportion of total genres
 # gscore_vs_gprop(gprops, score_means, median(D$score), gcolors,
-#                 names(D)[6 : 44])
+#                 names(D)[GENRE_COLS])
 gscore_vs_gprop = function(gprops, mean_gscores, global_med_score, gcolors,
                            glabels, ylim=NULL, xlim=NULL) {
     plot(
@@ -419,14 +420,14 @@ gscore_vs_gprop = function(gprops, mean_gscores, global_med_score, gcolors,
     text(gprops, mean_gscores, labels=glabels, col=gcolors)
 }
 #gscore_vs_gprop(gprops, score_means, median(D$score), gcolors,
-                #names(D)[6 : 44])
+                #names(D)[GENRE_COLS])
 
 ###############################################################################
 # GENRE SCORE SLOPE VS. GENRE PROPORTION SLOPE
 ###############################################################################
 # score vs. proportion of total genres
 # gscore_slope_vs_gprop_slope(data$gcount_slopes, data$gscore_slopes,
-#                             gcolors, names(D)[6 : 44])
+#                             gcolors, names(D)[GENRE_COLS])
 # score slope vs. count slope (forecast) (quality vs. quanitity)
 gscore_slope_vs_gprop_slope = function(gcount_slopes, gscore_slopes,
                                        gcolors, glabels,
@@ -444,7 +445,7 @@ gscore_slope_vs_gprop_slope = function(gcount_slopes, gscore_slopes,
     text(gcount_slopes, gscore_slopes, labels=glabels, col=gcolors)
 }
 #gscore_slope_vs_gprop_slope(data$gcount_slopes, data$gscore_slopes,
-                            #gcolors, names(D)[6 : 44])
+                            #gcolors, names(D)[GENRE_COLS])
 
 ###############################################################################
 # SCORE VS. YEAR, VIEWS VS. YEAR, EPS VS. YEAR
@@ -553,7 +554,7 @@ score_vs_dominance = function(years, perf_mat, ylim=NULL, xlim=NULL) {
 # Data initialization
 #A = init_anime()
 #D = A[, -1]
-#sapply(6 : 44, function(idx) D[, idx] <<- as.integer(D[, idx]) - 1)
+#sapply(GENRE_COLS, function(idx) D[, idx] <<- as.integer(D[, idx]) - 1)
 #cur_studio = 'Gainax'
 #default_years = (max(D$year) - 10) : (max(D$year) - 1) # Not the current year
 #dataset = D[(D$studio == cur_studio), ]
@@ -696,7 +697,7 @@ A = init_anime()
 #globalNames = A$name
 globalDS = A[, -1]
 rm(A)
-sapply(6 : 44,
+sapply(GENRE_COLS,
        function(idx)
            globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
 

@@ -120,7 +120,7 @@ shinyServer(
                     # Each reactive listens to changes on a selection menu
                     # for a specific tab.
                     if (tabId == TAB_ID_GENRES) {
-                        classes = sort(names(globalDS)[6 : 44],
+                        classes = sort(names(globalDS)[GENRE_COLS],
                                        decreasing=FALSE)
                         reactive({
                             class = input$select2_3
