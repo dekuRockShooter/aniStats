@@ -58,6 +58,16 @@ init_anime = function() {
                        num_genres=get_num_genres(Anime)
                        )
 
+    load('fp.Rdata')
+    load('fn.Rdata')
+    Anime$predicted_correctly = ifelse(
+                                       (Anime$name %in% unlist(FP)) |
+                                           (Anime$name %in% unlist(FN)),
+                                       0,
+                                       1)
+    rm(FP)
+    rm(FN)
+    return(Anime)
 }
 
 get_overall_data = function(data, glo_data, cur_studio) {
