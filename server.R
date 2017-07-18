@@ -683,10 +683,15 @@ shinyServer(
                     #return(retList)
                 #})
 
+                # Create an HTML table to display all shows and their
+                # predictions.  This uses renderUI instead of renderTable
+                # because the rows need to be formatted according to
+                # the predictions.  Each row needs to be in a specific
+                # CSS class, and this is much simpler to do with renderUI.
                 createPredictionsTable = function() {
                     getIndeces = getReactivePredictions()
 
-                    renderTable({
+                    renderUI({
                         indeces = getIndeces()
                         columns = which(
                                         names(globalDS) %in%
@@ -695,7 +700,61 @@ shinyServer(
                                         )
 
                         table = globalDS[indeces, columns]
-                        return(table)
+                        outcomes = table$predicted_correctly
+                        scores = table$score
+                        # Determine the predictions for each show.  There are
+                        # four possibilities:
+                        # outcome | score | prediction
+                        #    1       < 7       0 (correctly predicted 0)
+                        #    1       >= 7      1 (correctly predicted 1)
+                        #    0       < 7       1 (incorrectly predicted 1)
+                        #    0       >= 7      0 (incorrectly predicted 0)
+                        yhats = ifelse(
+                                       ((outcomes == 1) & !(scores < 7.0)) |
+                                           ((outcomes == 0) & (scores < 7.0)),
+                                       1,
+                                       0
+                                       )
+
+                        # Build an HTML table.  The rows are shows.  If
+                        # a show's score was correctly predicted, then
+                        # it goes into the 'correct_row' CSS class.
+                        # Otherwise, the row goes into the 'wrong_row'
+                        # CSS class.
+                        rows = list()
+                        for (rowIdx in 1 : nrow(table)) {
+                            cells = list()
+
+                            # The row cells are the columns of 'table'
+                            # except the 'predicted_correctly' column,
+                            # which is used to determine the CSS class
+                            # that the row belongs to.  The last cell
+                            # after this loop is the prediction made.
+                            # by the classifier.
+                            for (colIdx in 1 : (ncol(table) - 1)) {
+                                cell = tags$td(table[rowIdx, colIdx])
+                                cells[[length(cells) + 1]] = cell
+                            }
+                            cell = tags$td(yhats[rowIdx])
+                            cells[[length(cells) + 1]] = cell
+
+                            # Determine the row's class.
+                            row = NULL
+                            if (table[rowIdx, ncol(table)] == 1) {
+                                row = tags$tr(class='correct_row', cells)
+                            }
+                            else {
+                                row = tags$tr(class='wrong_row', cells)
+                            }
+                            rows[[length(rows) + 1]] = row
+                        }
+
+                        htmlTable = tags$table(
+                                               class='predictions_table',
+                                               rows
+                                               )
+
+                        return(htmlTable)
                     })
                 }
 

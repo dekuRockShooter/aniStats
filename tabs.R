@@ -250,7 +250,7 @@ createSummaryTab = function(name, tabIdx) {
 # 'Fall'.
 #
 createPredictionsTab = function(name, tabIdx) {
-    tableOut = tableOutput('table_predictions')
+    tableOut = htmlOutput('table_predictions')
     yearSelect = selectInput(
                 inputId='predictions_year_select',
                 label='year',
