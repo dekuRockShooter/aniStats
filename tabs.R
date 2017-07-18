@@ -238,6 +238,17 @@ createSummaryTab = function(name, tabIdx) {
              )
 }
 
+# Create a tabPanel that shows a table.
+#
+# The tab contains a table with id 'table_predictions' (defined in server.R
+# using output$table_predictions = renderTable(...) or something similar).
+# Two select menus are also available.  The first one has id 'predictions_
+# year_select' and is meant to choose the year for which predictions are
+# shown.  The values are 1990 to 2016, as strings.  The second select menu
+# has id 'predictions_season_select' and is meant to select the season for
+# which to show predictions.  Values are 'Winter', 'Spring', 'Summer', and
+# 'Fall'.
+#
 createPredictionsTab = function(name, tabIdx) {
     tableOut = tableOutput('table_predictions')
     yearSelect = selectInput(
@@ -252,10 +263,15 @@ createPredictionsTab = function(name, tabIdx) {
                                choices=c('Winter', 'Spring', 'Summer', 'Fall'),
                                selected='Winter'
                                )
+    selectDiv = div(
+                    class='predictions_select',
+                    yearSelect,
+                    seasonSelect,
+                    actionButton('predictionDateActionButton', 'Done')
+                    )
     tabPanel(
              name,
-             yearSelect,
-             seasonSelect,
+             selectDiv,
              tableOut,
              value=tabIdx
              )
