@@ -247,7 +247,16 @@ createSummaryTab = function(name, tabIdx) {
 # shown.  The values are 1990 to 2016, as strings.  The second select menu
 # has id 'predictions_season_select' and is meant to select the season for
 # which to show predictions.  Values are 'Winter', 'Spring', 'Summer', and
-# 'Fall'.
+# 'Fall'.  A button is also available that signals that the selections are
+# final and that data should be queried.  This button has id 'predictionDate
+# ActionButton', and should be used in an eventReactive:
+#
+#    eventReactive(output$predictionDateActionButton, {
+#        # do something with input$predictions_season_select and
+#        # input$predictions_year_select.
+#    })
+#
+# The select menus and button are contained in a bootstrap row.
 #
 createPredictionsTab = function(name, tabIdx) {
     tableOut = htmlOutput('table_predictions')
@@ -263,15 +272,16 @@ createPredictionsTab = function(name, tabIdx) {
                                choices=c('Winter', 'Spring', 'Summer', 'Fall'),
                                selected='Winter'
                                )
-    selectDiv = div(
-                    class='predictions_select',
-                    yearSelect,
-                    seasonSelect,
-                    actionButton('predictionDateActionButton', 'Done')
-                    )
+    doneButton = actionButton('predictionDateActionButton', 'Done')
+
+    optionsRow = fluidRow(
+                          column(3, yearSelect),
+                          column(3, seasonSelect),
+                          column(2, doneButton)
+                          )
     tabPanel(
              name,
-             selectDiv,
+             optionsRow,
              tableOut,
              value=tabIdx
              )
