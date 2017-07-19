@@ -60,10 +60,14 @@ createCatTab = function(name, tabIdx) {
     selectId = paste('select', tabIdx, '_3', sep='')
     selectLabel = NULL
     selectItems = NULL
+    # Array of help text for each plot.  The array is chosen in accordance to
+    # tabIdx.
+    help_text = NULL
     # Initialize the select menu items.
     if (tabIdx == 2) {
         selectLabel = 'Select genre'
         selectItems = sort(names(globalDS) [GENRE_COLS], decreasing=FALSE)
+        help_text = HELP_TEXT$genres
     } else if (tabIdx == 3) {
         selectLabel = 'Select source'
         selectItems = sort(levels(globalDS$source), decreasing=FALSE)
@@ -108,8 +112,14 @@ createCatTab = function(name, tabIdx) {
                              checkboxDiv,
                              tags$p('Options')
                              )
-            plotOut = div(class='hover_plot', plotOut, optionsDiv)
+            #plotOut = div(class='hover_plot', plotOut, optionsDiv)
         }
+
+        # This gives all plots a tooltip that displays information on hover.
+        helpTextDiv = div(class='plot_help_text', tags$p(help_text[rowIdx]))
+        helpDiv = div(class='hover_help', helpTextDiv, tags$p('?'))
+
+        plotOut = div(class='hover_plot', plotOut, optionsDiv, helpDiv)
 
         column(
                colSize,
