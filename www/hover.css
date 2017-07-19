@@ -4,9 +4,10 @@
 }
 
 /* Tooltip (icon) to show on plot hover */
-.hover_plot .hover_options {
+.hover_plot .hover_options,
+.hover_plot .hover_help {
     visibility: hidden;
-    width: 120px;
+    width: 10%;
     background-color: black;
     color: #fff;
     text-align: center;
@@ -17,8 +18,13 @@
     z-index: 100;
 }
 
+.hover_plot .hover_help {
+    left: 10%;
+}
+
 /* Tooltip (options) to show on icon hover */
-.hover_plot .hover_options .percentile_checkbox {
+.hover_plot .hover_options .percentile_checkbox,
+.hover_plot .hover_help .plot_help_text {
     visibility: hidden;
     width: 120px;
     background-color: black;
@@ -36,7 +42,15 @@
     visibility: visible;
 }
 
+.hover_plot:hover .hover_help {
+    visibility: visible;
+}
+
 /* Show percentile_checkbox on hover_options hover. */
 .hover_options:hover .percentile_checkbox {
+    visibility: visible;
+}
+
+.hover_help:hover .plot_help_text {
     visibility: visible;
 }

@@ -198,12 +198,21 @@ createSummaryTab = function(name, tabIdx) {
         #     </div>
         if ((rowIdx > 0) && (rowIdx < 4)) {
             checkboxDiv = createCheckboxCol(cbIds[rowIdx, ])
+            helpTextDiv = div(
+                              class='plot_help_text',
+                              tags$p(HELP_TEXT[rowIdx])
+                              )
             optionsDiv = div(
                              class='hover_options',
                              checkboxDiv,
                              tags$p('Options')
                              )
-            plotOut = div(class='hover_plot', plotOut, optionsDiv)
+            helpDiv = div(
+                          class='hover_help',
+                          helpTextDiv,
+                          tags$p('?')
+                          )
+            plotOut = div(class='hover_plot', plotOut, optionsDiv, helpDiv)
         }
 
         column(
