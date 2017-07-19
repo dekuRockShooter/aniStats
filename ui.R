@@ -24,8 +24,8 @@ initPredictionsTabs = function() {
     tabsetPanel(
                 type="tabs",
                 id='predictionsTabsetPanelId',
-                createPredictionsTab('Predictions', TAB_ID_PREDICTIONS)
-                #createPlotsTab('Plots', TAB_ID_PLOTS)
+                createPredictionsTab('Predictions', TAB_ID_PREDICTIONS),
+                createPerformanceTab('Performance', TAB_ID_PERFORMANCE)
                 )
 }
 
@@ -41,6 +41,11 @@ fluidPage(
                               rel="stylesheet",
                               type="text/css",
                               href="predictions.css"
+                              ),
+                    tags$link(
+                              rel="stylesheet",
+                              type="text/css",
+                              href="performance.css"
                               )
                     ),
           # Application title

@@ -820,6 +820,21 @@ shinyServer(
                        })
                 output[['table_predictions']] = createPredictionsTable()
 
+                # These are output elements for the images in the 'Performance'
+                # tab of the 'Predictions' page.
+                output[['acc_vs_time']] = renderImage(deleteFile=FALSE, {
+                    list(src='www/acc_vs_time.png')
+                })
+                output[['tp_vs_tn']] = renderImage(deleteFile=FALSE, {
+                    list(src='www/tp_vs_tn.png')
+                })
+                output[['fp_vs_stucnt']] = renderImage(deleteFile=FALSE, {
+                    list(src='www/fp_vs_stucnt.png')
+                })
+                output[['fn_vs_stucnt']] = renderImage(deleteFile=FALSE, {
+                    list(src='www/fn_vs_stucnt.png')
+                })
+
                 rm(plotSuffix)
                 rm(brushSuffix)
                 rm(dblClkSuffix)

@@ -276,3 +276,33 @@ createPredictionsTab = function(name, tabIdx) {
              value=tabIdx
              )
 }
+
+# Create a tab to show performance figures of the classifier.
+#
+# The tab has images that show various performance metrics.  The
+# id's of each figure are 'acc_vs_time', 'tp_vs_tn', 'fp_vs_stucnt',
+# and 'fn_vs_stucnt'.  These should be elements of the Shiny 'output'
+# list.  Each figure is wrapped in a div element with class
+# 'performance_image'.
+#
+# The return value is a tabPanel.
+createPerformanceTab = function(name, tabIdx) {
+    imgIds = c(
+               'acc_vs_time',
+               'tp_vs_tn',
+               'fp_vs_stucnt',
+               'fn_vs_stucnt'
+               )
+
+    imgDivs = list()
+    for (imgId in imgIds) {
+        imgDiv = tags$div(class='performance_image', plotOutput(imgId))
+        imgDivs[[length(imgDivs) + 1]] = imgDiv
+    }
+
+    tabPanel(
+             name,
+             imgDivs,
+             value=tabIdx
+             )
+}
