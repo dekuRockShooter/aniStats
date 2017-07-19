@@ -198,22 +198,18 @@ createSummaryTab = function(name, tabIdx) {
         #     </div>
         if ((rowIdx > 0) && (rowIdx < 4)) {
             checkboxDiv = createCheckboxCol(cbIds[rowIdx, ])
-            helpTextDiv = div(
-                              class='plot_help_text',
-                              tags$p(HELP_TEXT[rowIdx])
-                              )
             optionsDiv = div(
                              class='hover_options',
                              checkboxDiv,
                              tags$p('Options')
                              )
-            helpDiv = div(
-                          class='hover_help',
-                          helpTextDiv,
-                          tags$p('?')
-                          )
-            plotOut = div(class='hover_plot', plotOut, optionsDiv, helpDiv)
         }
+        helpTextDiv = div(
+                          class='plot_help_text',
+                          tags$p(HELP_TEXT[rowIdx])
+                          )
+        helpDiv = div(class='hover_help', helpTextDiv, tags$p('?'))
+        plotOut = div(class='hover_plot', plotOut, optionsDiv, helpDiv)
 
         column(
                colSize,
@@ -239,6 +235,8 @@ createSummaryTab = function(name, tabIdx) {
              fluidRow(createCol(1, 12)),
              fluidRow(createCol(2, 12)),
              fluidRow(createCol(3, 12)),
+             #fluidRow(createCol(4, 12)),
+             #fluidRow(createCol(5, 12)),
              fluidRow(column(12, plotOutput(plotIds[4]))),
              fluidRow(column(12, plotOutput(plotIds[5]))),
              fluidRow(createCol(6, 12)),
