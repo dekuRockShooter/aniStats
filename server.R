@@ -749,8 +749,33 @@ shinyServer(
                             rows[[length(rows) + 1]] = row
                         }
 
+                        # Get the total number of shows and the number of
+                        # shows predicted correctly and incorrectly.  These
+                        # numbers are shown to the user.
+                        nwrong = length(which(outcomes == 0))
+                        nrows = length(rows)
+                        res1 = paste('Number of shows:', nrows)
+                        res2 = paste(
+                                     'Number predicted correctly:',
+                                     length(which(outcomes == 1))
+                                     )
+                        res3 = paste('Number predicted incorrectly:', nwrong)
+                        res4 = paste(
+                                     'Total error: ',
+                                     round(100.0 * nwrong / nrows, 2), '%',
+                                     sep=''
+                                     )
                         htmlTable = tags$table(
                                                class='predictions_table',
+                                               res1,
+                                               tags$br(),
+                                               res2,
+                                               tags$br(),
+                                               res3,
+                                               tags$br(),
+                                               res4,
+                                               tags$br(),
+                                               tags$br(),
                                                rows
                                                )
 
