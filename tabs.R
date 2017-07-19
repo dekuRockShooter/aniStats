@@ -206,7 +206,7 @@ createSummaryTab = function(name, tabIdx) {
         }
         helpTextDiv = div(
                           class='plot_help_text',
-                          tags$p(HELP_TEXT[rowIdx])
+                          tags$p(HELP_TEXT$summary[rowIdx])
                           )
         helpDiv = div(class='hover_help', helpTextDiv, tags$p('?'))
         plotOut = div(class='hover_plot', plotOut, optionsDiv, helpDiv)
