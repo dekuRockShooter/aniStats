@@ -71,12 +71,15 @@ createCatTab = function(name, tabIdx) {
     } else if (tabIdx == 3) {
         selectLabel = 'Select source'
         selectItems = sort(levels(globalDS$source), decreasing=FALSE)
+        help_text = HELP_TEXT$source
     } else if (tabIdx == 4) {
         selectLabel='Select type'
         selectItems = sort(levels(globalDS$type), decreasing=FALSE)
+        help_text = HELP_TEXT$type
     } else if (tabIdx == 5) {
         selectLabel='Select studio'
         selectItems = sort(levels(globalDS$studio), decreasing=FALSE)
+        help_text = HELP_TEXT$studio
     }
 
     # Create columns common to most rows.  These have plots with support for
