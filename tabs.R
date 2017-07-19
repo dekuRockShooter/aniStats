@@ -235,10 +235,8 @@ createSummaryTab = function(name, tabIdx) {
              fluidRow(createCol(1, 12)),
              fluidRow(createCol(2, 12)),
              fluidRow(createCol(3, 12)),
-             #fluidRow(createCol(4, 12)),
-             #fluidRow(createCol(5, 12)),
-             fluidRow(column(12, plotOutput(plotIds[4]))),
-             fluidRow(column(12, plotOutput(plotIds[5]))),
+             fluidRow(createCol(4, 12)),
+             fluidRow(createCol(5, 12)),
              fluidRow(createCol(6, 12)),
              fluidRow(createCol(7, 12)),
              value=tabIdx
