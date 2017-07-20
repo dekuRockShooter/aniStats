@@ -6,3 +6,10 @@
 #acc_vs_time #tp_vs_tn #fp_vs_stucnt #fn_vs_stucnt {
     margin: auto;
 }
+
+#table_studio_acc {
+    height: 400px;
+    width: 80%;
+    margin: auto;
+    overflow-y: scroll;
+}

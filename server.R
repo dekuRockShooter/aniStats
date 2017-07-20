@@ -783,6 +783,48 @@ shinyServer(
                     })
                 }
 
+                # Create a table that shows the classifier performance
+                # for each studio.
+                createStudioPredictionsTable = function() {
+
+                    renderUI({
+                        rows = list()
+                        for (idx in perfSortedIndeces) {
+                            # This creates the cells: one for the studio
+                            # name, one for the number of its shows predicted
+                            # correctly, one for the total number of shows it
+                            # made, and another for the ratio of the previous
+                            # two.
+                            studioNameCell = tags$td(studioNames[idx])
+                            studioAccCell = tags$td(studioAcc[idx])
+                            studioCountCell = tags$td(studioCount[idx])
+                            studioPerfCell = tags$td(studioPerf[idx])
+
+                            row = tags$tr(
+                                          studioNameCell,
+                                          studioAccCell,
+                                          studioCountCell,
+                                          studioPerfCell
+                                          )
+                            rows[[length(rows) + 1]] = row
+                        }
+
+                        header = tags$th(
+                                         tags$td('Studio'),
+                                         tags$td('Shows predicted correctly'),
+                                         tags$td('Total shows animated'),
+                                         tags$td('Proportion of shows predicted correctly')
+                                         )
+                        htmlTable = tags$table(
+                                               class='studio_acc_table',
+                                               header,
+                                               rows
+                                               )
+
+                        return(htmlTable)
+                    })
+                }
+
 
                 # Create plots for the summary tab.
                 plotSuffix = paste('plot', 1, '_', sep='')
@@ -844,6 +886,7 @@ shinyServer(
                                   })
                        })
                 output[['table_predictions']] = createPredictionsTable()
+                output[['table_studio_acc']] = createStudioPredictionsTable()
 
                 # These are output elements for the images in the 'Performance'
                 # tab of the 'Predictions' page.

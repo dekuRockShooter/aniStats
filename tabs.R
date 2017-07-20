@@ -330,6 +330,7 @@ createPerformanceTab = function(name, tabIdx) {
 
     tabPanel(
              name,
+             htmlOutput('table_studio_acc'),
              imgDivs,
              value=tabIdx
              )

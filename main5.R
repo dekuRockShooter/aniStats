@@ -734,7 +734,7 @@ studioMedScoresMat = lapply(
                                                   ], na.rm=TRUE)
                                        })
                             })
-rm(years); rm(gloStudio); rm(gloYear); rm(gloScore)
+rm(years); rm(gloYear); rm(gloScore); rm(gloStudio)
 studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
 # Not the current year
@@ -742,6 +742,26 @@ defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
 globalData = init_data(globalDS, globalDS, NULL)
 globalMedScore = median(globalDS$score)
 globalMedViews = median(globalDS$tot_watched)
+
+# This block calculates the prediction accuracy for each studio.
+studioNames = sort(levels(globalDS$studio), decreasing=FALSE)
+studioAcc = numeric(length(studioNames))
+studioCount = numeric(length(studioNames))
+for (idx in which(globalDS$type == 'TV')) {
+    studioIdx = which(studioNames == globalDS$studio[idx])
+    outcome = globalDS$predicted_correctly[idx]
+    studioAcc[studioIdx] = studioAcc[studioIdx] + outcome
+    studioCount[studioIdx] = studioCount[studioIdx] + 1
+}
+which0 = which(studioCount == 0)
+studioAcc = studioAcc[-which0]
+studioCount = studioCount[-which0]
+studioNames = studioNames[-which0]
+rm(which0)
+# perfrcSortedIndeces stores the indeces of the studios,
+# sorted by decreasing performance.
+studioPerf = round(studioAcc / studioCount, 2)
+perfSortedIndeces = order(studioPerf, decreasing=TRUE)
 
 # I don't remember what these variables were meant for.
 #globalTimeline = list()
