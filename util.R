@@ -229,10 +229,15 @@ get_timeline = function(statistic, vec, times) {
 #       'mean': calculate the mean score for a genre at a year
 #       'count': count the number of ones present in a genre for a year
 #
+#   col_indeces:
+#      A vector of columns of 'data' for which to calculate the metric
+#      for.
+#
 # Return:
-#    A matrix with length(years) rows and one column per genre.  Entry
-#   (j, k) is the value of the metric for genre k at year j.
-get_genre_freqs = function(data, years, metric, col_idx=-1) {
+#    A matrix with length(years) rows and length(col_indeces) columns.
+#    Entry (j, k) is the value of the metric for data[, col_indeces[k]]
+#    at year j.
+get_genre_freqs = function(data, years, metric, col_indeces, col_idx=-1) {
     freq_mat = lapply(years,
                       function(year) {
                           D = data[data$year == year, ]
@@ -242,7 +247,7 @@ get_genre_freqs = function(data, years, metric, col_idx=-1) {
                           else {
                               col = D$score
                           }
-                          sapply(GENRE_COLS,
+                          sapply(col_indeces,
                                  function(genre_idx) {
                                      if (metric == 'count') {
                                          sum(D[, genre_idx])
@@ -344,18 +349,18 @@ get_alpha_props = function(props, alpha) {
 # genre columns.  T is nrow(test) x 39 dimensional.  The rows in T
 # correspond to those in test.  The values are those of the last row of
 # the score matrix for data plus the trendline slope.
-transform_genres = function(data, from_year, to_year, test=NULL) {
+transform_genres = function(data, from_year, to_year, genre_cols, test=NULL) {
     mat = matrix(0.0, nrow=nrow(data), ncol=39)
     test_mat = NULL
     if (!is.null(test)) test_mat = matrix(0.0, nrow=nrow(test), ncol=39)
-    genre_cols = GENRE_COLS
     sapply(unique(data$studio),
            function(val) {
                wval = which(data$studio == val)
                #gmat = f(data[wval, ], from_year, to_year, 5)
                gmat = get_genre_freqs(data[wval, ],
                                       from_year : to_year,
-                                      metric='mean')
+                                      metric='mean',
+                                      genre_cols)
 
                # Get data for test set.
                if (!is.null(test)) {
