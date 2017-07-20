@@ -765,6 +765,12 @@ shinyServer(
                                      round(100.0 * nwrong / nrows, 2), '%',
                                      sep=''
                                      )
+                        header = tags$tr(
+                                         tags$th('Name'),
+                                         tags$th('Studio'),
+                                         tags$th('Actual score'),
+                                         tags$th('Prediction')
+                                         )
                         htmlTable = tags$table(
                                                class='predictions_table',
                                                res1,
@@ -776,7 +782,8 @@ shinyServer(
                                                res4,
                                                tags$br(),
                                                tags$br(),
-                                               rows
+                                               tags$thead(header),
+                                               tags$tbody(rows)
                                                )
 
                         return(htmlTable)

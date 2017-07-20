@@ -8,10 +8,28 @@ table, td, th {
 }
 
 table {
-    border-collapse: collapse;
     width: 100%;
+    border-collapse: collapse;
 }
 
 th, td {
     padding: 15px;
 }
+
+
+.predictions_table thead th {
+    width: 25%;
+}
+
+.predictions_table thead, .predictions_table tbody {
+    display: block; /* This allows scrollably body and fixed header */
+    width: 100%;
+    margin: auto;
+}
+
+/* Make the table body scrollable. */
+.predictions_table tbody {
+    overflow-y: scroll;
+    height: 80vh;
+}
+
