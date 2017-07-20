@@ -38,7 +38,9 @@
 }
 
 .hover_plot .hover_help .plot_help_text {
+    max-height: 10em;
     width: 50vw;
+    overflow-y: auto;
 }
 
 /* Show hover_options on hover_plot hover. */
