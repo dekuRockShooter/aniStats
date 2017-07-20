@@ -809,15 +809,15 @@ shinyServer(
                             rows[[length(rows) + 1]] = row
                         }
 
-                        header = tags$th(
-                                         tags$td('Studio'),
-                                         tags$td('Shows predicted correctly'),
-                                         tags$td('Total shows animated'),
-                                         tags$td('Proportion of shows predicted correctly')
+                        header = tags$tr(
+                                         tags$th('Studio'),
+                                         tags$th('Shows predicted correctly'),
+                                         tags$th('Total shows animated'),
+                                         tags$th('Proportion of shows predicted correctly')
                                          )
                         htmlTable = tags$table(
                                                class='studio_acc_table',
-                                               header,
+                                               tags$thead(header),
                                                rows
                                                )
 
