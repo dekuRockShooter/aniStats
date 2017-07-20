@@ -773,20 +773,23 @@ shinyServer(
                                          )
                         htmlTable = tags$table(
                                                class='predictions_table',
-                                               res1,
-                                               tags$br(),
-                                               res2,
-                                               tags$br(),
-                                               res3,
-                                               tags$br(),
-                                               res4,
-                                               tags$br(),
-                                               tags$br(),
                                                tags$thead(header),
                                                tags$tbody(rows)
                                                )
+                        element = tags$div(
+                                           res1,
+                                           tags$br(),
+                                           res2,
+                                           tags$br(),
+                                           res3,
+                                           tags$br(),
+                                           res4,
+                                           tags$br(),
+                                           tags$br(),
+                                           htmlTable
+                                           )
 
-                        return(htmlTable)
+                        return(element)
                     })
                 }
 
