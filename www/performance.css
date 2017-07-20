@@ -25,5 +25,5 @@
 /* Make the table body scrollable. */
 #table_studio_acc tbody {
     height: 75vh;
-    overflow-y: scroll;
+    overflow: scroll;
 }

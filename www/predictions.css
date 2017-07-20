@@ -29,7 +29,7 @@ th, td {
 
 /* Make the table body scrollable. */
 .predictions_table tbody {
-    overflow-y: scroll;
+    overflow: scroll;
     height: 80vh;
 }
 
