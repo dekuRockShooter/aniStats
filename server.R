@@ -818,7 +818,7 @@ shinyServer(
                         htmlTable = tags$table(
                                                class='studio_acc_table',
                                                tags$thead(header),
-                                               rows
+                                               tags$tbody(rows)
                                                )
 
                         return(htmlTable)

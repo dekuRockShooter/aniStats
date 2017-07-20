@@ -7,9 +7,23 @@
     margin: auto;
 }
 
-#table_studio_acc {
-    height: 400px;
+
+/*
+ * Have all cells be of equal width for the time being.
+ * This makes the table header and rows align properly.
+ * */
+#table_studio_acc td, #table_studio_acc th {
+    width: 25%;
+}
+
+#table_studio_acc thead, #table_studio_acc tbody {
+    display: block; /* This allows scrollably body and fixed header */
     width: 80%;
     margin: auto;
+}
+
+/* Make the table body scrollable. */
+#table_studio_acc tbody {
+    height: 400px;
     overflow-y: scroll;
 }
