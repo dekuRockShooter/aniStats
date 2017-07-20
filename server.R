@@ -269,8 +269,8 @@ shinyServer(
                                           data$years,
                                           globalPerf, # median
                                           curType$qscore_timeline[, 3], # median
-                                          title='Mean score throughout time',
-                                          ylab='Mean score',
+                                          title='Median score throughout time',
+                                          ylab='Median score',
                                           timeline_mat=timeline_mat,
                                           ylim=ylim,
                                           xlim=xlim
@@ -310,8 +310,8 @@ shinyServer(
                                           data$years,
                                           globalPerf,
                                           curType$qview_timeline[, 3],
-                                          title='Mean views throughout time',
-                                          ylab='Mean views',
+                                          title='Median views throughout time',
+                                          ylab='Median views',
                                           timeline_mat=timeline_mat,
                                           ylim=ylim,
                                           xlim=xlim
@@ -350,8 +350,8 @@ shinyServer(
                                           data$years,
                                           globalPerf,
                                           curType$qeps_timeline[, 3],
-                                          title='Mean episodes throughout time',
-                                          ylab='Mean episodes',
+                                          title='Median episodes throughout time',
+                                          ylab='Median episodes',
                                           timeline_mat=timeline_mat,
                                           ylim=ylim,
                                           xlim=xlim

@@ -208,9 +208,11 @@ get_type_data = function(data, glo_data, category) {
     } else if (category == category_enum$CATEGORY_GENRE) {
         # Get timeline matrices for genres and their slopes.
         score_mat = get_genre_freqs(data, years, 'median',
+                                    GENRE_COLS,
                                     col_idx=which(names(data) == 'score'))
-        count_mat = get_genre_freqs(data, years, 'count')
+        count_mat = get_genre_freqs(data, years, 'count', GENRE_COLS)
         view_mat = get_genre_freqs(data, years, 'median',
+                                   GENRE_COLS,
                                    col_idx=which(names(data) == 'tot_watched'))
         class_names = sort(names(data)[GENRE_COLS], decreasing=FALSE)
     }
@@ -337,8 +339,8 @@ init_data = function(data, glo_data, studio) {
 gprop_vs_genre = function(gprops, gcolors) {
     barplot(
             100*gprops, space=0, las=2, col=gcolors,
-            ylab='Frequency of genre (%)',
-            main='Genres by frequency'
+            ylab='Proportion of shows',
+            main='Overall proportions'
             )
 }
 #w = order(gprops, decreasing=TRUE)
@@ -353,8 +355,8 @@ mean_gscore_vs_genre = function(mean_gscores, gcolors, global_med_score) {
     #barplot(sort(score_means, decreasing=TRUE), space=0, las=2,
             #col=gcolors[order(score_means, decreasing=TRUE)])
     barplot(mean_gscores, space=0, las=2, col=gcolors,
-            ylab='Mean score',
-            main='Genres by mean score')
+            ylab='Median score',
+            main='Overall median scores')
     abline(h=median(mean_gscores, na.rm=TRUE), lty='dashed', col='black')
     abline(h=global_med_score, lty='dotted', col='black')
 }
@@ -374,15 +376,15 @@ gprop_vs_year = function(years, gprops, gscores, max_prop, minmax_scores,
     if (is.null(ylim)) ylim = c(0.0, max_prop)
     plot(years, gprops, type='b', ylim=ylim, xlim=xlim,
          xlab='years',
-         ylab='Frequency of genre',
-         main='Genre frequency throughout time')
+         ylab='Proportion',
+         main='Performance throughout time')
     axis(side=4,
          at=seq(0.0, max_prop, length=8),
          labels=round(seq(minmax_scores[1], minmax_scores[2], length=8), 1))
     b1 = max_prop/(minmax_scores[2] - minmax_scores[1])
     b0 = -b1 * minmax_scores[1]
     lines(years, b0 + b1*gscores, lty='dashed', type='b', col='#303030',
-          ylab='Mean score')
+          ylab='Median score')
 }
 #gprop_vs_year(years, gprop_mat[, 1], data$gscore_mat[, 1], max(gprop_mat))
 
@@ -396,9 +398,9 @@ gscore_vs_gview = function(mean_gviews, mean_gscores, gcolors,
                            glabels, ylim=NULL, xlim=NULL) {
     plot(
          mean_gviews, mean_gscores, type='n',
-         ylab='Mean score (quality)',
-         xlab='Mean views (popularity)',
-         main='Genre popularity and quality',
+         ylab='Median score (quality)',
+         xlab='Median views (popularity)',
+         main='Popularity and quality',
          ylim=ylim,
          xlim=xlim
          )
@@ -422,9 +424,9 @@ gscore_vs_gprop = function(gprops, mean_gscores, global_med_score, gcolors,
                            glabels, ylim=NULL, xlim=NULL) {
     plot(
          gprops, mean_gscores, type='n',
-         main='Genre quantity and quality',
-         xlab='Frequency of genre (quantity)',
-         ylab='Mean score (quality)',
+         main='Quantity and quality',
+         xlab='Proportion (quantity)',
+         ylab='Median score (quality)',
          ylim=ylim,
          xlim=xlim
          )
@@ -449,9 +451,9 @@ gscore_slope_vs_gprop_slope = function(gcount_slopes, gscore_slopes,
                                        ylim=NULL, xlim=NULL) {
     plot(
          gcount_slopes, gscore_slopes, type='n',
-         main='Forecast of genre quality and quantity',
+         main='Forecast of quality and quantity',
          xlab='Change in frequency',
-         ylab='Change in mean score',
+         ylab='Change in median score',
          ylim=ylim,
          xlim=xlim
          )
@@ -500,7 +502,7 @@ numtype_vs_year = function(years, cat_freq_mat, categories) {
     barplot(cat_freq_mat, names.arg=years, col=rainbow(length(categories)),
             legend.text=categories, args.legend=list(x='topleft'),
             border=NA,
-            main='Proportions of anime types',
+            main='Proportions',
             xlab='year')
 }
 #numtype_vs_year(years, dataset)
@@ -529,14 +531,14 @@ score_vs_dominance = function(years, perf_mat, ylim=NULL, xlim=NULL) {
     cur_year = as.integer(format(Sys.time(), '%Y'))
     ycolors = sapply(years,
                      function(year) {
-                         if (year > (cur_year - 6)) 'yellow'
-                         else if (year > (cur_year - 11)) 'brown'
-                         else '#a0a0a0'
+                         if (year > (cur_year - 6)) 'red'
+                         else if (year > (cur_year - 11)) 'blue'
+                         else 'black'
                      })
     plot(perf_mat[, 2], perf_mat[, 3], type='n',
          main='Performance throughout time: from a different angle',
          xlab='Proportion of studios that produced fewer anime',
-         ylab='Proportion of studios with lower mean scores',
+         ylab='Proportion of studios with lower median scores',
          ylim=ylim,
          xlim=xlim
          )
