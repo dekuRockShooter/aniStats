@@ -76,8 +76,27 @@ createOptionsPanel = function() {
                                 )
                     ),
              column(
-                    4,
+                    2,
+                    selectInput(
+                                inputId='fromYearSelectId',
+                                label='Select start year',
+                                choices=1990 : 2016,
+                                selected='1990'
+                                )
+                    ),
+             column(
+                    2,
+                    selectInput(
+                                inputId='toYearSelectId',
+                                label='Select end year',
+                                choices=1990 : 2016,
+                                selected='2016'
+                                )
+                    ),
+             column(
+                    2,
                     actionButton('changeDataActionButton', 'Done')
                     )
+
              )
 }

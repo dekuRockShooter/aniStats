@@ -29,6 +29,8 @@ shinyServer(
                         genre = input$genreSelectId
                         src = input$sourceSelectId
                         type = input$typeSelectId
+                        fromYear = as.integer(input$fromYearSelectId)
+                        toYear = as.integer(input$toYearSelectId)
                         localDS = globalDS
 
                         # These if-blocks gradually decrease the data set
@@ -57,6 +59,11 @@ shinyServer(
                         if (type != 'Any type') {
                             localDS = localDS[localDS$type == type, ]
                         }
+                        # Filter data set by year.
+                        localDS = localDS[
+                                          !(localDS$year < fromYear) &
+                                              !(localDS$year > toYear),
+                                          ]
 
                         if (nrow(localDS) != nrow(globalDS)) {
                             localDS = init_data(localDS, globalDS, studio)
@@ -64,6 +71,7 @@ shinyServer(
                         else {
                             localDS = globalData
                         }
+
                         return(localDS)
                     },
                     ignoreNULL = FALSE
