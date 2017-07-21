@@ -250,8 +250,18 @@ get_type_data = function(data, glo_data, category, years) {
     # This line causes barplots to render incorrectly.
     #prop_mat[prop_mat < 1e-10] = NaN
 
-    score_slopes = get_trendline(score_mat, byrow=FALSE, onlysig=FALSE)
-    prop_slopes = get_trendline(prop_mat, byrow=FALSE, onlysig=FALSE)
+    # Trendlines can only be calculated if the data spans at least two years.
+    # If this is not the case, then the slopes are set to 0.
+    score_slopes = NULL
+    prop_slopes = NULL
+    if (nrow(prop_mat) == 1) {
+        score_slopes = rep(0, times=ncol(prop_mat))
+        prop_slopes = rep(0, times=ncol(prop_mat))
+    }
+    else {
+        score_slopes = get_trendline(score_mat, byrow=FALSE, onlysig=FALSE)
+        prop_slopes = get_trendline(prop_mat, byrow=FALSE, onlysig=FALSE)
+    }
 
     core_classes = get_core_genres(count_mat, 0.5)
 
