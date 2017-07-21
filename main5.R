@@ -98,53 +98,63 @@ get_overall_data = function(data, glo_data, cur_studio) {
     D_year = as.integer(D$year)
     D_studio = as.character(D$studio)
     gloDS_year = as.integer(D$year)
+    min_gloDS_year = min(gloDS_year)
+    freq_vec = NULL
+    sm = NULL
+    sw = NULL
+    sum_swgt0 = NULL
+    # This is a vector of data to get frequencies of.  If 'cur_studio'
+    # is null, then this holds years, so that 'freq_vec' will store
+    # counts of the number of shows for each year.  If 'cur_studio'
+    # is not null, then this holds studios, so that 'freq_vec' will
+    # store counts of the number of shows produced by each studio.
+    x = NULL
+    if (is.null(cur_studio)) {
+        x = D_year
+        freq_vec = table(x)
+        # Median of studio median scores for each year.
+        sm = apply(studioMedScoresMat, 1,
+                   function(row) median(row, na.rm=TRUE))
+        # Number of studios for each year.
+        sw = apply(studioMedScoresMat, 1,
+                   function(row) length(na.omit(row)))
+        sum_swgt0 = sum(sw > 0)
+    }
     perf_mat = lapply(years,
                 function(year) {
                     year_idx <<- year_idx + 1
                     wyear = which(D_year == year)
                     ss = NULL
-                    studios = NULL
-                    studio_counts = NULL
+                    #freq_vec = NULL
                     if (is.null(cur_studio)) {
-                        # Pull these out to reduce repetitive calculations.
-                        studios = D_year # All rows
-                        studio_counts = table(studios)
-                        wyear = 1 : nrow(D) # This extra array can be removed.
-
-                        cur_studio_count = studio_counts[as.character(year)]
-                        cur_studio_count = as.integer(cur_studio_count)
-                        yr = year - min(gloDS_year) + 1 # 1-based index
-                        # Median of studio median scores for each year.
-                        sm = apply(studioMedScoresMat, 1,
-                                   function(row) median(row, na.rm=TRUE))
-                        # Number of studios for each year.
-                        sw = apply(studioMedScoresMat, 1,
-                                   function(row) length(na.omit(row)))
+                        cur_x_freq = freq_vec[as.character(year)]
+                        cur_x_freq = as.integer(cur_x_freq)
+                        yr = year - min_gloDS_year + 1 # 1-based index
                         # Number of years worse than yr /
                         # Number of years
-                        ss = sum(sm < sm[yr], na.rm=TRUE)/sum(sw > 0)
+                        ss = sum(sm < sm[yr], na.rm=TRUE)/sum_swgt0
                     }
                     else {
-                        studios = D_studio[wyear]
-                        studio_counts = table(studios)
-                        cur_studio_count = studio_counts[cur_studio]
-                        cur_studio_count = as.integer(cur_studio_count)
-                        yr = year - min(gloDS_year) + 1 # 1-based index
+                        x = D_studio[wyear]
+                        freq_vec = table(x)
+                        cur_x_freq = freq_vec[cur_studio]
+                        cur_x_freq = as.integer(cur_x_freq)
+                        yr = year - min_gloDS_year + 1 # 1-based index
                         ss = sum(studioMedScoresMat[yr, ] < 
                                  qscore_timeline[year_idx, Q50_IDX],
                                  na.rm=TRUE)/
                         length(na.omit(studioMedScoresMat[yr, ]))
                     }
-                    studio_counts = as.integer(studio_counts)
+                    freq_vec = as.integer(freq_vec)
                     # Proportion percentile.
-                    a = sum(studio_counts[!(studio_counts > cur_studio_count)],
+                    a = sum(freq_vec[!(freq_vec > cur_x_freq)],
                             na.rm=TRUE)
                     # proportion.
-                    l = cur_studio_count/length(studios)
+                    l = cur_x_freq/length(x)
                     # Mean score percentile.
                     #ss = sum(D$score[wyear] <
                              #qscore_timeline[year_idx, QMEAN_IDX])/
-                    c(l, a/sum(studio_counts), ss)
+                    c(l, a/sum(freq_vec), ss)
                 })
     perf_mat = do.call(rbind, perf_mat)
     perf_mat[perf_mat < 1e-8] = NaN
