@@ -96,7 +96,8 @@ createOptionsPanel = function() {
              column(
                     2,
                     actionButton('changeDataActionButton', 'Done')
-                    )
+                    ),
+             htmlOutput('warning_space')
 
              )
 }

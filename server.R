@@ -9,6 +9,14 @@ source('constants.R')
 
 shinyServer(
             function(input, output) {
+                # This is the current data being displayed.  It is the
+                # exact same object that is returned by reactiveDataChange().
+                # Its purpose is to provide a backup for those cases when
+                # the new data set is empty.  When this happens, 'locData'
+                # can be used to keep displaying the data instead of showing
+                # nothing or unexpectadly changing the data to 'globalData'.
+                locData = globalData
+
                 # Initialization of data specific to the current user.
                 # Executed once for every user.
                 #dataset = D[(D$studio == cur_studio), ]
@@ -65,6 +73,14 @@ shinyServer(
                                               !(localDS$year > toYear),
                                           ]
 
+                        # The filtered data might yield an empty set.  In
+                        # this case, keep showing the current data (locData)
+                        # but signal that the filtered data is empty.
+                        if ((nrow(localDS) == 0)) {
+                            locData$badQry = TRUE
+                            return(locData)
+                        }
+
                         if (nrow(localDS) != nrow(globalDS)) {
                             localDS = init_data(localDS, globalDS, studio)
                         }
@@ -72,6 +88,8 @@ shinyServer(
                             localDS = globalData
                         }
 
+                        localDS$badQry = FALSE
+                        locData <<- localDS
                         return(localDS)
                     },
                     ignoreNULL = FALSE
@@ -919,6 +937,26 @@ shinyServer(
                 })
                 output[['fn_vs_stucnt']] = renderImage(deleteFile=FALSE, {
                     list(src='www/fn_vs_stucnt.png')
+                })
+
+                # This UI output displays a warning message when as error
+                # occurs.  It listens to data set changes (reactiveDataChange)
+                # and displays a message depending on the badQry field.
+                output[['warning_space']] = renderUI({
+                    data = reactiveDataChange()
+                    msg = NULL
+
+                    if (data$badQry == TRUE) {
+                        msg = tags$p(
+                                     id='warningText',
+                                     'Warning: No results found.  The data has not changed!'
+                                     )
+                    }
+                    else {
+                        msg = tags$p()
+                    }
+
+                    return(msg)
                 })
 
                 rm(plotSuffix)
