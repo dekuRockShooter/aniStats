@@ -288,22 +288,73 @@ get_genre_freqs = function(data, years, metric, col_indeces, col_idx=-1) {
 #   The j'th element is the slope of the line fit through the j'th row
 #   or column.
 get_trendline = function(mat, byrow=TRUE, onlysig=TRUE) {
-    order = if (byrow) 1 else 2
-    apply(mat,
-          order,
-          function(vec) {
-              if (length(na.omit(vec)) < 2) return(0.0)
-              line = lm(y ~ x, data=data.frame(y=vec, x=1:length(vec)))
-              smry = summary(line)$coefficients['x', ]
-              pval = smry[4]
-              # Return the slope if it's not zero.
-              if (onlysig) {
-                  m = if (!is.na(pval) && (pval < 0.05)) smry[1] else 0.0
-                  return(m)
-              }
-              m = if (!is.na(pval)) smry[1] else 0.0
-              return(m)
-          })
+    # This is a linear least squares implementation to find the regression
+    # line through the columns of 'mat'.  This is much faster than R's
+    # lm() function, since that is tailored to handle general matrices,
+    # while this function takes advantage of the properties specific to
+    # 'mat'.  For comparison, the call to lm() that performs the equivalent
+    # code to this function is commented out at the end of sapply().
+    # It's a simple one liner, but it is many times slower.
+
+    # Linear least squares (LLS) for this problem results in solving for
+    # z1 and z2 in the following matrix equation:
+    #
+    #   [length(x) sum(x)  ] [z1] [sum(y)  ]
+    #   [                  ]*[  ]=[        ]
+    #   [sum(x)    sum(x^2)] [z2] [sum(y*x)]
+    #
+    #  = Az = b
+
+    # These variables are initialized assuming y has no NA values.
+    # These are cached so that when y has no NA values, there is no
+    # need to recompute these values.
+    x = 1 : nrow(mat)
+    A = matrix(nrow=2, ncol=2)
+    A[1, 1] = length(x)
+    A[1, 2] = sum(x)
+    A[2, 1] = A[1, 2]
+    A[2, 2] = sum(x^2)
+    b = numeric(2)
+    sapply(
+           1 : ncol(mat),
+           function(col_idx) {
+               y = as.numeric(mat[, col_idx])
+               y[y < 1e-10] = NA
+               wna = which(is.na(y))
+
+               # When y has NA values, they and the corresponding x values
+               # are removed.  Since x serves as a fixed cache, t is set to
+               # it in case elements need to be removed.  Also in this case,
+               # A needs to be recomputed, since its entries depend on x.
+               # Since A acts as a fixed cache, a is set to it in case it
+               # needs to be recomputed based on t.
+               t = x
+               a = A
+               if (length(wna) > 0) {
+                   y = y[-wna]
+                   # Need at least 2 variables for regression.
+                   if (length(y) < 2) return(0.0)
+
+                   # This is the behavior of lm().
+                   t = x[-wna]
+                   # This gives higher slopes since the points are closer
+                   # to eachother.
+                   #t = x[1 : length(y)]
+
+                   a[1, 1] = length(t)
+                   a[1, 2] = sum(t)
+                   a[2, 1] = a[1, 2]
+                   a[2, 2] = sum(t^2)
+               }
+               b[1] = sum(y)
+               b[2] = sum(y * t) # t == x when y has no NAs.
+               slope = solve(a, b)[2] # a == A when y has no NAs.
+
+               return(slope)
+
+               # This does the same as the above, but is too slow.
+               #coef(lm(y ~ x, data.frame(y=y, x=x)))[2]
+           })
 }
 
 get_best_genres = function(mat) {
