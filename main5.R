@@ -67,7 +67,7 @@ init_anime = function() {
                                        1)
     rm(FP)
     rm(FN)
-    return(Anime)
+    return(Anime[which(Anime$year > 1989), ])
 }
 
 get_overall_data = function(data, glo_data, cur_studio) {
@@ -166,9 +166,7 @@ get_overall_data = function(data, glo_data, cur_studio) {
     return(overall)
 }
 
-get_type_data = function(data, glo_data, category) {
-    D = glo_data
-    years = min(data$year) : max(data$year)
+get_type_data = function(data, glo_data, category, years) {
     data_year = as.integer(data$year)
 
     get_category_metric = function(year, cat_vec, categories, metric='count',
@@ -316,16 +314,21 @@ init_data = function(data, glo_data, studio) {
     genres = list()
     types = list()
     sources = list()
+    years = min(data$year) : max(data$year)
     overall = get_overall_data(data, glo_data, studio)
-    types = get_type_data(data, glo_data, category_enum$CATEGORY_TYPE)
-    sources = get_type_data(data, glo_data, category_enum$CATEGORY_SOURCE)
-    genres = get_type_data(data, glo_data, category_enum$CATEGORY_GENRE)
+    types = get_type_data(data, glo_data, category_enum$CATEGORY_TYPE,
+                          years)
+    sources = get_type_data(data, glo_data, category_enum$CATEGORY_SOURCE,
+                            years)
+    genres = get_type_data(data, glo_data, category_enum$CATEGORY_GENRE,
+                           years)
     studios = NULL
     if (is.null(studio)) {
-        studios = get_type_data(data, glo_data, category_enum$CATEGORY_STUDIO)
+        studios = get_type_data(data, glo_data,
+                                category_enum$CATEGORY_STUDIO,
+                                years)
     }
 
-    years = min(data$year) : max(data$year)
 
     ret_list = list(
                     overall=overall,
