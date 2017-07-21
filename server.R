@@ -230,16 +230,18 @@ shinyServer(
                             }
                             else {
                                 indeces = which(
-                                                (globalDS$type == 'TV') &
-                                                    (
-                                                     (globalDS$year == year) &
-                                                         (globalDS$month %in% c(1, 2))
-                                                     ) |
-                                                (
-                                                 (globalDS$year == (year - 1)) &
-                                                     (globalDS$month == 12)
-                                                 )
-                                                )
+                                    (globalDS$type == 'TV') &
+                                        (
+                                         (
+                                          (globalDS$year == year) &
+                                              (globalDS$month %in% c(1, 2))
+                                          ) |
+                                         (
+                                          (globalDS$year == (year - 1)) &
+                                              (globalDS$month == 12)
+                                          )
+                                         )
+                                    )
                             }
 
                             return(indeces)
@@ -722,25 +724,11 @@ shinyServer(
                         columns = which(
                                         names(globalDS) %in%
                                             c('name', 'score', 'studio',
-                                              'predicted_correctly')
+                                              'yhats', 'predicted_correctly')
                                         )
 
                         table = globalDS[indeces, columns]
                         outcomes = table$predicted_correctly
-                        scores = table$score
-                        # Determine the predictions for each show.  There are
-                        # four possibilities:
-                        # outcome | score | prediction
-                        #    1       < 7       0 (correctly predicted 0)
-                        #    1       >= 7      1 (correctly predicted 1)
-                        #    0       < 7       1 (incorrectly predicted 1)
-                        #    0       >= 7      0 (incorrectly predicted 0)
-                        yhats = ifelse(
-                                       ((outcomes == 1) & !(scores < 7.0)) |
-                                           ((outcomes == 0) & (scores < 7.0)),
-                                       1,
-                                       0
-                                       )
 
                         # Build an HTML table.  The rows are shows.  If
                         # a show's score was correctly predicted, then
@@ -757,16 +745,16 @@ shinyServer(
                             # that the row belongs to.  The last cell
                             # after this loop is the prediction made.
                             # by the classifier.
-                            for (colIdx in 1 : (ncol(table) - 1)) {
+                            for (colIdx in 1 : (ncol(table) - 2)) {
                                 cell = tags$td(table[rowIdx, colIdx])
                                 cells[[length(cells) + 1]] = cell
                             }
-                            cell = tags$td(yhats[rowIdx])
+                            cell = tags$td(table$yhats[rowIdx])
                             cells[[length(cells) + 1]] = cell
 
                             # Determine the row's class.
                             row = NULL
-                            if (table[rowIdx, ncol(table)] == 1) {
+                            if (table[rowIdx, ncol(table) - 1] == 1) {
                                 row = tags$tr(class='correct_row', cells)
                             }
                             else {

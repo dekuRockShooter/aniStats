@@ -53,10 +53,6 @@ init_anime = function() {
     colnames(Anime) = colnames(header)
     Anime = na.omit(Anime)
     Anime$studio = factor(Anime$studio)
-    Anime = data.frame(
-                       Anime,
-                       num_genres=get_num_genres(Anime)
-                       )
 
     load('fp.Rdata')
     load('fn.Rdata')
@@ -67,6 +63,26 @@ init_anime = function() {
                                        1)
     rm(FP)
     rm(FN)
+
+    # Determine the predictions for each show.  There are
+    # four possibilities:
+    # outcome | score | prediction
+    #    1       < 7       0 (correctly predicted 0)
+    #    1       >= 7      1 (correctly predicted 1)
+    #    0       < 7       1 (incorrectly predicted 1)
+    #    0       >= 7      0 (incorrectly predicted 0)
+    #
+    # Thus, 1 if (outcome == 1 AND score >= 7) OR (outcome == 0 AND score < 7)
+    # otherwise 0.
+    outcomes = Anime$predicted_correctly
+    scores = Anime$score
+    yhats = ifelse(
+                   ((outcomes == 1) & !(scores < 7.0)) |
+                       ((outcomes == 0) & (scores < 7.0)),
+                   1,
+                   0
+                   )
+    Anime$yhats = yhats
     return(Anime[which(Anime$year > 1989), ])
 }
 
