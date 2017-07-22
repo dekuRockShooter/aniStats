@@ -132,9 +132,9 @@ get_overall_data = function(data, glo_data, cur_studio) {
         sm = apply(studioMedScoresMat, 1,
                    function(row) median(row, na.rm=TRUE))
         # Number of studios for each year.
-        sw = apply(studioMedScoresMat, 1,
-                   function(row) length(na.omit(row)))
-        sum_swgt0 = sum(sw > 0)
+        #sw = apply(studioMedScoresMat, 1,
+                   #function(row) length(na.omit(row)))
+        sum_swgt0 = sum((sm > 0) & !(is.na(sm)))
     }
     perf_mat = lapply(years,
                 function(year) {
@@ -148,7 +148,7 @@ get_overall_data = function(data, glo_data, cur_studio) {
                         yr = year - min_gloDS_year + 1 # 1-based index
                         # Number of years worse than yr /
                         # Number of years
-                        ss = sum(sm < sm[yr], na.rm=TRUE)/sum_swgt0
+                        ss = sum(!(sm > sm[yr]), na.rm=TRUE)/sum_swgt0
                     }
                     else {
                         x = D_studio[wyear]
@@ -167,9 +167,7 @@ get_overall_data = function(data, glo_data, cur_studio) {
                             na.rm=TRUE)
                     # proportion.
                     l = cur_x_freq/length(x)
-                    # Mean score percentile.
-                    #ss = sum(D$score[wyear] <
-                             #qscore_timeline[year_idx, QMEAN_IDX])/
+                    # prop, prop percentile, score percentile.
                     c(l, a/sum(freq_vec), ss)
                 })
     perf_mat = do.call(rbind, perf_mat)
@@ -762,19 +760,31 @@ years = min(globalDS$year) : max(globalDS$year)
 gloStudio = as.character(globalDS$studio)
 gloYear = as.integer(globalDS$year)
 gloScore = as.numeric(globalDS$score)
+#yearIndeces = lapply(years, function(year) which(gloYear == year))
+#yearIndeces = do.call(rbind, yearIndeces)
+Rprof()
 studioMedScoresMat = lapply(
                             sort(as.character(levels(globalDS$studio)),
                                  decreasing=FALSE),
                             function(studio) {
-                                locScore = gloScore[gloStudio == studio]
-                                locYear = gloYear[gloStudio == studio]
+                                wstu = which(gloStudio == studio)
+                                locScore = gloScore[wstu]
+                                locYear = gloYear[wstu]
+                                y = 0
                                 sapply(years,
                                        function(year) {
-                                           median(locScore[
-                                                  (locYear == year)
-                                                  ], na.rm=TRUE)
+                                           y <<- y + 1
+                                           wyr = which(locYear == year)
+                                           #wyr = yearIndeces[[y]]
+                                           if (length(wyr) == 0) NA
+                                           else median(locScore[wyr],
+                                                       na.rm=TRUE)
+                                           #median(locData$score[
+                                                  #(locData$year == year)
+                                                  #], na.rm=TRUE)
                                        })
                             })
+Rprof(NULL)
 rm(years); rm(gloYear); rm(gloScore); rm(gloStudio)
 studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
