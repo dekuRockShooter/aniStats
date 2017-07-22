@@ -89,9 +89,10 @@ init_anime = function() {
     return(Anime[which(Anime$year > 1989), ])
 }
 
-get_overall_data = function(data, glo_data, cur_studio) {
+get_overall_data = function(data, glo_data, cur_studio, category, label) {
     D = glo_data
     years = min(data$year) : max(data$year)
+    studioMedScoresMat = createMedScoresMat(glo_data, category, label)
     overall = list()
 
     get_quantiles = function(year, vec) {
@@ -336,13 +337,13 @@ get_type_data = function(data, glo_data, category, years) {
 
 # 'data' is a data frame of the data of interest, for example, of all shows
 # made by a specific studio.
-init_data = function(data, glo_data, studio) {
+init_data = function(data, glo_data, studio, category='', instance=NULL) {
     D = glo_data
     genres = list()
     types = list()
     sources = list()
     years = min(data$year) : max(data$year)
-    overall = get_overall_data(data, glo_data, studio)
+    overall = get_overall_data(data, glo_data, studio, category, instance)
     types = get_type_data(data, glo_data, category_enum$CATEGORY_TYPE,
                           years)
     sources = get_type_data(data, glo_data, category_enum$CATEGORY_SOURCE,
@@ -759,43 +760,52 @@ sapply(GENRE_COLS,
            globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
 
 # Matrix of median scores for each studio (columns) per year (rows).
-Rprof()
-years = min(globalDS$year) : max(globalDS$year)
-minYear = years[1] - 1
-gloYear = as.integer(globalDS$year)
-gloScore = as.numeric(globalDS$score)
-stuIndeces = lapply(1 : length(levels(globalDS$studio)),
-                    function(stu) which(globalDS$studioEnum == stu))
-years2 = lapply(1 : length(years), function(j) c())
-studioMedScoresMat = lapply(
-                            1 : length(levels(globalDS$studio)),
-                            function(studio) {
-                                wstu = stuIndeces[[studio]]
-                                locScore = gloScore[wstu]
-                                locYear = gloYear[wstu]
-                                y = 0
-                                yrs = years2
-                                for (idx in 1 : length(wstu)) {
-                                    yridx = locYear[idx] - minYear
-                                    yrs[[yridx]] = c(yrs[[yridx]], idx)
+createMedScoresMat = function(data, x='', y=NULL) {
+    data = globalDS
+    if (x != '') {
+        data = data[which(data[[x]] == y), ]
+        data$studio = as.factor(data$studio)
+    }
+    years = min(data$year) : max(data$year)
+    minYear = years[1] - 1
+    yearVec = as.integer(data$year)
+    scoreVec = as.numeric(data$score)
+    uniqueStudios = unique(data$studioEnum)
+    stuIndeces = lapply(uniqueStudios,
+                        function(stu) which(data$studioEnum == stu))
+    years2 = lapply(1 : length(years), function(j) c())
+    mat = lapply(
+                 1 : length(uniqueStudios),
+                 function(studio) {
+                     wstu = stuIndeces[[studio]]
+                     locScore = scoreVec[wstu]
+                     locYear = yearVec[wstu]
+                     y = 0
+                     yrs = years2
+                     for (idx in 1 : length(wstu)) {
+                         yridx = locYear[idx] - minYear
+                         yrs[[yridx]] = c(yrs[[yridx]], idx)
+                     }
+                     sapply(years,
+                            function(year) {
+                                y <<- y + 1
+                                wyr = yrs[[y]]
+                                l = length(wyr)
+                                if (l == 0) NA
+                                else {
+                                    s = sort.int(locScore[wyr], na.last=NA)
+                                    l = ceiling(length(s)/2)
+                                    if (bitwAnd(l, 1) == 1) s[l]
+                                    else (s[l] + s[l+1])/2.0
                                 }
-                                sapply(years,
-                                       function(year) {
-                                           y <<- y + 1
-                                           wyr = yrs[[y]]
-                                           l = length(wyr)
-                                           if (l == 0) NA
-                                           else {
-                                               s = sort.int(locScore[wyr], na.last=NA)
-                                               l = ceiling(length(s)/2)
-                                               if (bitwAnd(l, 1) == 1) s[l]
-                                               else (s[l] + s[l+1])/2.0
-                                           }
-                                       })
                             })
-Rprof(NULL)
-rm(years); rm(gloYear); rm(gloScore);
-studioMedScoresMat = do.call(cbind, studioMedScoresMat)
+                 })
+
+    mat = do.call(cbind, mat)
+    return(mat)
+}
+
+#studioMedScoresMat = createMedScoresMat(globalDS)
 
 # Not the current year
 defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
