@@ -786,7 +786,7 @@ studioMedScoresMat = lapply(
                                            l = length(wyr)
                                            if (l == 0) NA
                                            else {
-                                               s = sort(locScore[wyr], na.last=NA)
+                                               s = sort.int(locScore[wyr], na.last=NA)
                                                l = ceiling(length(s)/2)
                                                if (bitwAnd(l, 1) == 1) s[l]
                                                else (s[l] + s[l+1])/2.0
