@@ -757,35 +757,43 @@ sapply(GENRE_COLS,
 
 # Matrix of median scores for each studio (columns) per year (rows).
 years = min(globalDS$year) : max(globalDS$year)
-gloStudio = as.character(globalDS$studio)
+minYear = years[1] - 1
 gloYear = as.integer(globalDS$year)
 gloScore = as.numeric(globalDS$score)
-#yearIndeces = lapply(years, function(year) which(gloYear == year))
-#yearIndeces = do.call(rbind, yearIndeces)
+uniqueStudios = sort(as.character(levels(globalDS$studio)), decreasing=FALSE)
 Rprof()
+gloStudioEnum = sapply(globalDS$studio, function(stu) which(uniqueStudios == stu))
+Rprof(NULL)
+stuIndeces = lapply(1 : length(uniqueStudios),
+                    function(stu) which(gloStudioEnum == stu))
+years2 = lapply(1 : length(years), function(j) c())
 studioMedScoresMat = lapply(
-                            sort(as.character(levels(globalDS$studio)),
-                                 decreasing=FALSE),
+                            1 : length(uniqueStudios),
                             function(studio) {
-                                wstu = which(gloStudio == studio)
+                                wstu = stuIndeces[[studio]]
                                 locScore = gloScore[wstu]
                                 locYear = gloYear[wstu]
                                 y = 0
+                                yrs = years2
+                                for (idx in 1 : length(wstu)) {
+                                    yridx = locYear[idx] - minYear
+                                    yrs[[yridx]] = c(yrs[[yridx]], idx)
+                                }
                                 sapply(years,
                                        function(year) {
                                            y <<- y + 1
-                                           wyr = which(locYear == year)
-                                           #wyr = yearIndeces[[y]]
-                                           if (length(wyr) == 0) NA
-                                           else median(locScore[wyr],
-                                                       na.rm=TRUE)
-                                           #median(locData$score[
-                                                  #(locData$year == year)
-                                                  #], na.rm=TRUE)
+                                           wyr = yrs[[y]]
+                                           l = length(wyr)
+                                           if (l == 0) NA
+                                           else {
+                                               s = sort(locScore[wyr], na.last=NA)
+                                               l = ceiling(length(s)/2)
+                                               if (bitwAnd(l, 1) == 1) s[l]
+                                               else (s[l] + s[l+1])/2.0
+                                           }
                                        })
                             })
-Rprof(NULL)
-rm(years); rm(gloYear); rm(gloScore); rm(gloStudio)
+rm(years); rm(gloYear); rm(gloScore);
 studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
 # Not the current year
