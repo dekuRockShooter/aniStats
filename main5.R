@@ -53,6 +53,9 @@ init_anime = function() {
     colnames(Anime) = colnames(header)
     Anime = na.omit(Anime)
     Anime$studio = factor(Anime$studio)
+    uniqueStudios = sort(as.character(levels(Anime$studio)), decreasing=FALSE)
+    studioEnum = sapply(Anime$studio, function(stu) which(uniqueStudios == stu))
+    Anime$studioEnum = studioEnum
 
     load('fp.Rdata')
     load('fn.Rdata')
@@ -756,19 +759,16 @@ sapply(GENRE_COLS,
            globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
 
 # Matrix of median scores for each studio (columns) per year (rows).
+Rprof()
 years = min(globalDS$year) : max(globalDS$year)
 minYear = years[1] - 1
 gloYear = as.integer(globalDS$year)
 gloScore = as.numeric(globalDS$score)
-uniqueStudios = sort(as.character(levels(globalDS$studio)), decreasing=FALSE)
-Rprof()
-gloStudioEnum = sapply(globalDS$studio, function(stu) which(uniqueStudios == stu))
-Rprof(NULL)
-stuIndeces = lapply(1 : length(uniqueStudios),
-                    function(stu) which(gloStudioEnum == stu))
+stuIndeces = lapply(1 : length(levels(globalDS$studio)),
+                    function(stu) which(globalDS$studioEnum == stu))
 years2 = lapply(1 : length(years), function(j) c())
 studioMedScoresMat = lapply(
-                            1 : length(uniqueStudios),
+                            1 : length(levels(globalDS$studio)),
                             function(studio) {
                                 wstu = stuIndeces[[studio]]
                                 locScore = gloScore[wstu]
@@ -793,6 +793,7 @@ studioMedScoresMat = lapply(
                                            }
                                        })
                             })
+Rprof(NULL)
 rm(years); rm(gloYear); rm(gloScore);
 studioMedScoresMat = do.call(cbind, studioMedScoresMat)
 
