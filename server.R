@@ -55,16 +55,16 @@ shinyServer(
                             studio = NULL
                         }
                         # Filter data set by genre.
-                        if (genre != 'Any genre') {
+                        if (genre != 'All genres') {
                             wgenre = which(names(localDS) == genre)
                             localDS = localDS[localDS[[wgenre]] == 1, ]
                         }
                         # Filter data set by source.
-                        if (src != 'Any source') {
+                        if (src != 'All sources') {
                             localDS = localDS[localDS$source == src, ]
                         }
                         # Filter data set by type.
-                        if (type != 'Any type') {
+                        if (type != 'All types') {
                             localDS = localDS[localDS$type == type, ]
                         }
                         # Filter data set by year.

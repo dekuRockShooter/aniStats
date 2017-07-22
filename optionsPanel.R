@@ -91,9 +91,9 @@ createOptionsPanel = function() {
                selectInput(
                            inputId='genreSelectId',
                            label='Select genre',
-                           choices=c('Any genre',
+                           choices=c('All genres',
                                      sort(names(globalDS)[GENRE_COLS])),
-                           selected='Any genre'
+                           selected='All genres'
                            )
                )
     sourceSelect =
@@ -102,9 +102,9 @@ createOptionsPanel = function() {
                selectInput(
                            inputId='sourceSelectId',
                            label='Select source',
-                           choices=c('Any source',
+                           choices=c('All sources',
                                      sort(levels(globalDS$source))),
-                           selected='Any source'
+                           selected='All sources'
                            )
                )
     typeSelect =
@@ -113,9 +113,9 @@ createOptionsPanel = function() {
                selectInput(
                            inputId='typeSelectId',
                            label='Select type',
-                           choices=c('Any type',
+                           choices=c('All types',
                                      sort(levels(globalDS$type))),
-                           selected='Any type'
+                           selected='All types'
                            )
                )
     fromYearSelect =
