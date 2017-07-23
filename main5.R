@@ -202,7 +202,7 @@ get_type_data = function(data, glo_data, category, years) {
                                if (metric == 'count') {
                                    sum(cur_cat_vec == cat)
                                } else if (metric == 'median') {
-                                   median(cur_metric_vec[cur_cat_vec == cat])
+                                   med(cur_metric_vec[cur_cat_vec == cat])
                                } else if (metric == 'mean') {
                                    mean(cur_metric_vec[cur_cat_vec == cat])
                                }
