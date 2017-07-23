@@ -226,31 +226,105 @@ get_timeline = function(statistic, vec, times) {
 #    A matrix with length(years) rows and length(col_indeces) columns.
 #    Entry (j, k) is the value of the metric for data[, col_indeces[k]]
 #    at year j.
-get_genre_freqs = function(data, years, metric, col_indeces, col_idx=-1) {
+get_genre_freqs = function(data, years, col_indeces) {
+    data_year = as.integer(data$year)
+    # Convert the data frame to a matrix to improve performance.
+    data = as.matrix(data[, col_indeces])
+    col_indeces = 1 : length(col_indeces)
+    r = range(data_year)
+    # This list will hold the indeces of rows in 'data' that have
+    # a common year.  w = year_indeces[[j]] is thus a vector of indeces
+    # such that data$year[w] will all have the same year.  This is
+    # equivalent to which(data$year == j'th year).  The reason for not
+    # using the which() function is to improve runtime, since this
+    # serves as a cache.
+    year_indeces = lapply(r[1] : r[2], function(j) c())
+    # This is a list of lists.  matching_indeces[[y]][[c]] is a vector
+    # of indeces of rows in 'data' that have year == y'th year and
+    # the c'th column == 1.  This is the same as which(data$year == y'th
+    # year and data[, c] == 1).  These indeces are cached to reduce
+    # computation time.
+    matching_indeces = lapply(
+                              r[1] : r[2],
+                              function(j) {
+                                  lapply(col_indeces, function(j) NULL)
+                              })
+
+    # This loop initializes year_indeces.  It passes once through the
+    # rows of 'data', appending the row index to the appropriate vector.
+    # When a row's year is y, the index (year_idx) of the vector in
+    # 'year_indeces' is y - min_year = y - r[1] + 1 (this creates a
+    # 1-based index starting from the smallest year in 'data').
+    min_year = r[1] - 1
+    for (row_idx in 1 : length(data_year)) {
+        year_idx = data_year[row_idx] - min_year # y = data_year[row_idx]
+        year_indeces[[year_idx]] = c(year_indeces[[year_idx]], row_idx)
+    }
+    rm(r)
+
+    # This function computes the median of a vector.  This is used
+    # instead of the built in median() function because that is
+    # too slow for how get_genre_freqs is meant to be used.  This
+    # cuts computation time considerably.
+    med = function(vec) {
+        if (length(vec) < 2) return(vec[1])
+        sorted_vec = sort.int(vec, na.last=NA)
+        len = length(sorted_vec)
+        mid = ceiling(length(sorted_vec) / 2)
+        # x bitwAnd 1 == 1 iff. x is odd.  This is faster than using
+        # x mod 2 == 1 to check if x is odd.
+        if (bitwAnd(1, len) == 1) sorted_vec[mid]
+        else (sorted_vec[mid] + sorted_vec[mid+1]) / 2.0
+    }
+
+    # This is the main function.  It is returned to the caller.
+    # Data in 'matching_indeces' are initialized the first time
+    # this is called.  Any subsequent calls will not recompute
+    # the data, and will instead reference 'matching_indeces' to
+    # get them.
+    f = function(metric, col=NULL, col_idx=-1) {
     freq_mat = lapply(years,
                       function(year) {
-                          D = data[data$year == year, ]
-                          if (col_idx > -1) {
-                              col = D[, col_idx]
+                          y = year - min_year
+                          yr_list = matching_indeces[[y]]
+                          wyr = year_indeces[[y]]
+                          wyr_len = length(wyr)
+                          if (wyr_len == 0) {
+                              return(numeric(length(col_indeces)))
                           }
-                          else {
-                              col = D$score
-                          }
+                          # This is the data for the current year.  If 'wyr'
+                          # only has one element, data[wyr, ] will be a vector,
+                          # not a matrix.  Thus, D[, col_idx] in the loop
+                          # below will give an error.  To avoid this, the
+                          # vector is converted to a matrix.
+                          D = data[wyr, ]
+                          if (wyr_len == 1) D = cbind(rbind(data[wyr, ]))
+
                           sapply(col_indeces,
-                                 function(genre_idx) {
+                                 function(col_idx) {
                                      if (metric == 'count') {
-                                         sum(D[, genre_idx])
+                                         sum(D[, col_idx])
                                      } else if(metric == 'mean') {
-                                         mean(col[D[, genre_idx] == 1],
+                                         mean(col[D[, col_idx] == 1],
                                               na.rm=TRUE)
                                      } else if(metric == 'median') {
-                                         median(col[D[, genre_idx] == 1],
-                                                na.rm=TRUE)
+                                         # w stores the indeces of rows whose
+                                         # year is equal to 'year' and whose
+                                         # col_idx'th column is 1.
+                                         w = yr_list[[col_idx]]
+                                         if (is.null(w)) {
+                                             w = which(D[, col_idx] == 1)
+                                             matching_indeces[[y]][[col_idx]] <<- w
+                                         }
+                                         med(col[w])
                                      }
                                  })
                       })
     freq_mat = do.call(rbind, freq_mat)
     return(freq_mat)
+    }
+
+    return(f)
 }
 
 # Calculate the slope of the regression line for a given vector.

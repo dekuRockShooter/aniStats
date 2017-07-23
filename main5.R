@@ -232,14 +232,13 @@ get_type_data = function(data, glo_data, category, years) {
         is_genre = FALSE
     # Matrix initialization genre.
     } else if (category == category_enum$CATEGORY_GENRE) {
+        scores = as.numeric(data$score)
         # Get timeline matrices for genres and their slopes.
-        score_mat = get_genre_freqs(data, years, 'median',
-                                    GENRE_COLS,
-                                    col_idx=which(names(data) == 'score'))
-        count_mat = get_genre_freqs(data, years, 'count', GENRE_COLS)
-        view_mat = get_genre_freqs(data, years, 'median',
-                                   GENRE_COLS,
-                                   col_idx=which(names(data) == 'tot_watched'))
+        freq_func = get_genre_freqs(data, years, GENRE_COLS)
+        score_mat = freq_func('median', col=scores)
+        count_mat = freq_func('count', col=scores)
+        rm(scores)
+        view_mat = freq_func('median', col=as.numeric(data$tot_watched))
         class_names = sort(names(data)[GENRE_COLS], decreasing=FALSE)
     }
     # Matrix initialization for all categories except genre.
