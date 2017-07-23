@@ -62,3 +62,24 @@ PLOT_DESC[['fn_vs_stucnt']] = 'This is the same plot as the above one, but displ
 
 
 PERF_TABLE_DESC = 'This table shows the classifier\'s performance for all studios.  The third column is the total TV anime shows produced by a studio.  The second column is the number of these correctly predicted to be below or above average.'
+
+ABOUT_TEXT = character()
+ABOUT_LIST = character()
+ABOUT_TEXT[1] = 'This website is intended to show various data about the world of anime.  The hope is to let anime viewers discover new things about anime: past, current, and future trends; the state of the industry; the performance of studios, genres, and source materials; and much more.  Here are some of the questions that you can find answers to with this site:'
+ABOUT_TEXT[2] = 'All data used on this site is from the popular online anime database, MyAnimeList.  Data was gathered from their "Seasonal Anime" page, not from the individual pages of each show (that would take too long to get without overloading their servers).  As such, only a subset of the data for each show is used in this site.  Specifically, genres, air date, studio, number of episodes, number of viewers, anime type, and source material.  No data related to staff, in-show characters, or most of the data that can be found by visiting a specific show\'s page is used.  This is somewhat limiting, especially for fans who view staff and the like as an important factor for dermining the quality of a show, and leads to a lack of potentially interesting data to be analyzed and shown on this site.  However, the data available is more than sufficient, and provides ample information for making inferences and finding answers to many questions.'
+ABOUT_TEXT[3] = 'Apart from allowing fans to view data about past and current anime, this site also allows fans to find out the quality of future anime.  By navigating to the "Predictions" page, fans can see which future anime are predicted to be above or below average.  This can be very useful in determing which shows to watch next season.  Although it is not correct 100% of the time (accuracy is closer to 70%), it can be used as a tool to discover new shows that one might have potentially not considered at all.  Currently, predictions are limited to only TV anime, as predictions for other types, such as OVAs and movies, are poor.'
+ABOUT_TEXT[4] = 'This site is hosted on Shiny server from Rstudio.'
+
+ABOUT_LIST[1] = 'Which studios are the most popular?'
+ABOUT_LIST[2] = 'Which studios consistently produce good shows?'
+ABOUT_LIST[3] = 'When was the golden age of a studio?'
+ABOUT_LIST[4] = 'Which years had the best shows of a particular genre?'
+ABOUT_LIST[5] = 'Which genres are associated with good shows?  Bad shows?'
+ABOUT_LIST[6] = 'From which source materials are anime currently being produced?'
+ABOUT_LIST[7] = 'Is anime better today than it was 10 years ago? 20 years ago?'
+ABOUT_LIST[8] = 'Are OVA series better than TV series?'
+ABOUT_LIST[9] = 'What was typical of anime in the early 2000s?'
+ABOUT_LIST[10] = 'Will light novels become the main source of anime?'
+ABOUT_LIST[11] = 'Are more shounen ai shows being produced?  If so, WHY?!?'
+ABOUT_LIST[12] = 'Will this upcoming show be worth watching?'
+ABOUT_LIST[13] = '...and much more!'

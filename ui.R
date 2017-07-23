@@ -29,6 +29,14 @@ initPredictionsTabs = function() {
                 )
 }
 
+initAboutTab = function() {
+    tabsetPanel(
+                type="tabs",
+                id='aboutTabsetPanelId',
+                createAboutTab('About', 1)
+                )
+}
+
 # Define UI for random distribution application 
 fluidPage(
           tags$head(
@@ -65,6 +73,13 @@ fluidPage(
                      tabPanel(
                               'Predictions',
                               initPredictionsTabs()
-                              )
+                              ),
+                     navbarMenu(
+                                'More',
+                                tabPanel(
+                                         'About',
+                                         initAboutTab()
+                                         )
+                                )
                      )
 )

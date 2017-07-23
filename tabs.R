@@ -342,3 +342,23 @@ createPerformanceTab = function(name, tabIdx) {
              value=tabIdx
              )
 }
+
+# Create a tab to show an About page.  This returns a tabPanel with id
+# 'name' and value 'tabIdx'.  The <p> tags are all in CSS class 'about_text'
+# and the <ul> element is in CSS class 'about_list'.
+createAboutTab = function(name, tabIdx) {
+    # Create <p> tags with the predefined text.
+    aboutText = lapply(ABOUT_TEXT, function(text)
+                       tags$p(class='about_text', text))
+    # Create <li> tags with the predefined text.
+    questionsListElements = lapply(ABOUT_LIST, function(text) tags$li(text))
+    questionsList = tags$ul(class='about_list', questionsListElements)
+
+    tabPanel(
+             name,
+             aboutText[[1]],
+             questionsList, # The list is associated with the first <p>.
+             aboutText[2 : length(aboutText)],
+             value=tabIdx
+             )
+}
