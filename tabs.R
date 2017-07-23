@@ -353,12 +353,16 @@ createAboutTab = function(name, tabIdx) {
     # Create <li> tags with the predefined text.
     questionsListElements = lapply(ABOUT_LIST, function(text) tags$li(text))
     questionsList = tags$ul(class='about_list', questionsListElements)
+    mainDiv = tags$div(
+                       class='about',
+                       aboutText[[1]],
+                       questionsList, # The list follows the first <p>.
+                       aboutText[2 : length(aboutText)]
+                       )
 
     tabPanel(
              name,
-             aboutText[[1]],
-             questionsList, # The list is associated with the first <p>.
-             aboutText[2 : length(aboutText)],
+             mainDiv,
              value=tabIdx
              )
 }

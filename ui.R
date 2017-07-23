@@ -59,6 +59,11 @@ fluidPage(
                               rel="stylesheet",
                               type="text/css",
                               href="options_panel.css"
+                              ),
+                    tags$link(
+                              rel="stylesheet",
+                              type="text/css",
+                              href="about.css"
                               )
                     ),
           # Application title

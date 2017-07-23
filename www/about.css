@@ -1,0 +1,14 @@
+.about {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.about_text {
+    text-align: left;
+    padding-bottom: 1em;
+}
+
+.about_list {
+    text-align: left;
+    padding-bottom: 1em;
+}
