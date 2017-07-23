@@ -262,21 +262,6 @@ get_genre_freqs = function(data, years, col_indeces) {
     }
     rm(r)
 
-    # This function computes the median of a vector.  This is used
-    # instead of the built in median() function because that is
-    # too slow for how get_genre_freqs is meant to be used.  This
-    # cuts computation time considerably.
-    med = function(vec) {
-        if (length(vec) < 2) return(vec[1])
-        sorted_vec = sort.int(vec, na.last=NA)
-        len = length(sorted_vec)
-        mid = ceiling(length(sorted_vec) / 2)
-        # x bitwAnd 1 == 1 iff. x is odd.  This is faster than using
-        # x mod 2 == 1 to check if x is odd.
-        if (bitwAnd(1, len) == 1) sorted_vec[mid]
-        else (sorted_vec[mid] + sorted_vec[mid+1]) / 2.0
-    }
-
     # This is the main function.  It is returned to the caller.
     # Data in 'matching_indeces' are initialized the first time
     # this is called.  Any subsequent calls will not recompute
@@ -519,3 +504,19 @@ transform_genres = function(data, from_year, to_year, genre_cols, test=NULL) {
     ret = if (is.null(test)) mat else list(data=mat, test=test_mat)
     return(ret)
 }
+
+
+# This function computes the median of a vector.  This exists for
+# for those times when the built in median() function is too slow.
+# This reduces computation time considerably.
+med = function(vec) {
+    if (length(vec) < 2) return(vec[1])
+    sorted_vec = sort.int(vec, na.last=NA)
+    len = length(sorted_vec)
+    mid = ceiling(length(sorted_vec) / 2)
+    # x bitwAnd 1 == 1 iff. x is odd.  This is faster than using
+    # x mod 2 == 1 to check if x is odd.
+    if (bitwAnd(1, len) == 1) sorted_vec[mid]
+    else (sorted_vec[mid] + sorted_vec[mid+1]) / 2.0
+}
+
