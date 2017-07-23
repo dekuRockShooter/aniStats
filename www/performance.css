@@ -3,8 +3,16 @@
     text-align: center;
 }
 
-#acc_vs_time #tp_vs_tn #fp_vs_stucnt #fn_vs_stucnt {
+.performance_image hr {
+    border: 1px solid #aaaaaa;
+}
+
+.performance_image img {
     margin: auto;
+}
+
+.performance_image p {
+    text-align: left;
 }
 
 

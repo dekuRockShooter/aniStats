@@ -324,7 +324,12 @@ createPerformanceTab = function(name, tabIdx) {
 
     imgDivs = list()
     for (imgId in imgIds) {
-        imgDiv = tags$div(class='performance_image', plotOutput(imgId))
+        imgDiv = tags$div(
+                          class='performance_image',
+                          tags$hr(),
+                          tags$p(PLOT_DESC[[imgId]]),
+                          plotOutput(imgId)
+                          )
         imgDivs[[length(imgDivs) + 1]] = imgDiv
     }
 
