@@ -84,6 +84,12 @@ fluidPage(
                                 tabPanel(
                                          'About',
                                          initAboutTab()
+                                         ),
+                                tabPanel(
+                                         'Contact',
+                                         tags$p(
+                                                'Please contact me at: dekunutshooter@gmail.com'
+                                                )
                                          )
                                 )
                      )
