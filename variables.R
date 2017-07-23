@@ -18,16 +18,7 @@
 #   set_noisy_genreset_score: create noise for a show's score
 #   set_studio_mean_score: ?
 #   set_genre_mean_score: ?
-library(MASS)
-library(nnet)
-library(class)
-library(boot)
-library(randomForest)
-library(gbm)
-library(e1071)
-library(glmnet)
-library(foreach)
-library(doParallel)
+
 source('util.R')
 
 

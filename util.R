@@ -13,17 +13,6 @@
 #   remove_constants: remove variables that have zero variance
 #   get_production_prop: undergoing documentation
 
-library(MASS)
-library(nnet)
-library(class)
-library(boot)
-library(randomForest)
-library(gbm)
-library(e1071)
-library(glmnet)
-library(foreach)
-library(doParallel)
-
 
 # Calculate class proportions of all genre sets.
 #
