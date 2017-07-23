@@ -335,6 +335,8 @@ createPerformanceTab = function(name, tabIdx) {
 
     tabPanel(
              name,
+             tags$p(PERF_TABLE_DESC),
+             tags$br(),
              htmlOutput('table_studio_acc'),
              imgDivs,
              value=tabIdx
