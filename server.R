@@ -41,9 +41,7 @@ shinyServer(
                     # Create observers for double clicks and brushes if
                     # so desired.
                     if (!(is.null(dblClickId) || is.null(brushId))) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
+                        ranges = getReactiveZoom(brushId, dblClickId)
                     }
                     if (plotId == 1) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('score')
@@ -222,67 +220,6 @@ shinyServer(
                     }
                 }
 
-                # Taken from the zoom example on the Shiny Server gallery
-                # page.
-                #
-                # These blocks of code implement zoom in and out.  Zooming
-                # in means drawing a brush (click and drag), and zooming
-                # out means double clicking.
-                # 
-                # Together, these functions are meant to be used as:
-                #   r = getReactivePlotLimitsChange()
-                #   observeBrush(bid, r) # Listen to brushes and update r.
-                #   observeDblClick(did, r) # Listen to dblclk and update r.
-                #   ...
-                #   plot(..., ylim=r$y, xlim=r$x) # Redraw on brush or dblclk.
-                #   ...
-
-                # Create a new reactiveValues object.  The values of this
-                # reactiveValues are independent of the values of other
-                # objects instantiated by this call.  By running:
-                #   r = getReactivePlotLimitsChange()
-                # r$x and r$y can be used as variables to listen to in a
-                # render*() function.  If one piece of code modifies one of
-                # these variables, then another piece of code that reads
-                # it will be notified.  This is meant to be used to listen
-                # to zoom in and out actions, where r$x is the new xlim
-                # and r$y is the new ylim.
-                getReactivePlotLimitsChange = function() {
-                    reactiveValues(x=NULL, y=NULL)
-                }
-
-                # Create an observer for a brush action.  When the given
-                # brush is acted on, the reactivePlotLimitChange (r) will be
-                # updated such that r$x and r$y are the x and y limits
-                # of the rectangle, respectively.  This is meant to be used
-                # as:
-                #   r = getReactivePlotLimitListener()
-                #   observeBrush(bid, r)
-                # brushId must be formatted as specified in tabs.R.
-                observeBrush = function(brushId, reactivePlotLimitChange) {
-                    observeEvent(input[[brushId]], {
-                                     brush = input[[brushId]]
-                                     reactivePlotLimitChange$x <<-
-                                         c(brush$xmin, brush$xmax)
-                                     reactivePlotLimitChange$y <<-
-                                         c(brush$ymin, brush$ymax)
-                        })
-                }
-
-                # Create an observer for a double click.  When the given
-                # double click is acted on, the reactivePlotLimitChange (r)
-                # will be updated such that r$x and r$y are both NULL.
-                # This is meant to be used as:
-                #   r = getReactivePlotLimitListener()
-                #   observeDblClick(did, r)
-                # dblClickId must be formatted as specified in tabs.R.
-                observeDblClick = function(dblClickId, reactivePlotLimitChange) {
-                    observeEvent(input[[dblClickId]], {
-                                 reactivePlotLimitChange$x <<- NULL
-                                 reactivePlotLimitChange$y <<- NULL
-                        })
-                }
-
                 # Create plot output objects for the categorical variables
                 # tabs.  This function is meant to be used as:
                 #
@@ -308,9 +245,7 @@ shinyServer(
                     else if (tabId == TAB_ID_STUDIOS) category = 'studios'
 
                     if (!(is.null(dblClickId) || is.null(brushId))) {
-                        ranges = getReactivePlotLimitsChange()
-                        observeDblClick(dblClickId, ranges)
-                        observeBrush(brushId, ranges)
+                        ranges = getReactiveZoom(brushId, dblClickId)
                     }
 
                     if (plotId == 1) {

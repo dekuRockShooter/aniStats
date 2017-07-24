@@ -16,12 +16,30 @@
 #  getReactiveShowQuantiles: react to user input for plotting quantiles
 #  getReactiveClassChange: react to user input for changing plots
 #  getReactiveGlobalPerf: react to data set changes to compute statistics
-#  getReactivePredictions:
+#  getReactivePredictions: react to date range changes
 
-# Update the underlying data set based on given parameters.
-# This reactive returns the data set being computed on.  It
-# listens to the changeDataActionButton and updates the data
-# set based on values of the widgets in the options panel.
+
+# Listen to changes in the options panel and update the
+# underlying data set based.  This reactive only reacts
+# to clicks on input$changeDataActionButton, whereupon
+# it uses the other sources to update and return the
+# new data set.
+#
+# This reactive is a conductor.
+#
+# Sources:
+#  input$changeDataActionButton
+#  input$studioSelectId
+#  input$genreSelectId
+#  input$sourceSelectId
+#  input$typeSelectId
+#  input$fromYearSelectId
+#  input$toYearSelectId
+#
+# Returns:
+#  The new data set (as returned by init_data()).  The
+#  value of 'locData' is also changed to refer to the new
+#  data set.
 reactiveDataChange = eventReactive(
     input$changeDataActionButton, {
        studio = input$studioSelectId
@@ -162,7 +180,7 @@ getReactiveShowQuantiles = function(tabId, whichPlot) {
 
 # Create a reactive that listens to selections for changing
 # plots.  The source of this reactive depends on the value
-# of 'tabId'.  
+# of 'tabId'.
 #
 # This reactive is a conductor.
 #
@@ -331,3 +349,99 @@ getReactivePredictions = function() {
         )
 }
 
+# Create a reactive source for zooming in and out of plots.
+# The source has two variables: x and y.  Both are two-element
+# vectors, such that the first element is the min value in the
+# x (y) direction, and the second element is the max value in
+# the x (y) direction.  Thus, the following use case is possible:
+#
+#    reactiveRanges = getReactiveZoom(brushId, dblClickId)
+#    xlim = reactiveRanges$x
+#    ylim = reactiveRanges$y
+#    plot(t, z, xlim=xlim[1] : xlim[2], ylim=ylim[1] : ylim[2])
+#
+# Arguments:
+#  brushId:
+#    a string formatted as specified in tabs.R.
+#
+#  dblClickId:
+#    a string formatted as specified in tabs.R.
+#
+# Endpoints:
+#  output$x, such that x = renderPlot(...)
+getReactiveZoom = function(brushId, dblClickId) {
+    # Taken from the zoom example on the Shiny Server gallery
+    # page.
+    #
+    # These blocks of code implement zoom in and out.  Zooming
+    # in means drawing a brush (click and drag), and zooming
+    # out means double clicking.
+    #
+    # Together, these functions are meant to be used as:
+    #   r = getReactivePlotLimitsChange()
+    #   observeBrush(bid, r) # Listen to brushes and update r.
+    #   observeDblClick(did, r) # Listen to dblclk and update r.
+    #   ...
+    #   plot(..., ylim=r$y, xlim=r$x) # Redraw on brush or dblclk.
+    #   ...
+
+    # This reactive is a source.  It is meant to change the limits of
+    # a plot.  It has two variables: x and y.   Both are intended to
+    # be two-element vectors, such that the first element is the min
+    # value in the x (y) direction, and the second element is the max
+    # value in the x (y) direction.  Thus, the following can be done:
+    #
+    #   reactiveLimits = getReactivePlotLimitsChange()
+    #   ...
+    #   output[[endpoint1]] = renderPlot({
+    #     xlim = reactiveLimits$x
+    #     ylim = reactiveLimits$y
+    #     plot(x, y, xlim=xlim[1] : xlim[2], ylim=ylim[1] : ylim[2])
+    #   })
+    #
+    # Endpoints:
+    #  output$x, such that x = renderPlot(...)
+    getReactivePlotLimitsChange = function() {
+        reactiveValues(x=NULL, y=NULL)
+    }
+
+    # Create an observer for a brush action.  When the given
+    # brush is acted on, the reactivePlotLimitChange (r) will be
+    # updated such that r$x and r$y are the x and y limits
+    # of the rectangle, respectively.  This is meant to be used
+    # as:
+    #   r = getReactivePlotLimitListener()
+    #   observeBrush(bid, r)
+    # brushId must be formatted as specified in tabs.R.
+    observeBrush = function(brushId, reactivePlotLimitChange) {
+        observeEvent(input[[brushId]], {
+                         brush = input[[brushId]]
+                         reactivePlotLimitChange$x <<-
+                             c(brush$xmin, brush$xmax)
+                         reactivePlotLimitChange$y <<-
+                             c(brush$ymin, brush$ymax)
+        })
+    }
+
+    # Create an observer for a double click.  When the given
+    # double click is acted on, the reactivePlotLimitChange (r)
+    # will be updated such that r$x and r$y are both NULL.
+    # This is meant to be used as:
+    #   r = getReactivePlotLimitListener()
+    #   observeDblClick(did, r)
+    # dblClickId must be formatted as specified in tabs.R.
+    observeDblClick = function(dblClickId, reactivePlotLimitChange) {
+        observeEvent(input[[dblClickId]], {
+                         reactivePlotLimitChange$x <<- NULL
+                         reactivePlotLimitChange$y <<- NULL
+        })
+    }
+
+    reactiveLimits = getReactivePlotLimitsChange()
+    # Listen to brushes and update reactiveLimits.
+    observeBrush(brushId, reactiveLimits)
+    # Listen to dblclk and update reactiveLimits.
+    observeDblClick(dblClickId, reactiveLimits)
+
+    return(reactiveLimits)
+}
