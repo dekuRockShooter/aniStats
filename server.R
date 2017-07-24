@@ -41,7 +41,7 @@ shinyServer(
                     # Create observers for double clicks and brushes if
                     # so desired.
                     if (!(is.null(dblClickId) || is.null(brushId))) {
-                        ranges = getReactiveZoom(brushId, dblClickId)
+                        reactiveRanges = getReactiveZoom(brushId, dblClickId)
                     }
                     if (plotId == 1) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('score')
@@ -56,8 +56,8 @@ shinyServer(
                             globalPerf = reactiveGlobalPerf()
 
                             # This needs no reactive due to the if-block.
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qscore_timeline, na.rm=TRUE),
                                        max(curType$qscore_timeline, na.rm=TRUE))
@@ -100,8 +100,8 @@ shinyServer(
                             globalPerf = reactiveGlobalPerf()
 
                             # This needs no reactive due to the if-block.
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qview_timeline, na.rm=TRUE),
                                        max(curType$qview_timeline, na.rm=TRUE))
@@ -145,8 +145,8 @@ shinyServer(
                             globalPerf = reactiveGlobalPerf()
 
                             # This needs no reactive due to the if-block.
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             if (is.null(ylim)) {
                                 ylim=c(min(curType$qeps_timeline, na.rm=TRUE),
                                        max(curType$qeps_timeline, na.rm=TRUE))
@@ -195,8 +195,8 @@ shinyServer(
                     } else if (plotId == 6) {
                         renderPlot({
                             data = reactiveDataChange()
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             dominance_vs_year(
                                               data$years,
                                               data$overall$perf_mat,
@@ -208,8 +208,8 @@ shinyServer(
                     } else if (plotId == 7) {
                         renderPlot({
                             data = reactiveDataChange()
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             score_vs_dominance(
                                                data$years,
                                                data$overall$perf_mat,
@@ -245,7 +245,7 @@ shinyServer(
                     else if (tabId == TAB_ID_STUDIOS) category = 'studios'
 
                     if (!(is.null(dblClickId) || is.null(brushId))) {
-                        ranges = getReactiveZoom(brushId, dblClickId)
+                        reactiveRanges = getReactiveZoom(brushId, dblClickId)
                     }
 
                     if (plotId == 1) {
@@ -258,7 +258,7 @@ shinyServer(
                                 return()
                             }
                             w = order(curType$tot_props, decreasing=TRUE)
-                            xlim = ranges$x
+                            xlim = reactiveRanges$x
                             if (!is.null(xlim)) {
                                 xlim = floor(xlim) + 1
                                 # Lower bound of 1.
@@ -288,7 +288,7 @@ shinyServer(
                                 return()
                             }
                             w = order(curType$score_meds, decreasing=TRUE)
-                            xlim = ranges$x
+                            xlim = reactiveRanges$x
                             if (!is.null(xlim)) {
                                 xlim = floor(xlim) + 1
                                 # Lower bound of 1.
@@ -320,8 +320,8 @@ shinyServer(
                                 return()
                             }
                             classIdx = reactiveClassChange()
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             gprop_vs_year(
                                           data$years,
                                           curType$prop_mat[, classIdx],
@@ -365,8 +365,8 @@ shinyServer(
                             if (is.null(curType)) {
                                 return()
                             }
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             gscore_vs_gview(
                                             curType$view_meds,
                                             curType$score_meds,
@@ -387,8 +387,8 @@ shinyServer(
                             if (is.null(curType)) {
                                 return()
                             }
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             gscore_vs_gprop(
                                             curType$tot_props,
                                             curType$score_meds,
@@ -408,8 +408,8 @@ shinyServer(
                             if (is.null(curType)) {
                                 return()
                             }
-                            ylim = ranges$y
-                            xlim = ranges$x
+                            ylim = reactiveRanges$y
+                            xlim = reactiveRanges$x
                             gscore_slope_vs_gprop_slope(
                                                         curType$prop_slopes,
                                                         curType$score_slopes,
