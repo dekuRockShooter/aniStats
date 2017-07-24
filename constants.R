@@ -7,6 +7,10 @@ TAB_ID_STUDIOS = 5
 TAB_ID_PREDICTIONS = 1
 TAB_ID_PERFORMANCE = 2
 
+PLOT_SCORE_VS_TIME = 1
+PLOT_VIEWS_VS_TIME = 2
+PLOT_EPS_VS_TIME = 3
+
 HELP_TEXT = list()
 HELP_TEXT$summary[1] = 'This plot shows how scores have changed over time.  The red line is the median score.  You can see curves for mean, min, and max scores with the options tooltip.  Click and drag to zoom in, and double click to zoom out.'
 HELP_TEXT$summary[2] = 'This plot shows how the number of viewers has changed over time.  The red line is the median score.  You can see curves for mean, min, and max scores with the options tooltip.  Click and drag to zoom in, and double click to zoom out.'

@@ -47,7 +47,10 @@ shinyServer(
                     }
                     if (plotId == 1) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('score')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 1)
+                        reactiveShowQuantiles = getReactiveShowQuantiles(
+                                                    TAB_ID_SUMMARY,
+                                                    PLOT_SCORE_VS_TIME
+                                                    )
 
                         renderPlot({
                             data = reactiveDataChange()
@@ -88,7 +91,10 @@ shinyServer(
                         })
                     } else if (plotId == 2) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('views')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 2)
+                        reactiveShowQuantiles = getReactiveShowQuantiles(
+                                                    TAB_ID_SUMMARY,
+                                                    PLOT_VIEWS_VS_TIME
+                                                    )
 
                         renderPlot({
                             data = reactiveDataChange()
@@ -130,7 +136,10 @@ shinyServer(
                     }
                     else if (plotId == 3) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('eps')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(1, 3)
+                        reactiveShowQuantiles = getReactiveShowQuantiles(
+                                                    TAB_ID_SUMMARY,
+                                                    PLOT_EPS_VS_TIME
+                                                    )
 
                         renderPlot({
                             data = reactiveDataChange()
