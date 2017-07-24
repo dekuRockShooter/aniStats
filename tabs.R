@@ -132,12 +132,12 @@ createCatTab = function(name, tabIdx) {
 
     tabPanel(
              name,
-             fluidRow(createCol(1, 12)),
-             fluidRow(createCol(2, 12)),
-             fluidRow(createCol(3, 12)),
-             fluidRow(createCol(4, 12)),
-             fluidRow(createCol(5, 12)),
-             fluidRow(createCol(6, 12)),
+             fluidRow(createCol(1, 12)), tags$hr(),
+             fluidRow(createCol(2, 12)), tags$hr(),
+             fluidRow(createCol(3, 12)), tags$hr(),
+             fluidRow(createCol(4, 12)), tags$hr(),
+             fluidRow(createCol(5, 12)), tags$hr(),
+             fluidRow(createCol(6, 12)), tags$hr(),
              fluidRow(createCol(7, 12)),
              value=tabIdx
              )
@@ -245,12 +245,12 @@ createSummaryTab = function(name, tabIdx) {
 
     tabPanel(
              name, 
-             fluidRow(createCol(1, 12)),
-             fluidRow(createCol(2, 12)),
-             fluidRow(createCol(3, 12)),
-             fluidRow(createCol(4, 12)),
-             fluidRow(createCol(5, 12)),
-             fluidRow(createCol(6, 12)),
+             fluidRow(createCol(1, 12)), tags$hr(),
+             fluidRow(createCol(2, 12)), tags$hr(),
+             fluidRow(createCol(3, 12)), tags$hr(),
+             fluidRow(createCol(4, 12)), tags$hr(),
+             fluidRow(createCol(5, 12)), tags$hr(),
+             fluidRow(createCol(6, 12)), tags$hr(),
              fluidRow(createCol(7, 12)),
              value=tabIdx
              )
@@ -299,7 +299,7 @@ createPredictionsTab = function(name, tabIdx) {
                           )
     tabPanel(
              name,
-             optionsRow,
+             optionsRow,tags$hr(),
              tableOut,
              value=tabIdx
              )
@@ -336,7 +336,7 @@ createPerformanceTab = function(name, tabIdx) {
     tabPanel(
              name,
              tags$p(PERF_TABLE_DESC),
-             tags$br(),
+             tags$br(), tags$hr(),
              htmlOutput('table_studio_acc'),
              imgDivs,
              value=tabIdx
