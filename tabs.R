@@ -366,3 +366,41 @@ createAboutTab = function(name, tabIdx) {
              value=tabIdx
              )
 }
+
+# Create the main content of the Stats page.
+# This returns a tabsetPanel.
+initStatsTabs = function() {
+    tabsetPanel(
+                type="tabs",
+                # input$tabpanelId is the name of the current tab.
+                id='tabpanelId',
+                # The argument to *Ouput(x) is the name of an R object
+                # (defined in server.R as output$x) of type *.
+                createSummaryTab('Summary', TAB_ID_SUMMARY),
+                createCatTab('Genres', TAB_ID_GENRES),
+                createCatTab('Sources', TAB_ID_SOURCES),
+                createCatTab('Types', TAB_ID_TYPES),
+                createCatTab('Studios', TAB_ID_STUDIOS)
+                )
+}
+
+# Create the main content of the Predictions page.
+# This returns a tabsetPanel.
+initPredictionsTabs = function() {
+    tabsetPanel(
+                type="tabs",
+                id='predictionsTabsetPanelId',
+                createPredictionsTab('Predictions', TAB_ID_PREDICTIONS),
+                createPerformanceTab('Performance', TAB_ID_PERFORMANCE)
+                )
+}
+
+# Create the main content of the About page.
+# This returns a tabsetPanel.
+initAboutTab = function() {
+    tabsetPanel(
+                type="tabs",
+                id='aboutTabsetPanelId',
+                createAboutTab('About', 1)
+                )
+}
