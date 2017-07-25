@@ -15,28 +15,28 @@
 #   studioSelectId:
 #       select menu
 #       'All studios'
-#       The items are all studios from 'globalDS' sorted lexicographically
+#       The items are all studios from 'GLOBAL_DS' sorted lexicographically
 #       in ascending order.
 #       Access with input$studioSelectId
 #
 #   genreSelectId:
 #       select menu
 #       'All genres'
-#       The items are all genres from 'globalDS' sorted lexicographically
+#       The items are all genres from 'GLOBAL_DS' sorted lexicographically
 #       in ascending order.
 #       Access with input$genreSelectId.
 #
 #   sourceSelectId:
 #       select menu
 #       'All sources'
-#       The items are all levels from globalDS$source sorted
+#       The items are all levels from GLOBAL_DS$source sorted
 #       lexicographically in ascending order.
 #       Access with input$sourceSelectId.
 #
 #   typeSelectId:
 #       select menu
 #       'All types'
-#       The items are all levels from globalDS$type sorted
+#       The items are all levels from GLOBAL_DS$type sorted
 #       lexicographically in ascending order.
 #       Access with input$typeSelectId.
 #
@@ -81,7 +81,7 @@ createOptionsPanel = function() {
                            inputId='studioSelectId',
                            label='Select studio',
                            choices=c('All studios',
-                                     sort(levels(globalDS$studio))),
+                                     sort(levels(GLOBAL_DS$studio))),
                            selected='All studios'
                            )
                )
@@ -92,7 +92,7 @@ createOptionsPanel = function() {
                            inputId='genreSelectId',
                            label='Select genre',
                            choices=c('All genres',
-                                     sort(names(globalDS)[GENRE_COLS])),
+                                     sort(names(GLOBAL_DS)[GENRE_COLS])),
                            selected='All genres'
                            )
                )
@@ -103,7 +103,7 @@ createOptionsPanel = function() {
                            inputId='sourceSelectId',
                            label='Select source',
                            choices=c('All sources',
-                                     sort(levels(globalDS$source))),
+                                     sort(levels(GLOBAL_DS$source))),
                            selected='All sources'
                            )
                )
@@ -114,7 +114,7 @@ createOptionsPanel = function() {
                            inputId='typeSelectId',
                            label='Select type',
                            choices=c('All types',
-                                     sort(levels(globalDS$type))),
+                                     sort(levels(GLOBAL_DS$type))),
                            selected='All types'
                            )
                )

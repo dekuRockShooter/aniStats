@@ -66,19 +66,19 @@ createCatTab = function(name, tabIdx) {
     # Initialize the select menu items.
     if (tabIdx == 2) {
         selectLabel = 'Select genre'
-        selectItems = sort(names(globalDS) [GENRE_COLS], decreasing=FALSE)
+        selectItems = sort(names(GLOBAL_DS) [GENRE_COLS], decreasing=FALSE)
         help_text = HELP_TEXT$genres
     } else if (tabIdx == 3) {
         selectLabel = 'Select source'
-        selectItems = sort(levels(globalDS$source), decreasing=FALSE)
+        selectItems = sort(levels(GLOBAL_DS$source), decreasing=FALSE)
         help_text = HELP_TEXT$source
     } else if (tabIdx == 4) {
         selectLabel='Select type'
-        selectItems = sort(levels(globalDS$type), decreasing=FALSE)
+        selectItems = sort(levels(GLOBAL_DS$type), decreasing=FALSE)
         help_text = HELP_TEXT$type
     } else if (tabIdx == 5) {
         selectLabel='Select studio'
-        selectItems = sort(levels(globalDS$studio), decreasing=FALSE)
+        selectItems = sort(levels(GLOBAL_DS$studio), decreasing=FALSE)
         help_text = HELP_TEXT$studio
     }
 

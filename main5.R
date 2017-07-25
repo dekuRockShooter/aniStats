@@ -1,4 +1,3 @@
-# Functions: #   init_anime: initialize the main data set 
 library(lattice)
 source('util.R')
 source('variables.R')
@@ -750,17 +749,17 @@ get_quantiles_tmp = function(year, vec, data_years) {
 # * number of TVs vs. year (interest in TV)
 # * number of Movies vs. year (interest in Movie)
 
-globalDS = init_anime()
+GLOBAL_DS = init_anime()
 #globalNames = A$name
-#globalDS = A[, -1]
+#GLOBAL_DS = A[, -1]
 #rm(A)
 sapply(GENRE_COLS,
        function(idx)
-           globalDS[, idx] <<- as.integer(globalDS[, idx]) - 1)
+           GLOBAL_DS[, idx] <<- as.integer(GLOBAL_DS[, idx]) - 1)
 
 # Matrix of median scores for each studio (columns) per year (rows).
 createMedScoresMat = function(data, x='', y=NULL) {
-    data = globalDS
+    data = GLOBAL_DS
     if (x != '') {
         data = data[which(data[[x]] == y), ]
         data$studio = as.factor(data$studio)
@@ -804,48 +803,48 @@ createMedScoresMat = function(data, x='', y=NULL) {
     return(mat)
 }
 
-#studioMedScoresMat = createMedScoresMat(globalDS)
+#studioMedScoresMat = createMedScoresMat(GLOBAL_DS)
 
 # Not the current year
-defaultYears = (max(globalDS$year) - 10) : (max(globalDS$year) - 1)
-globalData = init_data(globalDS, globalDS, NULL)
-globalMedScore = median(globalDS$score)
-globalMedViews = median(globalDS$tot_watched)
+defaultYears = (max(GLOBAL_DS$year) - 10) : (max(GLOBAL_DS$year) - 1)
+GLOBAL_DATA = init_data(GLOBAL_DS, GLOBAL_DS, NULL)
+GLOBAL_MED_SCORES = median(GLOBAL_DS$score)
+GLOBAL_MED_VIEWS = median(GLOBAL_DS$tot_watched)
 
 # This block calculates the prediction accuracy for each studio.
-studioNames = sort(levels(globalDS$studio), decreasing=FALSE)
-studioAcc = numeric(length(studioNames))
-studioCount = numeric(length(studioNames))
-for (idx in which(globalDS$type == 'TV')) {
-    studioIdx = which(studioNames == globalDS$studio[idx])
-    outcome = globalDS$predicted_correctly[idx]
-    studioAcc[studioIdx] = studioAcc[studioIdx] + outcome
-    studioCount[studioIdx] = studioCount[studioIdx] + 1
+GLOBAL_STUDIO_NAMES = sort(levels(GLOBAL_DS$studio), decreasing=FALSE)
+GLOBAL_STUDIO_ACC = numeric(length(GLOBAL_STUDIO_NAMES))
+GLOBAL_STUDIO_COUNT = numeric(length(GLOBAL_STUDIO_NAMES))
+for (idx in which(GLOBAL_DS$type == 'TV')) {
+    studioIdx = which(GLOBAL_STUDIO_NAMES == GLOBAL_DS$studio[idx])
+    outcome = GLOBAL_DS$predicted_correctly[idx]
+    GLOBAL_STUDIO_ACC[studioIdx] = GLOBAL_STUDIO_ACC[studioIdx] + outcome
+    GLOBAL_STUDIO_COUNT[studioIdx] = GLOBAL_STUDIO_COUNT[studioIdx] + 1
 }
-which0 = which(studioCount == 0)
-studioAcc = studioAcc[-which0]
-studioCount = studioCount[-which0]
-studioNames = studioNames[-which0]
+which0 = which(GLOBAL_STUDIO_COUNT == 0)
+GLOBAL_STUDIO_ACC = GLOBAL_STUDIO_ACC[-which0]
+GLOBAL_STUDIO_COUNT = GLOBAL_STUDIO_COUNT[-which0]
+GLOBAL_STUDIO_NAMES = GLOBAL_STUDIO_NAMES[-which0]
 rm(which0)
 # perfrcSortedIndeces stores the indeces of the studios,
 # sorted by decreasing performance.
-studioPerf = round(studioAcc / studioCount, 2)
-perfSortedIndeces = order(studioPerf, decreasing=TRUE)
+GLOBAL_STUDIO_PERF = round(GLOBAL_STUDIO_ACC / GLOBAL_STUDIO_COUNT, 2)
+GLOBAL_PERF_SORTED_INDECES = order(GLOBAL_STUDIO_PERF, decreasing=TRUE)
 
 # I don't remember what these variables were meant for.
 #globalTimeline = list()
-#globalTimeline$scores = lapply(globalData$years,
+#globalTimeline$scores = lapply(GLOBAL_DATA$years,
                                #get_quantiles_tmp,
-                               #na.omit(globalDS$score),
-                               #globalDS$year)
-#globalTimeline$views = lapply(globalData$years,
+                               #na.omit(GLOBAL_DS$score),
+                               #GLOBAL_DS$year)
+#globalTimeline$views = lapply(GLOBAL_DATA$years,
                                #get_quantiles_tmp,
-                               #na.omit(globalDS$tot_watched),
-                               #globalDS$year)
-#globalTimeline$eps = lapply(globalData$years,
+                               #na.omit(GLOBAL_DS$tot_watched),
+                               #GLOBAL_DS$year)
+#globalTimeline$eps = lapply(GLOBAL_DATA$years,
                                #get_quantiles_tmp,
-                               #na.omit(globalDS$tot_eps),
-                               #globalDS$year)
+                               #na.omit(GLOBAL_DS$tot_eps),
+                               #GLOBAL_DS$year)
 #globalTimeline$scores = do.call(rbind, globalTimeline$scores)[, 3]
 #globalTimeline$views = do.call(rbind, globalTimeline$views)[, 3]
 #globalTimeline$eps = do.call(rbind, globalTimeline$eps)[, 3]

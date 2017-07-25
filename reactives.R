@@ -50,7 +50,7 @@ reactiveDataChange = eventReactive(
        toYear = as.integer(input$toYearSelectId)
        category = ''
        label = NULL
-       localDS = globalDS
+       localDS = GLOBAL_DS
 
        # These if-blocks gradually decrease the data set
        # based on the parameters.  The current implementation
@@ -98,12 +98,12 @@ reactiveDataChange = eventReactive(
            return(locData)
        }
 
-       if (nrow(localDS) != nrow(globalDS)) {
-           localDS = init_data(localDS, globalDS, studio,
+       if (nrow(localDS) != nrow(GLOBAL_DS)) {
+           localDS = init_data(localDS, GLOBAL_DS, studio,
                                category, label)
        }
        else {
-           localDS = globalData
+           localDS = GLOBAL_DATA
        }
 
        localDS$badQry = FALSE
@@ -198,14 +198,14 @@ getReactiveShowQuantiles = function(tabId, whichPlot) {
 #   Sources can be anything for which input$selectX_Y is one of
 #   levels in the corresponding factor (for example, select3_3
 #   can be some widget for which input$select3_3 is one of the
-#   elements in levels(globalDS$sources)).
+#   elements in levels(GLOBAL_DS$sources)).
 #
 # Returns:
-#   The index of the source's value in sort(levels(globalDS$x)),
+#   The index of the source's value in sort(levels(GLOBAL_DS$x)),
 #   if tabIdx is anything except TAB_ID_GENRES (x is either source,
 #   type, or studio, depending on the value of 'tabIdx').  When
 #   'tabIdx' is TAB_ID_GENRES, the return value is the index of
-#   the source's value in sort(names(globalDS)[GENRE_COLS]).
+#   the source's value in sort(names(GLOBAL_DS)[GENRE_COLS]).
 getReactiveClassChange = function(tabId) {
     # For the input$select* accesses, x is the ID of a select
     # menu formatted as specified in tabs.R.
@@ -213,7 +213,7 @@ getReactiveClassChange = function(tabId) {
     # Each reactive listens to changes on a selection menu
     # for a specific tab.
     if (tabId == TAB_ID_GENRES) {
-        classes = sort(names(globalDS)[GENRE_COLS],
+        classes = sort(names(GLOBAL_DS)[GENRE_COLS],
                        decreasing=FALSE)
         reactive({
             class = input$select2_3
@@ -221,7 +221,7 @@ getReactiveClassChange = function(tabId) {
             return(idx)
         })
     } else if (tabId == TAB_ID_SOURCES) {
-        classes = sort(levels(globalDS$source),
+        classes = sort(levels(GLOBAL_DS$source),
                        decreasing=FALSE)
         reactive({
             class = input$select3_3
@@ -229,7 +229,7 @@ getReactiveClassChange = function(tabId) {
             return(idx)
         })
     } else if (tabId == TAB_ID_TYPES) {
-        classes = sort(levels(globalDS$type),
+        classes = sort(levels(GLOBAL_DS$type),
                        decreasing=FALSE)
         reactive({
             class = input$select4_3
@@ -237,7 +237,7 @@ getReactiveClassChange = function(tabId) {
             return(idx)
         })
     } else if (tabId == TAB_ID_STUDIOS) {
-        classes = sort(levels(globalDS$studio),
+        classes = sort(levels(GLOBAL_DS$studio),
                        decreasing=FALSE)
         reactive({
             class = input$select5_3
@@ -249,7 +249,7 @@ getReactiveClassChange = function(tabId) {
 
 # Create a reactive that listens to data changes.  Whenever
 # the data set changes, this reactive computes the medians
-# of a given variable in 'globalDS' for different years.
+# of a given variable in 'GLOBAL_DS' for different years.
 #
 # This reactive is a conductor.
 #
@@ -263,17 +263,17 @@ getReactiveClassChange = function(tabId) {
 #
 # Returns:
 #   A numeric vector with medians for 'rv' computed for each year
-#   in the new data set.  The medians are calculated using 'globalDS'.
+#   in the new data set.  The medians are calculated using 'GLOBAL_DS'.
 #   Concretely, if v is the returned vector, v[j] is the median 'rv'
-#   for rows in 'globalDS' with a year value of data$years[j], where
+#   for rows in 'GLOBAL_DS' with a year value of data$years[j], where
 #   'data' is the new data set returned by the source.
 getReactiveGlobalPerf = function(rv) {
     if (rv == 'score') {
-        rv = globalDS$score
+        rv = GLOBAL_DS$score
     } else if (rv == 'views') {
-        rv = globalDS$tot_watched
+        rv = GLOBAL_DS$tot_watched
     } else if (rv == 'eps') {
-        rv = globalDS$tot_eps
+        rv = GLOBAL_DS$tot_eps
     }
 
     reactive({
@@ -282,7 +282,7 @@ getReactiveGlobalPerf = function(rv) {
                          data$years,
                          function(year) {
                              median(
-                                    rv[globalDS$year == year],
+                                    rv[GLOBAL_DS$year == year],
                                     na.rm=TRUE
                                     )
                          })
@@ -304,7 +304,7 @@ getReactiveGlobalPerf = function(rv) {
 #   input$predictions_season_select
 #
 # Returns:
-#   An integer vector of row indeces in 'globalDS' that have a
+#   An integer vector of row indeces in 'GLOBAL_DS' that have a
 #   value of year in the range specified by the source.  The
 #   rows are further limited to those with a value of 'TV' for
 #   the 'type' column.
@@ -322,22 +322,22 @@ getReactivePredictions = function() {
               else if (season == 'Summer') months = c(6, 7, 8)
               else months = c(9, 10, 11)
               indeces = which(
-                              (globalDS$type == 'TV') &
-                                  (globalDS$year == year) &
-                                  (globalDS$month %in% months)
+                              (GLOBAL_DS$type == 'TV') &
+                                  (GLOBAL_DS$year == year) &
+                                  (GLOBAL_DS$month %in% months)
                               )
             }
             else {
               indeces = which(
-                              (globalDS$type == 'TV') &
+                              (GLOBAL_DS$type == 'TV') &
                                   (
                                    (
-                                    (globalDS$year == year) &
-                                        (globalDS$month %in% c(1, 2))
+                                    (GLOBAL_DS$year == year) &
+                                        (GLOBAL_DS$month %in% c(1, 2))
                                     ) |
                                    (
-                                    (globalDS$year == (year - 1)) &
-                                        (globalDS$month == 12)
+                                    (GLOBAL_DS$year == (year - 1)) &
+                                        (GLOBAL_DS$month == 12)
                                     )
                                    )
                               )

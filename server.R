@@ -19,8 +19,8 @@ shinyServer(
                 # Its purpose is to provide a backup for those cases when
                 # the new data set is empty.  When this happens, 'locData'
                 # can be used to keep displaying the data instead of showing
-                # nothing or unexpectadly changing the data to 'globalData'.
-                locData = globalData
+                # nothing or unexpectadly changing the data to 'GLOBAL_DATA'.
+                locData = GLOBAL_DATA
 
                 # Initialization of data specific to the current user.
                 # Executed once for every user.
@@ -305,7 +305,7 @@ shinyServer(
                             mean_gscore_vs_genre(
                                                  curType$score_meds[w],
                                                  curType$class_colors[w],
-                                                 globalMedScore
+                                                 GLOBAL_MED_SCORES
                                                  )
                         })
                     } else if (plotId == 3) {
@@ -371,8 +371,8 @@ shinyServer(
                                             curType$view_meds,
                                             curType$score_meds,
                                             curType$class_colors,
-                                            globalMedScore,
-                                            globalMedViews,
+                                            GLOBAL_MED_SCORES,
+                                            GLOBAL_MED_VIEWS,
                                             curType$class_names,
                                             ylim=ylim,
                                             xlim=xlim
@@ -392,7 +392,7 @@ shinyServer(
                             gscore_vs_gprop(
                                             curType$tot_props,
                                             curType$score_meds,
-                                            globalMedScore,
+                                            GLOBAL_MED_SCORES,
                                             curType$class_colors,
                                             curType$class_names,
                                             ylim=ylim,
@@ -448,12 +448,12 @@ shinyServer(
                     renderUI({
                         indeces = getIndeces()
                         columns = which(
-                                        names(globalDS) %in%
+                                        names(GLOBAL_DS) %in%
                                             c('name', 'score', 'studio',
                                               'yhats', 'predicted_correctly')
                                         )
 
-                        table = globalDS[indeces, columns]
+                        table = GLOBAL_DS[indeces, columns]
                         outcomes = table$predicted_correctly
 
                         # Build an HTML table.  The rows are shows.  If
@@ -539,16 +539,16 @@ shinyServer(
 
                     renderUI({
                         rows = list()
-                        for (idx in perfSortedIndeces) {
+                        for (idx in GLOBAL_PERF_SORTED_INDECES) {
                             # This creates the cells: one for the studio
                             # name, one for the number of its shows predicted
                             # correctly, one for the total number of shows it
                             # made, and another for the ratio of the previous
                             # two.
-                            studioNameCell = tags$td(studioNames[idx])
-                            studioAccCell = tags$td(studioAcc[idx])
-                            studioCountCell = tags$td(studioCount[idx])
-                            studioPerfCell = tags$td(studioPerf[idx])
+                            studioNameCell = tags$td(GLOBAL_STUDIO_NAMES[idx])
+                            studioAccCell = tags$td(GLOBAL_STUDIO_ACC[idx])
+                            studioCountCell = tags$td(GLOBAL_STUDIO_COUNT[idx])
+                            studioPerfCell = tags$td(GLOBAL_STUDIO_PERF[idx])
 
                             row = tags$tr(
                                           studioNameCell,
