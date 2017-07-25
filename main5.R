@@ -284,6 +284,9 @@ get_type_data = function(data, glo_data, category, years) {
     # median(X) for each class.
     score_meds = apply(score_mat, 2, function(col) median(col, na.rm=TRUE))
     view_meds = apply(view_mat, 2, function(col) median(col, na.rm=TRUE))
+    # Turn zeros into NAs so that they don't affect the median.
+    score_meds[score_meds < 1e-8] = NA
+    view_meds[view_meds < 1e-8] = NA
 
     # Proportions of each genre relative to all years.
     tot_props = get_genre_props(count_mat)
