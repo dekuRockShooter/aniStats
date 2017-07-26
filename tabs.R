@@ -376,11 +376,11 @@ initStatsTabs = function() {
                 id='tabpanelId',
                 # The argument to *Ouput(x) is the name of an R object
                 # (defined in server.R as output$x) of type *.
-                createSummaryTab('Summary', TAB_ID_SUMMARY),
-                createCatTab('Genres', TAB_ID_GENRES),
-                createCatTab('Sources', TAB_ID_SOURCES),
-                createCatTab('Types', TAB_ID_TYPES),
-                createCatTab('Studios', TAB_ID_STUDIOS)
+                createSummaryTab('Summary', tabsEnum$SUMMARY),
+                createCatTab('Genres', tabsEnum$GENRES),
+                createCatTab('Sources', tabsEnum$SOURCES),
+                createCatTab('Types', tabsEnum$TYPES),
+                createCatTab('Studios', tabsEnum$STUDIOS)
                 )
 }
 
@@ -390,8 +390,14 @@ initPredictionsTabs = function() {
     tabsetPanel(
                 type="tabs",
                 id='predictionsTabsetPanelId',
-                createPredictionsTab('Predictions', TAB_ID_PREDICTIONS),
-                createPerformanceTab('Performance', TAB_ID_PERFORMANCE)
+                createPredictionsTab(
+                                     'Predictions',
+                                     tabsEnum$PREDICTIONS
+                                     ),
+                createPerformanceTab(
+                                     'Performance',
+                                     tabsEnum$PERFORMANCE
+                                     )
                 )
 }
 

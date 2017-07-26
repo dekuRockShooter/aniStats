@@ -29,7 +29,7 @@ shinyServer(
                 # The render* functions are executed everytime a widget
                 # that it is observing changes.  These widgets are stored
                 # in input$x.  If a function does not use the input list,
-                # then it is executed only once. 
+                # then it is executed only once.
 
 
                 # Create a renderPlot function.  This can be used as:
@@ -45,10 +45,11 @@ shinyServer(
                     }
                     if (plotId == 1) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('score')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(
-                                                    TAB_ID_SUMMARY,
-                                                    PLOT_SCORE_VS_TIME
-                                                    )
+                        reactiveShowQuantiles =
+                            getReactiveShowQuantiles(
+                                tabsEnum$SUMMARY,
+                                PLOT_SCORE_VS_TIME
+                                )
 
                         renderPlot({
                             data = reactiveDataChange()
@@ -89,10 +90,11 @@ shinyServer(
                         })
                     } else if (plotId == 2) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('views')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(
-                                                    TAB_ID_SUMMARY,
-                                                    PLOT_VIEWS_VS_TIME
-                                                    )
+                        reactiveShowQuantiles =
+                            getReactiveShowQuantiles(
+                                tabsEnum$SUMMARY,
+                                PLOT_VIEWS_VS_TIME
+                                )
 
                         renderPlot({
                             data = reactiveDataChange()
@@ -134,10 +136,11 @@ shinyServer(
                     }
                     else if (plotId == 3) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('eps')
-                        reactiveShowQuantiles = getReactiveShowQuantiles(
-                                                    TAB_ID_SUMMARY,
-                                                    PLOT_EPS_VS_TIME
-                                                    )
+                        reactiveShowQuantiles =
+                            getReactiveShowQuantiles(
+                                tabsEnum$SUMMARY,
+                                PLOT_EPS_VS_TIME
+                                )
 
                         renderPlot({
                             data = reactiveDataChange()
@@ -239,10 +242,14 @@ shinyServer(
                 # specs in tabs.R.
                 createCatPlot = function(plotId, tabId,
                                          brushId, dblClickId) {
-                    if (tabId == TAB_ID_GENRES) category = 'genres'
-                    else if (tabId == TAB_ID_SOURCES) category = 'sources'
-                    else if (tabId == TAB_ID_TYPES) category = 'types'
-                    else if (tabId == TAB_ID_STUDIOS) category = 'studios'
+                    if (tabId == tabsEnum$GENRES)
+                        category = 'genres'
+                    else if (tabId == tabsEnum$SOURCES)
+                        category = 'sources'
+                    else if (tabId == tabsEnum$TYPES)
+                        category = 'types'
+                    else if (tabId == tabsEnum$STUDIOS)
+                        category = 'studios'
 
                     if (!(is.null(dblClickId) || is.null(brushId))) {
                         reactiveRanges = getReactiveZoom(brushId, dblClickId)

@@ -1,16 +1,23 @@
-TAB_ID_SUMMARY = 1
-TAB_ID_GENRES = 2
-TAB_ID_SOURCES = 3
-TAB_ID_TYPES = 4
-TAB_ID_STUDIOS = 5
+# This list acts as an enum to refer to a tab.  If code needs
+# to reference a specific tab, it should do so using this enum.
+tabsEnum = list()
+tabsEnum$SUMMARY = 1
+tabsEnum$GENRES = 2
+tabsEnum$SOURCES = 3
+tabsEnum$TYPES = 4
+tabsEnum$STUDIOS = 5
+tabsEnum$PREDICTIONS = 6
+tabsEnum$PERFORMANCE = 7
 
-TAB_ID_PREDICTIONS = 1
-TAB_ID_PERFORMANCE = 2
-
+# These are arguments for getReactiveShowQuantiles().  They
+# denote the plot that will be associated with the reactive.
 PLOT_SCORE_VS_TIME = 1
 PLOT_VIEWS_VS_TIME = 2
 PLOT_EPS_VS_TIME = 3
 
+# Each element of this list corresponds to a tab in the
+# Stats page.  The elements of those elements are help
+# text for the corresponding plot.
 HELP_TEXT = list()
 HELP_TEXT$summary[1] = 'This plot shows how scores have changed over time.  The red line is the median score.  You can see curves for mean, min, and max scores with the options tooltip.  Click and drag to zoom in, and double click to zoom out.'
 HELP_TEXT$summary[2] = 'This plot shows how the number of viewers has changed over time.  The red line is the median score.  You can see curves for mean, min, and max scores with the options tooltip.  Click and drag to zoom in, and double click to zoom out.'
@@ -58,6 +65,9 @@ HELP_TEXT$studio[7] = 'This chart plots each studio according to its forcasted q
 
 
 
+# The elements of this list are descriptions for the
+# corresponding plot in the Performance tab on the
+# Predictions page.
 PLOT_DESC = list()
 PLOT_DESC[['acc_vs_time']] = 'This chart shows the true positive (red) and false positive (black) rates for each six-month (two seasons) window from December 1999 (time = 1) to the present.  Each vertical rectangle  encapsulates two years; the leftmost point being the Winter and Spring seasons, and subsequent points being the following two seasons.  The true positive rate is defined as: (number of positives predicted correctly) / (number of positives predicted).  The false positive rate is defined analogously.  The performance is erratic due to the ever-changing quality of anime (two shows with everything identical other than their names can (and do) receive scores so different that one is below average and the other is above average.  As you can imagine, this confuses the classifier greatly).  Generally, when the classifier predicts a show to be above average, it is right about 70% of the time, while only about 60% of its predictions for below average shows are correct.'
 PLOT_DESC[['tp_vs_tn']] = 'This is a plot of true positive vs. true negative.  Each point is the performance measured for one six-month period.  Like in the above plot, you can see that most of the positive predictions are correct at least 70% of the time.  Most negative predictions are correct at least 60% of the time.'
@@ -65,8 +75,14 @@ PLOT_DESC[['fp_vs_stucnt']] = 'This plot shows how well the classifier performs 
 PLOT_DESC[['fn_vs_stucnt']] = 'This is the same plot as the above one, but displays the proportion of shows incorrectly predicted to be below average, rather than above average.  The shape is very similar, and the observations made in the above plot apply this one as well.  Again this is good since the quality of shows made by most major studios will generally be predicted correctly.'
 
 
+# This is a description of the table that is shown in the
+# Performance tab of the Predictions page.
 PERF_TABLE_DESC = 'This table shows the classifier\'s performance for all studios.  The third column is the total TV anime shows produced by a studio.  The second column is the number of these correctly predicted to be below or above average.'
 
+# The elements of ABOUT_TEXT is a paragraph, to be surrounded
+# by <p> tags, for the About page.  Each element of ABOUT_LIST
+# is text for the <li> tags in the list that appears in the
+# About page.
 ABOUT_TEXT = character()
 ABOUT_LIST = character()
 ABOUT_TEXT[1] = 'This website is intended to show various data about the world of anime.  The hope is to let anime viewers discover new things about anime: past, current, and future trends; the state of the industry; the performance of studios, genres, and source materials; and much more.  Here are some of the questions that you can find answers to with this site:'

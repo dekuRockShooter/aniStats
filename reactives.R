@@ -212,7 +212,7 @@ getReactiveClassChange = function(tabId) {
 
     # Each reactive listens to changes on a selection menu
     # for a specific tab.
-    if (tabId == TAB_ID_GENRES) {
+    if (tabId == tabsEnum$GENRES) {
         classes = sort(names(GLOBAL_DS)[GENRE_COLS],
                        decreasing=FALSE)
         reactive({
@@ -220,7 +220,7 @@ getReactiveClassChange = function(tabId) {
             idx = which(classes == class)
             return(idx)
         })
-    } else if (tabId == TAB_ID_SOURCES) {
+    } else if (tabId == tabsEnum$SOURCES) {
         classes = sort(levels(GLOBAL_DS$source),
                        decreasing=FALSE)
         reactive({
@@ -228,7 +228,7 @@ getReactiveClassChange = function(tabId) {
             idx = which(classes == class)
             return(idx)
         })
-    } else if (tabId == TAB_ID_TYPES) {
+    } else if (tabId == tabsEnum$TYPES) {
         classes = sort(levels(GLOBAL_DS$type),
                        decreasing=FALSE)
         reactive({
@@ -236,7 +236,7 @@ getReactiveClassChange = function(tabId) {
             idx = which(classes == class)
             return(idx)
         })
-    } else if (tabId == TAB_ID_STUDIOS) {
+    } else if (tabId == tabsEnum$STUDIOS) {
         classes = sort(levels(GLOBAL_DS$studio),
                        decreasing=FALSE)
         reactive({
