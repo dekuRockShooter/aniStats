@@ -119,7 +119,7 @@ reactiveDataChange = eventReactive(
 #
 # Arguments:
 #   tabId:
-#     One of the following variables: TAB_ID_SUMMARY.
+#     One of the following: tabsEnum$SUMMARY.
 #
 #   whichPlot:
 #     One of the following variables: PLOT_SCORE_VS_TIME,
@@ -186,14 +186,14 @@ getReactiveShowQuantiles = function(tabId, whichPlot) {
 #
 # Arguments:
 #   tabId:
-#     One of the following variables: TAB_ID_GENRES, TAB_ID_SOURCES,
-#     TAB_ID_STUDIOS, TAB_ID_TYPES.
+#     One of the following variables: tabsEnum$GENRES, tabsEnum$SOURCES,
+#     tabsEnum$STUDIOS, tabsEnum$TYPES.
 #
 # Sources:
-#   input$select2_3 (if tabIdx == TAB_ID_GENRES)
-#   input$select3_3 (if tabIdx == TAB_ID_SOURCES)
-#   input$select4_3 (if tabIdx == TAB_ID_TYPES)
-#   input$select5_3 (if tabIdx == TAB_ID_STUDIOS)
+#   input$select2_3 (if tabIdx == tabsEnum$GENRES)
+#   input$select3_3 (if tabIdx == tabsEnum$SOURCES)
+#   input$select4_3 (if tabIdx == tabsEnum$TYPES)
+#   input$select5_3 (if tabIdx == tabsEnum$STUDIOS)
 #
 #   Sources can be anything for which input$selectX_Y is one of
 #   levels in the corresponding factor (for example, select3_3
@@ -202,9 +202,9 @@ getReactiveShowQuantiles = function(tabId, whichPlot) {
 #
 # Returns:
 #   The index of the source's value in sort(levels(GLOBAL_DS$x)),
-#   if tabIdx is anything except TAB_ID_GENRES (x is either source,
+#   if tabIdx is anything except tabsEnum$GENRES (x is either source,
 #   type, or studio, depending on the value of 'tabIdx').  When
-#   'tabIdx' is TAB_ID_GENRES, the return value is the index of
+#   'tabIdx' is tabsEnum$GENRES, the return value is the index of
 #   the source's value in sort(names(GLOBAL_DS)[GENRE_COLS]).
 getReactiveClassChange = function(tabId) {
     # For the input$select* accesses, x is the ID of a select

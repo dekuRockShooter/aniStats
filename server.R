@@ -233,8 +233,7 @@ shinyServer(
                 #
                 # plotId is the y part of plotx_y (see tabs.R).
                 #
-                # tabId is a TAB_ID_* constant (see constants.R) except
-                # TAB_ID_SUMMARY.
+                # tabId is a value of tabsEnum, except tabsEnum$SUMMARY.
                 #
                 # If the plot has support for brushing and double clicking,
                 # then the IDs of those actions can be given with brushId
