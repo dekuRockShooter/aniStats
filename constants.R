@@ -9,12 +9,23 @@ tabsEnum$STUDIOS = 5
 tabsEnum$PREDICTIONS = 6
 tabsEnum$PERFORMANCE = 7
 
-# These are arguments for getReactiveShowQuantiles().  They
-# denote the plot that will be associated with the reactive.
-PLOT_SCORE_VS_TIME = 1
-PLOT_VIEWS_VS_TIME = 2
-PLOT_EPS_VS_TIME = 3
-
+# This list is an enum to refer to a plot.  If code needs to
+# refer to a specific plot, it should do so with this enum.
+plotsEnum = list()
+plotsEnum$SCORE_VS_TIME = 1
+plotsEnum$VIEWS_VS_TIME = 2
+plotsEnum$EPS_VS_TIME = 3
+plotsEnum$TYPEPROP_VS_TIME = 4
+plotsEnum$SOURCEPROP_VS_TIME = 5
+plotsEnum$PERFORMANCE_VS_TIME = 6
+plotsEnum$SCORE_PERC_VS_SHOW_PERC = 7
+plotsEnum$PROP_BARCHART = 8
+plotsEnum$SCORE_VS_CATEGORY = 9
+plotsEnum$CATEGORY_PERF_VS_TIME = 10
+plotsEnum$CATEGORY_SCORE_VS_VIEWS = 11
+plotsEnum$CATEGORY_SCORE_VS_PROP = 12
+plotsEnum$CATEGORY_SCORE_SLOPE_VS_PROP_SLOPE = 13
+plotsEnum$CATEGORY_PROP_HEATMAP = 14
 # Each element of this list corresponds to a tab in the
 # Stats page.  The elements of those elements are help
 # text for the corresponding plot.

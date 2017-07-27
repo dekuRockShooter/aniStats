@@ -122,8 +122,8 @@ reactiveDataChange = eventReactive(
 #     One of the following: tabsEnum$SUMMARY.
 #
 #   whichPlot:
-#     One of the following variables: PLOT_SCORE_VS_TIME,
-#     PLOT_EPS_VS_TIME, PLOT_VIEWS_VS_TIME.
+#     One of the following: plotsEnum$SCORE_VS_TIME,
+#     plotsEnum$EPS_VS_TIME, plotsEnum$VIEWS_VS_TIME.
 #
 # Sources:
 #   input$checkboxX_Y_1 (min)
@@ -209,14 +209,18 @@ getReactiveShowQuantiles = function(tabId, whichPlot) {
 getReactiveClassChange = function(tabId) {
     # For the input$select* accesses, x is the ID of a select
     # menu formatted as specified in tabs.R.
+    selectId = paste('select', tabId, '_', plotsEnum$CATEGORY_PERF_VS_TIME,
+                     sep='')
 
+    # TODO: put reactives at the end; they are the same, which means all
+    # if-blocks are duplicating code.
     # Each reactive listens to changes on a selection menu
     # for a specific tab.
     if (tabId == tabsEnum$GENRES) {
         classes = sort(names(GLOBAL_DS)[GENRE_COLS],
                        decreasing=FALSE)
         reactive({
-            class = input$select2_3
+            class = input[[selectId]]
             idx = which(classes == class)
             return(idx)
         })
@@ -224,7 +228,7 @@ getReactiveClassChange = function(tabId) {
         classes = sort(levels(GLOBAL_DS$source),
                        decreasing=FALSE)
         reactive({
-            class = input$select3_3
+            class = input[[selectId]]
             idx = which(classes == class)
             return(idx)
         })
@@ -232,7 +236,7 @@ getReactiveClassChange = function(tabId) {
         classes = sort(levels(GLOBAL_DS$type),
                        decreasing=FALSE)
         reactive({
-            class = input$select4_3
+            class = input[[selectId]]
             idx = which(classes == class)
             return(idx)
         })
@@ -240,7 +244,7 @@ getReactiveClassChange = function(tabId) {
         classes = sort(levels(GLOBAL_DS$studio),
                        decreasing=FALSE)
         reactive({
-            class = input$select5_3
+            class = input[[selectId]]
             idx = which(classes == class)
             return(idx)
         })

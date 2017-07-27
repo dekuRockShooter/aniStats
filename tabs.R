@@ -9,78 +9,108 @@
 #              createCatTab('Category', catTabId)
 #             )
 #
-# Each tab consists of several plots and widgets.  The ids of each element
-# depend on the arguments passed (name, tabIdx).  The ids correspond to names
-# in the Shiny 'output' and 'input' list.  The ids are formatted as:
+# Each tab consists of several plots and widgets.  Each plot is accessed
+# with plotOutput(p).  Here, p is the ID of the plot, and corresponds to
+# output$p = renderPlot(...), which is assumed to have already been
+# created in server.R.  The ID, p, of a plot is formatted as follows:
 #
-#   plots: 'plotx_y', x = tabIdx, y = row in which the plot is displayed.
-#       Access with output[['plotx_y']].
+#   'plotx_y', x is a value in tabsEnum, y is a value in plotsEnum.
+#   Concretely, these IDs are constructed as
+#   paste0('plot', tabEnum, '_', plotEnum), where tabEnum and plotEnum are
+#   enums in tabsEnum and plotsEnum, respectively.
 #
-#   brushes: 'brushx_y', x = tabIdx, y = row in which the plot is displayed.
-#       This is the brush for 'plotx_y'.  All plots except plot 4 have a brush.
-#       Access with input[['brushx_y']].
+# output[['plotx_y']] is the associated plot.
 #
-#   double clicks: 'dblclickx_y', x = tabIdx, y = row in which the plot is
-#       displayed.  This is the double click for 'plotx_y'.  All plots
-#       except plot 4 support double click.
-#       Access with input[['dblclickx_y']].
+# Some plots can also be brushed (click and dragged) and double clicked.
+# This corresponds to the call plotOuput(p, brush=b, dblclick=d).  The
+# ID of a brush (b) and double click (d) are:
 #
-#   select menus: 'selectx_y', x = tabIdx, y = row in which the plot is
-#       displayed.  This is the select menu for 'plotx_y'.  Only plot 3
-#       has a select menu.
-#       Access with input[['selectx_y']].
+#   'brushx_y', x is a value in tabsEnum, y is a value in plotsEnum,
+#   'dblclickx_y', x is a value in tabsEnum, y is a value in plotsEnum.
 #
-#   checkboxes: 'checkboxx_y_z', x = tabIdx, y = row in which the plot is
-#       displayed, z = position from the top where the checkbox is located
-#       (1 is topmost, 5 is bottomost).  Only plots 1, 2, and 3 of tabs
-#       created by createSummaryTab contain checkboxes.
-#       Access with input[['selectx_y_z']].
+# The IDs of a brush and double click for a specific plot with ID plotx_y
+# have the same values for x and y.  Thus, if plot plot2_1 has a brush and
+# double click, their IDs are brush2_1 and dblclick2_1, respectively.
+# These IDs can be used in reactives by using input$brush2_1 and
+# input$dblclick2_1.  More generally, input$brushx_y and dblclickx_y can
+# be used to react to brushes and double clicks on plotx_y.
+#
+# Some plots also have select menus that are accessed by hovering over the
+# plot.  The IDs of these are formatted as:
+#
+#   'selectx_y', x is a value in tabsEnum, y is a value in plotsEnum.
+#
+# Like with brushes and double clicks, the ID of a select menu for a
+# specific plot with ID plotx_y is selectx_y, where x and y are the same
+# in both IDs.  The ID of a select menu can be used as a reactive source
+# with input$selectx_y.
+#
+# Some plots have checkboxes that are accessed by hovering over the
+# plot.  The IDs of these are formatted as:
+#
+#   'checkboxX_Y_Z', X is a value in tabsEnum, y is a value in plotsEnum,
+#   Z is an integer in [1, 5].  Z denotes the purpose of the checkbox:
+#   1 for min, 2 for 25th percentile, 3 for mean, 4 for 75th percentile,
+#   and 5 for max.
+#
+# Like with select menus, the ID of a checkbox for a specific plot with ID
+# plotX_Y is checkboxX_Y_Z, where X and Y are the same in both IDs.  The ID
+# of a checkbox can be used as a reactive source with input$checkboxX_Y_Z.
 source('main5.R')
 
 # Create a tabPanel for one of the categorical variables tabs.  See the
 # file description for details.
 #
 # name: The name to display on the tab.
-# tabIdx: The id of the tab.  This is one of the TAB_ID_* constants in
-#   constants.R, except TAB_ID_SUMMARY.
+# tabIdx: The id of the tab.  This is one of the values of tabsEnum,
+#   tabsEnum$SUMMARY.
 #
 # Returns a tabPanel.
 createCatTab = function(name, tabIdx) {
+    plots = c(
+              plotsEnum$PROP_BARCHART,
+              plotsEnum$SCORE_VS_CATEGORY,
+              plotsEnum$CATEGORY_PERF_VS_TIME,
+              plotsEnum$CATEGORY_PROP_HEATMAP,
+              plotsEnum$CATEGORY_SCORE_VS_VIEWS,
+              plotsEnum$CATEGORY_SCORE_VS_PROP,
+              plotsEnum$CATEGORY_SCORE_SLOPE_VS_PROP_SLOPE
+              )
     plotPrefix = paste('plot', tabIdx, '_', sep='')
+    plotIds = sapply(plots, function(val) paste(plotPrefix, val, sep=''))
+
     brushPrefix = paste('brush', tabIdx, '_', sep='')
+    brushIds = sapply(plots, function(val) paste(brushPrefix, val, sep=''))
+
     dblClkPrefix = paste('dblclick', tabIdx, '_', sep='')
-    # Ids for plots.  Format is 'plotx_y', x=tabIdx, y=rowIdx.
-    plotIds = sapply(1 : 7, function(idx) paste(plotPrefix, idx, sep=''))
-    # Ids for brushes  Format is 'brushx_y', x=tabIdx, y=rowIdx.
-    brushIds = sapply(1 : 7, function(idx) paste(brushPrefix, idx, sep=''))
-    # Ids for double clicks  Format is 'dblclickx_y', x=tabIdx, y=rowIdx.
-    dblClkIds = sapply(1 : 7, function(idx) paste(dblClkPrefix, idx, sep=''))
-    # Id for select menu.  Format is 'selectx_3', x=tabIdx.  Only plot 3 has
-    # a select menu.
-    selectId = paste('select', tabIdx, '_3', sep='')
+    dblClkIds = sapply(plots, function(val) paste(dblClkPrefix, val, sep=''))
+
+    selectId = paste('select', tabIdx, '_', plotsEnum$CATEGORY_PERF_VS_TIME,
+                     sep='')
     selectLabel = NULL
     selectItems = NULL
     # Array of help text for each plot.  The array is chosen in accordance to
     # tabIdx.
     help_text = NULL
     # Initialize the select menu items.
-    if (tabIdx == 2) {
+    if (tabIdx == tabsEnum$GENRES) {
         selectLabel = 'Select genre'
         selectItems = sort(names(GLOBAL_DS) [GENRE_COLS], decreasing=FALSE)
         help_text = HELP_TEXT$genres
-    } else if (tabIdx == 3) {
+    } else if (tabIdx == tabsEnum$SOURCES) {
         selectLabel = 'Select source'
         selectItems = sort(levels(GLOBAL_DS$source), decreasing=FALSE)
         help_text = HELP_TEXT$source
-    } else if (tabIdx == 4) {
+    } else if (tabIdx == tabsEnum$TYPES) {
         selectLabel='Select type'
         selectItems = sort(levels(GLOBAL_DS$type), decreasing=FALSE)
         help_text = HELP_TEXT$type
-    } else if (tabIdx == 5) {
+    } else if (tabIdx == tabsEnum$STUDIOS) {
         selectLabel='Select studio'
         selectItems = sort(levels(GLOBAL_DS$studio), decreasing=FALSE)
         help_text = HELP_TEXT$studio
     }
+    # TODO: else throw error.
 
     # Create columns common to most rows.  These have plots with support for
     # brushes and double clicks, and some have a hoverable options menu.
@@ -146,25 +176,35 @@ createCatTab = function(name, tabIdx) {
 # Create a summary tabPanel.  See the file description for details.
 #
 # name: The name to display on the tab.
-# tabIdx: The id of the tab.  Currently, only TAB_ID_SUMMARY is supported.
+# tabIdx: The id of the tab.  Currently, only tabsEnum$SUMMARY is supported.
 #
 # Returns a tabPanel.
 createSummaryTab = function(name, tabIdx) {
+    plots = c(
+              plotsEnum$SCORE_VS_TIME,
+              plotsEnum$VIEWS_VS_TIME,
+              plotsEnum$EPS_VS_TIME,
+              plotsEnum$TYPEPROP_VS_TIME,
+              plotsEnum$SOURCEPROP_VS_TIME,
+              plotsEnum$PERFORMANCE_VS_TIME,
+              plotsEnum$SCORE_PERC_VS_SHOW_PERC
+              )
+
     plotPrefix = paste('plot', tabIdx, '_', sep='')
+    plotIds = sapply(plots, function(idx) paste(plotPrefix, idx, sep=''))
+
     brushPrefix = paste('brush', tabIdx, '_', sep='')
+    brushIds = sapply(plots, function(idx) paste(brushPrefix, idx, sep=''))
+
     dblClkPrefix = paste('dblclick', tabIdx, '_', sep='')
-    # Ids for plots.  Format is 'plotx_y', x=tabIdx, y=rowIdx.
-    plotIds = sapply(1 : 7, function(idx) paste(plotPrefix, idx, sep=''))
-    # Ids for brushes  Format is 'brushx_y', x=tabIdx, y=rowIdx.
-    brushIds = sapply(1 : 7, function(idx) paste(brushPrefix, idx, sep=''))
-    # Ids for double clicks  Format is 'dblclickx_y', x=tabIdx, y=rowIdx.
-    dblClkIds = sapply(1 : 7, function(idx) paste(dblClkPrefix, idx, sep=''))
+    dblClkIds = sapply(plots, function(idx) paste(dblClkPrefix, idx, sep=''))
+
     # Ids for checkboxes  Format is 'checkboxx_y', x=rowIdx, y=checkboxIdx.
-    cbIds = lapply(1 : 3, # Row indeces.  First three plots have checkboxes.
-                   function(rowIdx) {
+    cbIds = lapply(plots[1 : 3], # First three plots have checkboxes.
+                   function(val) {
                        idPrefix = paste(
                                         'checkbox', tabIdx, '_',
-                                        rowIdx, '_', sep=''
+                                        val, '_', sep=''
                                         )
                        sapply(1 : 5, # Checkbox indeces.
                               function(cbIdx) {
@@ -206,7 +246,7 @@ createSummaryTab = function(name, tabIdx) {
         #         <div class='percentile_checkbox'>
         #           checkboxes
         #         </div>
-        #       optionIcon
+        #         optionIcon
         #       </div>
         #     </div>
         if ((rowIdx > 0) && (rowIdx < 4)) {

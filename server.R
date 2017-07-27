@@ -43,12 +43,12 @@ shinyServer(
                     if (!(is.null(dblClickId) || is.null(brushId))) {
                         reactiveRanges = getReactiveZoom(brushId, dblClickId)
                     }
-                    if (plotId == 1) {
+                    if (plotId == plotsEnum$SCORE_VS_TIME) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('score')
                         reactiveShowQuantiles =
                             getReactiveShowQuantiles(
                                 tabsEnum$SUMMARY,
-                                PLOT_SCORE_VS_TIME
+                                plotId
                                 )
 
                         renderPlot({
@@ -88,12 +88,12 @@ shinyServer(
                                           xlim=xlim
                                           )
                         })
-                    } else if (plotId == 2) {
+                    } else if (plotId == plotsEnum$VIEWS_VS_TIME) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('views')
                         reactiveShowQuantiles =
                             getReactiveShowQuantiles(
                                 tabsEnum$SUMMARY,
-                                PLOT_VIEWS_VS_TIME
+                                plotId
                                 )
 
                         renderPlot({
@@ -134,12 +134,12 @@ shinyServer(
                                           )
                         })
                     }
-                    else if (plotId == 3) {
+                    else if (plotId == plotsEnum$EPS_VS_TIME) {
                         reactiveGlobalPerf = getReactiveGlobalPerf('eps')
                         reactiveShowQuantiles =
                             getReactiveShowQuantiles(
                                 tabsEnum$SUMMARY,
-                                PLOT_EPS_VS_TIME
+                                plotId
                                 )
 
                         renderPlot({
@@ -177,7 +177,7 @@ shinyServer(
                                           xlim=xlim
                                           )
                         })
-                    } else if (plotId == 4) {
+                    } else if (plotId == plotsEnum$TYPEPROP_VS_TIME) {
                         renderPlot({
                             data = reactiveDataChange()
                             numtype_vs_year(
@@ -186,7 +186,7 @@ shinyServer(
                                             data$types$class_names
                                             )
                         })
-                    } else if (plotId == 5) {
+                    } else if (plotId == plotsEnum$SOURCEPROP_VS_TIME) {
                         renderPlot({
                             data = reactiveDataChange()
                             numtype_vs_year(
@@ -195,7 +195,7 @@ shinyServer(
                                             data$sources$class_names
                                             )
                         })
-                    } else if (plotId == 6) {
+                    } else if (plotId == plotsEnum$PERFORMANCE_VS_TIME) {
                         renderPlot({
                             data = reactiveDataChange()
                             ylim = reactiveRanges$y
@@ -208,7 +208,7 @@ shinyServer(
                                               )
 
                         })
-                    } else if (plotId == 7) {
+                    } else if (plotId == plotsEnum$SCORE_PERC_VS_SHOW_PERC) {
                         renderPlot({
                             data = reactiveDataChange()
                             ylim = reactiveRanges$y
@@ -254,7 +254,7 @@ shinyServer(
                         reactiveRanges = getReactiveZoom(brushId, dblClickId)
                     }
 
-                    if (plotId == 1) {
+                    if (plotId == plotsEnum$PROP_BARCHART) {
                         # Show props vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
 
@@ -284,7 +284,7 @@ shinyServer(
                                            #xlim=xlim
                                            )
                         })
-                    } else if (plotId == 2) {
+                    } else if (plotId == plotsEnum$SCORE_VS_CATEGORY) {
                         # Show score vs. class barplot for all categorical
                         # variables (genres, source, type, and studio).
 
@@ -314,7 +314,7 @@ shinyServer(
                                                  GLOBAL_MED_SCORES
                                                  )
                         })
-                    } else if (plotId == 3) {
+                    } else if (plotId == plotsEnum$CATEGORY_PERF_VS_TIME) {
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         reactiveClassChange = getReactiveClassChange(tabId)
@@ -338,7 +338,7 @@ shinyServer(
                                           xlim=xlim
                                           )
                         })
-                    } else if (plotId == 4) {
+                    } else if (plotId == plotsEnum$CATEGORY_PROP_HEATMAP) {
                         # Show score,prop vs. year for all categorical variables
                         # (genres, source, type, and studio).
                         renderPlot({
@@ -362,7 +362,7 @@ shinyServer(
                                  las=2
                                  )
                         })
-                    } else if (plotId == 5) {
+                    } else if (plotId == plotsEnum$CATEGORY_SCORE_VS_VIEWS) {
                         # Show score vs. views for all categorical
                         # variables (genres, source, type, and studio).
 
@@ -384,7 +384,7 @@ shinyServer(
                                             xlim=xlim
                                             )
                         })
-                    } else if (plotId == 6) {
+                    } else if (plotId == plotsEnum$CATEGORY_SCORE_VS_PROP) {
                         # Show score vs. props for all categorical variables
                         # (genres, source, type, and studio).
 
@@ -405,7 +405,8 @@ shinyServer(
                                             xlim=xlim
                                             )
                         })
-                    } else if (plotId == 7) {
+                    } else if (plotId ==
+                               plotsEnum$CATEGORY_SCORE_SLOPE_VS_PROP_SLOPE) {
                         # Show score slope vs. prop slope for all categorical
                         # variables (genres, source, type, and studio).
 
@@ -583,58 +584,84 @@ shinyServer(
 
 
                 # Create plots for the summary tab.
-                plotSuffix = paste('plot', 1, '_', sep='')
-                brushSuffix = paste('brush', 1, '_', sep='')
-                dblClkSuffix = paste('dblclick', 1, '_', sep='')
-                sapply(1 : 7,
-                       function(plotId) {
-                           pid = paste(plotSuffix, plotId, sep='')
+                plotSuffix = paste('plot', tabsEnum$SUMMARY, '_', sep='')
+                brushSuffix = paste('brush', tabsEnum$SUMMARY, '_', sep='')
+                dblClkSuffix = paste('dblclick', tabsEnum$SUMMARY, '_', sep='')
+                plots = c(
+                          plotsEnum$SCORE_VS_TIME,
+                          plotsEnum$VIEWS_VS_TIME,
+                          plotsEnum$EPS_VS_TIME,
+                          plotsEnum$TYPEPROP_VS_TIME,
+                          plotsEnum$SOURCEPROP_VS_TIME,
+                          plotsEnum$PERFORMANCE_VS_TIME,
+                          plotsEnum$SCORE_PERC_VS_SHOW_PERC
+                          )
+                sapply(plots,
+                       function(plotEnum) {
+                           pid = paste(plotSuffix, plotEnum, sep='')
 
                            # These plots don't listen to double clicks
                            # or brushes.
-                           if ((plotId == 4) || (plotId == 5)) {
+                           if ((plotEnum == plotsEnum$TYPEPROP_VS_TIME) ||
+                               (plotEnum == plotsEnum$SOURCEPROP_VS_TIME)) {
                                output[[pid]] =
-                                   createSummaryPlot(plotId, NULL, NULL)
+                                   createSummaryPlot(plotEnum, NULL, NULL)
                            }
                            # These plots listen to double clicks and
                            # brushes.
                            else {
-                               bid = paste(brushSuffix, plotId, sep='')
-                               dcid = paste(dblClkSuffix, plotId, sep='')
+                               bid = paste(brushSuffix, plotEnum, sep='')
+                               dcid = paste(dblClkSuffix, plotEnum, sep='')
                                output[[pid]] =
-                                   createSummaryPlot(plotId, bid, dcid)
+                                   createSummaryPlot(plotEnum, bid, dcid)
                            }
                        })
 
                 # Create plots for the other tabs.
-                sapply(2 : 5,
-                       function(tabId) {
-                           plotSuffix = paste('plot', tabId, '_', sep='')
-                           brushSuffix = paste('brush', tabId, '_', sep='')
-                           dblClkSuffix = paste('dblclick', tabId, '_', sep='')
-                           sapply(1 : 7,
-                                  function(plotId) {
-                                      pid = paste(plotSuffix, plotId, sep='')
-                                      if (plotId == 4) {
+                plots = c(
+                          plotsEnum$PROP_BARCHART,
+                          plotsEnum$SCORE_VS_CATEGORY,
+                          plotsEnum$CATEGORY_PERF_VS_TIME,
+                          plotsEnum$CATEGORY_PROP_HEATMAP,
+                          plotsEnum$CATEGORY_SCORE_VS_VIEWS,
+                          plotsEnum$CATEGORY_SCORE_VS_PROP,
+                          plotsEnum$CATEGORY_SCORE_SLOPE_VS_PROP_SLOPE
+                          )
+                tabs = c(
+                         tabsEnum$GENRES,
+                         tabsEnum$TYPES,
+                         tabsEnum$SOURCES,
+                         tabsEnum$STUDIOS
+                         )
+                sapply(tabs,
+                       function(tabEnum) {
+                           plotSuffix = paste('plot', tabEnum, '_', sep='')
+                           brushSuffix = paste('brush', tabEnum, '_', sep='')
+                           dblClkSuffix = paste('dblclick', tabEnum, '_', sep='')
+                           sapply(plots,
+                                  function(plotEnum) {
+                                      pid = paste(plotSuffix, plotEnum, sep='')
+                                      if (plotEnum ==
+                                          plotsEnum$CATEGORY_PROP_HEATMAP) {
                                           output[[pid]] =
-                                              createCatPlot(plotId, tabId,
+                                              createCatPlot(plotEnum, tabEnum,
                                                             NULL, NULL)
                                       }
                                       else {
                                           bid = paste(
                                                       brushSuffix,
-                                                      plotId,
+                                                      plotEnum,
                                                       sep=''
                                                       )
                                           dcid = paste(
                                                        dblClkSuffix,
-                                                       plotId,
+                                                       plotEnum,
                                                        sep=''
                                                        )
                                           output[[pid]] =
                                               createCatPlot(
-                                                            plotId,
-                                                            tabId,
+                                                            plotEnum,
+                                                            tabEnum,
                                                             bid,
                                                             dcid
                                                             )
@@ -682,5 +709,7 @@ shinyServer(
                 rm(plotSuffix)
                 rm(brushSuffix)
                 rm(dblClkSuffix)
+                rm(plots)
+                rm(tabs)
             }
 )
