@@ -1,0 +1,76 @@
+Description of the UI
+The Stats page contains tabs, and each tab displays plots to show various information.  There is an options panel to change the data that information is shown for.  Individual plots also have options specific to what they show.
+
+Details of the options panel UI
+The options panel contains several select menu widgets:
+    studioSelectId: select a studio
+    genreSelectId: select a genre
+    sourceSelectId: select a source
+    typeSelectId: select a type
+    fromYearSelectId: select the first year
+    toYearSelectId: select the last year
+
+and one button:
+    changeDataActionButton: commit changes.
+
+When the button is clicked, the data should change to reflect the selected options.  All select menus and the button are reactive sources, with all plots being reactive endpoints.
+
+Details of the plot UIs
+The plots show data that corresponds to the options given in the options panel.  Each tab contains several plots, and each plot has ID plotT_P, where T denotes the tab in which the plot is contained, and P denotes the type of the plot.  Plots can also have widgets associated them.  These serve as options to change how the plot displays its data.  The widgets come in the form of checkboxes and select menus.  The select menu associated with a plot with ID plotT_P has ID selectT_P.  The checkboxes associated with a plot with ID plotT_P have IDs checkboxT_P_X, where X is the ordinal number of the checkbox (if there are five checkboxes, then X ranges from 1 to 5).  These widgets are reactive sources, and their associated plot is the reactive endpoint.
+
+In addition to widgets being able to control the contents of a specific plot, mouse gestures can do so as well.  Plots can be double clicked or brushed (click and drag).  Double clicking zooms out on a plot, while brushing zooms in.  The double click object associated with a plot with ID plotT_P has ID dblclickT_P.  The brush associated with a plot with ID plotT_P has ID brushT_P.  These are reactive sources, and the associated plots are the reactive endpoints.
+
+The Stats page architecture
+The above descriptions of the elements in the Stats page lead to the implementation architecture defined in this section.  The UI needs the following server-side data: the contents to populate the option panel's and the plots' select menus, and the plots themselves.
+
+To populate the select menus, the UI uses immutable global lists that contain the contents relevant to each menu.  Storing the content in immutable lists is advantegous because the content does not have to be recomputed every time the user visits the Stats page, and the content will not change inadvertently.  Using a global constant is preferred over using local constants because the data is common to several sections of code across many functions and files, which would mean the same data would be unecessarily duplicated throughout the app.  Since the data is also read-only, there are no synchronicity issues (note that R has no concept of immutability, thus this is enforced by the convention that variables with upper case names are read-only).  The following code segment shows how this architecture is implemented in code to populate the select menu with ID studioSelectId. 
+
+    studioSelect =
+        column(
+               3,
+               selectInput(
+                           inputId='studioSelectId',
+                           label='Select studio',
+                           choices=c('All studios',
+                                     sort(levels(GLOBAL_DS$studio))),
+                           selected='All studios'
+                           )
+               )
+
+The plots are created in server.R following the description of the plot UIs.  In that description, plots have IDs formatted as plotT_P, where T denotes a specific tab, and P denotes a specific plot type.  The tabs are denoted by an enum, tabsEnum.  The plot types are denoted by another enum, plotsEnum.  The tabs in the Stats page are Summary, Genres, Sources, Types, and Studios.  Each one has a corresponding enum in tabsEnum:
+
+    tabsEnum$SUMMARY
+    tabsEnum$GENRES
+    tabsEnum$SOURCES
+    tabsEnum$TYPES
+    tabsEnum$STUDIO
+
+There are many types of plots, such as median score vs. time, proportion of shows vs. category, median score vs. median views, etc.  Each one has a corresponding enum in plotsEnum:
+
+    plotsEnum$SCORE_VS_TIME
+    plotsEnum$VIEWS_VS_TIME
+    plotsEnum$EPS_VS_TIME
+    plotsEnum$TYPEPROP_VS_TIME
+    plotsEnum$SOURCEPROP_VS_TIME
+    plotsEnum$PERFORMANCE_VS_TIME
+    plotsEnum$SCORE_PERC_VS_SHOW_PERC
+    plotsEnum$PROP_BARCHART
+    plotsEnum$SCORE_VS_CATEGORY
+    plotsEnum$CATEGORY_PERF_VS_TIME
+    plotsEnum$CATEGORY_SCORE_VS_VIEWS
+    plotsEnum$CATEGORY_SCORE_VS_PROP
+    plotsEnum$CATEGORY_SCORE_SLOPE_VS_PROP_SLOPE
+    plotsEnum$CATEGORY_PROP_HEATMAP
+
+The plots IDs are formatted as plotT_P, where T is an enum in tabsEnum, and P is an enum in plotsEnum.  For example, 'plot' + tabsEnum$TYPES + '_' + plotsEnum$SCORE_VS_CATEGORY is the ID of the score vs. category plot in the Types tab.  Both the UI code and server code refer to plots using IDs of this form.
+
+The UI uses the IDs to acces the plots by calling plotOutput(plotId), while the server uses the IDs to assign the plots as output$plotId = create*Plot().  There are two create*Plot() functions in server.R that create the plots that the UI needs: 
+createCatPlot() and createSummaryPlot().  The first creates plots for the Genres, Sources, Types, and Studios tabs, depending on its given arguments.  The second creates plots for the Summary tab.
+
+The create*Plot() functions use the reactive sources defined in the description of the UI.  The sources are accessed either directly with input$sourceId, or more commonly, by conductor reactives defined in reactives.R.  To react to user actions, reactives.R contains several source and conductor reactives that efficiently generate the data needed for each plot.
+
+The last topic of this section is that of the options specific to a plot.  These options are also source reactives.  Select menus, checkboxes, brushes, and double clicks are defined to be reactive sources with IDs selectT_P, checkboxT_P_X, brushT_P and dblclickT_P, respectively.  The IDs follow the same format defined above for plot IDs.  That is, T is an enum in tabsEnum, and P is an enum in plotsEnum.  Thus, for a plot with ID plotT_P, any select menus, checkboxes, brushe, and double click sources associated with it have the IDs as above, where T and P are the same in all IDs.  The X in the checkbox IDs denotes the ordinal number of the checkbox, as described in the UI description section.  These sources are accessed in reactives in the reactives.R file.
+
+To conclude this section, a summary is given of how the UI is implemented.  The Stats page contains tabs, each identified by an enum in tabsEnum.  Each tab contains plots that show a relation between variables.  The relation that a plot shows is denoted by an enum in plotsEnum.  Each plot has an ID that identifies on which tab the plot is displayed, and what relationship is shows.  The IDs are formatted as 'plot' + enum in tabsEnum + '_' + enum in plotsEnum.  Each plot is a reactive endpoint to the sources in the options panel (a change in one source here affects all plots), as well as to the sources in the plot-specific options (a change in a source here affects only one plot).  Most plot-specific options have IDs formatted as widget_name + enum in tabsEnum + '_' + enum in plotsEnum; the specific enums denote to which plot the option is associated with, and widget_name denotes the type of option (select, checkbox, brush, etc.).  These sources are used in reactives defined in reactives.R.  These reactives are then used in functions that create the plots in server.R.  The created plots are then accessed in tabs.R.
+
+

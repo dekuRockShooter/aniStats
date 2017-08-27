@@ -1,0 +1,50 @@
+Description of the UI
+The Predictions page contains tabs to show information about the predictions given by the classifier.  One tab shows the actual predictions for each season of every year.  Another tab shows statistics about the performance of the classifier that describe how accurate the classifier is and how much confidence can be put into its predictions.
+
+Details of the Predictions tab
+The Predictions tab contains an option panel and a table.  The options panel contains widgets to change the season and year for which predictions are displayed.  The table displays the predictions for the chosen time.
+
+The options panel contain select menus with the IDs:
+    predictions_year_select: select a year
+    predictions_season_select: select a season
+
+and one button:
+    predictionDateActionButton: commit changes.
+
+When the button is clicked, the contents in the table should change to reflect the selected options.  All select menus and the button are reactive sources, with table being reactive their reactive endpoint.
+
+Details of the table
+The table shows the predictions made by the classifer for a given year and season.  It has ID table_predictions.  The columns of the table are the name of the show, the prediction, the true label, and show's score.  When a prediction is incorrect, the corresponding row is marked with a color to visually make it easier to separate from the correct predictions.
+
+The Predictions page architecture
+The above descriptions of the elements in the Predictions page lead to the implementation architecture defined in this section.  The UI needs the following server-side data: the contents to populate the option panel's select menus, and the table of predictions.
+
+To populate the select menus, the UI does so itself, without aid from the server.  The reason for this is that the contents do not depend on server data.  The predictions_year_select select menu contains the numbers 1990 : current year.  The predictions_season_select select menu contains the strings 'Winter', 'Spring', 'Summer', and 'Fall'.
+
+To use the table, the UI accesses it with htmlOutput(table_predictions).  The table is created in server.R in the createPredictionsTable() functions, and is made accessible to the UI by the assignment output$predictions_table = createPredictionsTable().  The createPredictionsTable() function uses renderUI() as opposed to the more intuitive renderTable() function.  This is due to the limitations in customizing the table when using renderTable().  The UI description for the table requires styling each row differently depending on its data values.  Each row must thus be put in a CSS class.  As of July 2017, there is no way (at least, no simple way) to this with the renderTable() function, whence the use of renderUI() to manually construct the table.
+
+The table is a reactive endopoint, and it uses the sources defined above to change the data that it displays.  These sources are used in the getReactivePredictions() conductor reactive defined in reactives.R, which uses the sources to produce a list of indeces for the shows in the selected season and year.  The createPredictionsTable() function updates the table to display the predictions of these shows.
+
+In addition to the options panel and table, a small number of statistics are shown above the table that summarize the data within it.  These statistics are the number of shows in the selected year and season, how many were predicted correctly and incorrectly, and the total error as a percentage.  These statistics give the user a general overview of the performance of the classifier for the particular season-year pair.
+
+As a conclusion, the implementation of the Predictions page UI is summarized.  The page contains a table that shows predictions made by the classifier.  There are options to select the season and year of shows for which predictions are displayed.  The options come as select menus, and are reactive sources.  When a new date is selected, the table, which is the reactive endpoint, uses the sources to change the shows that it displays.  The table is assigned to output$predictions_table, and is accessed with htmlOuput('predictions_table').
+
+
+
+Details of the Performance tab
+The Performance tab contains several plots that display the performance of the classifier.  It also contains a table that displays the performance per studio.
+
+Details of the plots
+The plots show the performance of the classifier from different perspectives.  There are four plots with IDs acc_vs_time, tp_vs_tn, fp_vs_stucnt, and fn_vs_stucnt.  For each plot, a description about it is given.
+
+Details of the table
+The table shows the accuracy of the predictions made by the classifer for each studio.  It has ID table_studio_acc.  The columns of the table are the name of the studio, the number of its shows correctly predicted, the total number of shows the studio has produced, and the proportion of correctly predicted shows.
+
+The Performance page architecture
+The above descriptions of the elements in the Performance page lead to the implementation architecture defined in this section.  The UI needs the following server-side data: the plots and the table.
+
+The plots used on this page are static images.  These are stored in the www/ folder.  In server.R, the images are rendered using renderImages(), and assigned to output$imageID, where imageID as defined above.  The UI accesses the images by calling imageOutput(imageID).  The descriptions of each plot is held in the PLOT_DESC list in the constant.R file.  This list is used as PLOT_DESC$imageID, which is the description for the plot with ID imageID.
+
+To use the table, the UI accesses it with htmlOutput('table_studio_acc').  The table is created in server.R in the createStudioPredictionsTable() function, and is made accessible to the UI by the assignment output$table_studio_acc = createStudioPredictionsTable().  The createStudioPredictionsTable() function uses renderUI() as opposed to the more intuitive renderTable() function.  This is due to the limitations in customizing the table when using renderTable().
+
+As a conclusion, the implementation of the Predictions page UI is summarized.  The page contains a table that shows the performance of the classifier for each studio.  There are also plots that display the performance from different perspectives.  The table is assigned to output$table_studio_acc, and is accessed with htmlOuput('table_studio_acc').  The plots are assigned to output$imageID and are accesses with imageOutput(imageID), where imageID is one of the IDs defined in the plot details section.
