@@ -1,0 +1,7 @@
+anime_mach.csv, as created by csv2machine.py, contains duplicate
+entries.  To remove the duplicates, execute this in the terminal:
+
+    $ sort -k 1,1 anime_mach.csv | uniq > anime_mach_nodup.csv
+
+The file anime_mach_nodup.csv will contain only the unique entries
+of anime_mach.csv.
