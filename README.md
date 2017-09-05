@@ -4,7 +4,9 @@ The website is https://anistats.shinyapps.io/anistats/.
 
 To run locally, execute the following code in R.  First, however, make sure to change directory to the parent of the app's directory (or change the directory used in runApp()):
 
+```
     > library(shiny)
     > runApp('./app/')
+```
 
 Then visit the URL that is displayed on the console.
