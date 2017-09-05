@@ -57,7 +57,11 @@ fluidPage(
                                 tabPanel(
                                          'Contact',
                                          tags$p(
-                                                'Please contact me at: dekunutshooter@gmail.com'
+                                                'Email: dekurockshooter@gmail.com'
+                                                ),
+                                         tags$a(
+                                                href='https://github.com/dekuRockShooter/aniStats',
+                                                'Github'
                                                 )
                                          )
                                 )
